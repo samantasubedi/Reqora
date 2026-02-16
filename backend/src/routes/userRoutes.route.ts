@@ -15,3 +15,4 @@ router.patch("/users/:id", (req, res) => {
     message: "this edits the existing user info like name,personal details",
   });
 });
+export default router
