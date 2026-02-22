@@ -12,9 +12,10 @@ generator client {
 datasource db {
   provider = "mysql"
 }
-model users{
-  username String
-  id String @id @default(cuid())
-  role String
+
+model users {
+  username String @unique
+  id       String @id @default(cuid())
+  role     String
   password String
 }
