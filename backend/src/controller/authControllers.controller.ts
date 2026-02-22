@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt-ts";
 import { prisma } from "../lib/prisma";
-export const handleLogin = (req: Request, res: Response) => {
-  res.json({ message: "post request sent to login page" });
-};
+
 export const handleRegister = async (req: Request, res: Response) => {
   try {
     const username = req.body.username;
@@ -29,6 +27,30 @@ export const handleRegister = async (req: Request, res: Response) => {
     res.status(500).send(`couldnt perform the action, ${err}`); //500 means internal server error
   }
 };
+
+export const handleLogin = async (req: Request, res: Response) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  if (!username || !password) {
+    return res.status(400).json({ message: "all fields are required"});
+  }
+  const retrivedPassword = await prisma.users.findFirst({
+    where: { username },
+    select: { password: true },
+  });
+  if (!retrivedPassword) {
+    return res.status(400).json({ message: "user not found" });
+  }
+  const isPasswordCorrect = await bcrypt.compare(
+    password,
+    retrivedPassword.password,
+  );
+  if (isPasswordCorrect) {
+    res.status(200).json({ message: "you have been logged in" });
+  }
+  else if(!isPasswordCorrect){res.status(200).json({"message":"incorrect password"})}
+};
+
 export const handleLogout = (req: Request, res: Response) => {
   res.json({ message: "this is logout page" });
 };

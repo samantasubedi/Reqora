@@ -13,9 +13,14 @@ datasource db {
   provider = "mysql"
 }
 
+enum Role {
+  admin
+  manager
+  employee
+}
 model users {
   username String @unique
   id       String @id @default(cuid())
-  role     String
+  role     Role
   password String
 }
