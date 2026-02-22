@@ -13,7 +13,8 @@ datasource db {
   provider = "mysql"
 }
 model users{
-  name String
+  username String
   id String @id @default(cuid())
   role String
+  password String
 }
