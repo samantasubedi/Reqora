@@ -41,7 +41,7 @@ export default function EmployeeDashboard() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button>
+          <Button className="text-white! text-bold! bg-purple-900 hover:bg-purple-700 duration-300 transition-all cursor-pointer">
             <Plus className="mr-2 h-4 w-4" /> New Request
           </Button>
         </div>
@@ -49,42 +49,42 @@ export default function EmployeeDashboard() {
 
       {/* Metrics Row */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card  className="hover:bg-purple-100 bg-purple-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">My Resources</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xl font-medium">My Resources</CardTitle>
+            <Package className="h-8 w-8 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">04</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Items currently assigned
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card  className="hover:bg-orange-100 bg-orange-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xl font-medium">
               Pending Approvals
             </CardTitle>
-            <Clock className="h-4 w-4 text-orange-500" />
+            <Clock className="h-8 w-8 text-orange-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">02</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Awaiting manager review
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:bg-green-100 bg-green-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xl font-medium">
               Approved Requests
             </CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <CheckCircle2 className="h-8 w-8 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Total successful fulfillments
             </p>
           </CardContent>
@@ -98,7 +98,7 @@ export default function EmployeeDashboard() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Recent Requests</CardTitle>
+                <CardTitle className="text-2xl">Recent Requests</CardTitle>
                 <CardDescription>
                   You have made 3 requests this month.
                 </CardDescription>
@@ -106,7 +106,7 @@ export default function EmployeeDashboard() {
               <div className="flex items-center gap-2">
                 <div className="relative w-full max-w-sm">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search..." className="pl-8 w-[200px]" />
+                  <Input placeholder="Search..." className="pl-8 w-50" />
                 </div>
               </div>
             </div>
@@ -127,14 +127,14 @@ export default function EmployeeDashboard() {
                   <TableCell>Oct 12, 2023</TableCell>
                   <TableCell>
                     <Badge
-                      variant="outline"
-                      className="border-green-500 text-green-600"
+                     
+                      className="bg-green-100 text-green-600"
                     >
                       Approved
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="secondary" size="sm" className="text-blue-500 bg-zinc-100 hover:bg-zinc-200 cursor-pointer transition-all duration-300 ease-in-out">
                       View
                     </Button>
                   </TableCell>
@@ -153,24 +153,23 @@ export default function EmployeeDashboard() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="secondary" size="sm" className="text-blue-500 bg-zinc-100 hover:bg-zinc-200 cursor-pointer transition-all duration-300 ease-in-out">
                       View
                     </Button>
                   </TableCell>
                 </TableRow>
               </TableBody>
-            
             </Table>
-              <div className="flex justify-end w-full mt-10">
-                <Button>View All</Button>
-              </div>
+            <div className="flex justify-end w-full mt-10">
+              <Button className="cursor-pointer text-blue-600 bg-blue-100 hover:bg-blue-200 transition-all duration-300 ease-in-out font-bold">View All</Button>
+            </div>
           </CardContent>
         </Card>
 
         {/* Quick Access/Current Items Sidebar */}
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>My Active Gear</CardTitle>
+            <CardTitle className="text-2xl">My Active Gear</CardTitle>
             <CardDescription>
               Items you are currently responsible for.
             </CardDescription>
