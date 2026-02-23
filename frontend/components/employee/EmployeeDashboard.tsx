@@ -9,7 +9,7 @@ import {
   Filter,
 } from "lucide-react";
 
-// Shadcn UI Imports (Assuming they are installed in @/components/ui)
+
 import {
   Card,
   CardContent,
@@ -32,7 +32,7 @@ import { Input } from "@/components/ui/input";
 export default function EmployeeDashboard() {
   return (
     <div className="flex-1 space-y-8 p-8 pt-6">
-      {/* Header Section */}
+
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -47,7 +47,7 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      {/* Metrics Row */}
+
       <div className="grid gap-4 md:grid-cols-3">
         <Card  className="hover:bg-purple-100 bg-purple-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -91,9 +91,9 @@ export default function EmployeeDashboard() {
         </Card>
       </div>
 
-      {/* Main Content Grid */}
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Recent Requests Table */}
+ 
         <Card className="col-span-4">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -166,7 +166,7 @@ export default function EmployeeDashboard() {
           </CardContent>
         </Card>
 
-        {/* Quick Access/Current Items Sidebar */}
+   
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle className="text-2xl">My Active Gear</CardTitle>
