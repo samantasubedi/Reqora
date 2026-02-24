@@ -12,6 +12,7 @@ import {
 } from "../ui/card";
 import { Book, Package } from "lucide-react";
 import { Button } from "../ui/button";
+import { ResourceTable } from "./ResourceTable";
 export interface statCardInterface {
   title: string;
   number: number;
@@ -75,6 +76,7 @@ const AdminDashboard = () => {
             );
           })}
         </div>
+        <ResourceTable />
       </div>
     </>
   );
