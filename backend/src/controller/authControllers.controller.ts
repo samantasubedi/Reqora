@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt-ts";
 import { prisma } from "../lib/prisma";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
+import strict from "node:assert/strict";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
@@ -32,7 +35,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   const username = req.body.username;
   const password = req.body.password;
   if (!username || !password) {
-    return res.status(400).json({ message: "all fields are required"});
+    return res.status(400).json({ message: "all fields are required" });
   }
   const retrivedPassword = await prisma.users.findFirst({
     where: { username },
@@ -46,9 +49,28 @@ export const handleLogin = async (req: Request, res: Response) => {
     retrivedPassword.password,
   );
   if (isPasswordCorrect) {
-    res.status(200).json({ message: "you have been logged in" });
+    const role = prisma.users.findFirst({
+      where: { username },
+      select: { role: true },
+    });
+    const tokenData = { username, role };
+    const accessSecret = process.env.ACCESS_SECRET!;
+    const refreshSecret = process.env.REFRESH_SECRET!;
+    const accessToken = jwt.sign(tokenData, accessSecret);
+    const refreshToken = jwt.sign(tokenData, refreshSecret);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+    res.status(200).json({
+      message: "you have been logged in ",
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    });
+  } else if (!isPasswordCorrect) {
+    res.status(200).json({ message: "incorrect password" });
   }
-  else if(!isPasswordCorrect){res.status(200).json({"message":"incorrect password"})}
 };
 
 export const handleLogout = (req: Request, res: Response) => {
