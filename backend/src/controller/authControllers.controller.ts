@@ -9,8 +9,8 @@ export const handleRegister = async (req: Request, res: Response) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
-    const role = req.body.role;
-    if (!username || !password || !role) {
+
+    if (!username || !password) {
       return res.status(400).json({ message: "all fields are required" }); // 400 means bad request
     }
     const existingUser = await prisma.users.findUnique({ where: { username } });
@@ -22,7 +22,7 @@ export const handleRegister = async (req: Request, res: Response) => {
       data: {
         username,
         password: hashedPassword,
-        role,
+        role:"employee"
       },
     });
     res.status(201).send("data added to the database"); // 201 means created
