@@ -27,3 +27,4 @@ export const handleForward = (req: Request, res: Response) => {
     message: `forwards the specific request with id ${id} to higher authority`,
   });
 };
+
