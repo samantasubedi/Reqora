@@ -22,10 +22,10 @@ export const handleRegister = async (req: Request, res: Response) => {
       data: {
         username,
         password: hashedPassword,
-        role:"employee"
+        role: "employee",
       },
     });
-    res.status(201).send("data added to the database"); // 201 means created
+    res.status(201).send(`registered with username ${username}`); // 201 means created
   } catch (err) {
     res.status(500).send(`couldnt perform the action, ${err}`); //500 means internal server error
   }
