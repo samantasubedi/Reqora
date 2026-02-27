@@ -3,6 +3,7 @@ import bcrypt from "bcrypt-ts";
 import { prisma } from "../lib/prisma";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import { Role } from "../generated/prisma/enums";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
@@ -12,16 +13,26 @@ export const handleRegister = async (req: Request, res: Response) => {
     if (!username || !password) {
       return res.status(400).json({ message: "all fields are required" }); // 400 means bad request
     }
-    const existingUser = await prisma.users.findUnique({ where: { username } });
-    if (existingUser) {
+    const duplicateUser = await prisma.users.findUnique({
+      where: { username },
+    });
+    if (duplicateUser) {
       return res.status(409).json({ message: "user already exists" }); // 409 means its a conflict
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+    const existingUsers = await prisma.users.count();
+    console.log(" total number of existing users are", existingUsers);
+    let role: Role;
+    if (existingUsers === 0) {
+      role = Role.admin;
+    } else {
+      role = Role.employee;
+    }
     await prisma.users.create({
       data: {
         username,
         password: hashedPassword,
-        role: "employee",
+        role,
       },
     });
     res.status(201).send(`registered with username ${username}`); // 201 means created
@@ -54,7 +65,6 @@ export const handleLogin = async (req: Request, res: Response) => {
     });
     if (!roleObj) return;
     const role = roleObj.role;
-    console.log("this is role retrived from db ", role);
     const tokenData = { username, role };
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;

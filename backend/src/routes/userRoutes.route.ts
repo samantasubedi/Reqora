@@ -1,8 +1,13 @@
 import { Router } from "express";
-import { getAllUsers,getSpecificUser,createUser,editUser } from "../controller/userControllers.controller";
-const router=Router()
-router.get("/users",getAllUsers);
-router.get("/users/:id",getSpecificUser );
-router.post("/users",createUser );
-router.patch("/users/:id",editUser );
-export default router
+import {
+  getAllUsers,
+  getSpecificUser,
+  changeUserRole,
+//   deleteAllusers,
+} from "../controller/userControllers.controller";
+const router = Router();
+router.get("/users", getAllUsers);
+router.get("/users/:id", getSpecificUser);
+router.patch("/users/:id", changeUserRole);
+// router.delete("/users", deleteAllusers);
+export default router;

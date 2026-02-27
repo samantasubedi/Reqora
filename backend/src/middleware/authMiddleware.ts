@@ -17,7 +17,7 @@ export const authMiddlware = (
         const decodedData = jwt.verify(token, accessSecret);
 
         res.locals.user = decodedData;
-        console.log("this is decoded data", decodedData);
+        // console.log("this is decoded data", decodedData);
         next();
       } else if (!accessSecret) {
         return res.json({ message: "accessSecret not found" });

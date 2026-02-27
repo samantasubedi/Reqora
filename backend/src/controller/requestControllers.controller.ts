@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 export const getAllRequest = (req: Request, res: Response) => {
-  res.send("gets all requests used to be viewed by manager");
+  const role = res.locals.user.role;
+  if (role === "employee") {
+    res.json({ message: "this sends all requests sent by a employee" });
+  }
+  if (role == "manager") {
+    res.send("gets all requests used to be viewed by manager");
+  }
 };
 export const getSpecificRequest = (req: Request, res: Response) => {
   const id = req.params.id;
@@ -27,4 +33,3 @@ export const handleForward = (req: Request, res: Response) => {
     message: `forwards the specific request with id ${id} to higher authority`,
   });
 };
-
