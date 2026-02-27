@@ -3,12 +3,12 @@ export const roleMiddleware = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const userInfo = res.locals.user;
+      console.log("this is userInfo", userInfo);
       if (!userInfo) {
         return res.json({ message: "user not found" });
       }
       if (allowedRoles.includes(userInfo.role)) {
-        res.json({ message: "access granted" });
-        next();
+        return next();
       }
       return res.json({
         message: "Access denied, user with this role cannot access this route",

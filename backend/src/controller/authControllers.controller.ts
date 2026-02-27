@@ -3,7 +3,6 @@ import bcrypt from "bcrypt-ts";
 import { prisma } from "../lib/prisma";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import strict from "node:assert/strict";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
@@ -49,10 +48,13 @@ export const handleLogin = async (req: Request, res: Response) => {
     retrivedPassword.password,
   );
   if (isPasswordCorrect) {
-    const role = prisma.users.findFirst({
+    const roleObj = await prisma.users.findFirst({
       where: { username },
       select: { role: true },
     });
+    if (!roleObj) return;
+    const role = roleObj.role;
+    console.log("this is role retrived from db ", role);
     const tokenData = { username, role };
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;
@@ -64,7 +66,7 @@ export const handleLogin = async (req: Request, res: Response) => {
       sameSite: "strict",
     });
     res.status(200).json({
-      message: "you have been logged in ",
+      message: `you have been logged in as ${username}`,
       accessToken: accessToken,
       refreshToken: refreshToken,
     });
