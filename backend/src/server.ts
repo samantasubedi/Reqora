@@ -1,7 +1,9 @@
 import express from "express";
 import allRoutes from "./routes/index";
+import cookieParser from "cookie-parser";
 const server = express();
 server.use(express.json());
+server.use(cookieParser());
 server.get("/", (req, res) => {
   res.send("this is homepage");
 });
