@@ -2,6 +2,7 @@
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
+import { toast } from "react-toastify";
 import {
   Card,
   CardContent,
@@ -12,24 +13,41 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 type formDataType = {
   username: string;
   password: string;
 };
+
 const page = () => {
-  const backendUrl = process.env.BACKEND_API_URL;
+  const router = useRouter();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<formDataType>();
   const handleFormSubmit: SubmitHandler<formDataType> = async (data) => {
     console.log("form data", data);
     try {
-      const response = await axios.post("backendUrl/register", data);
+      console.log("this is backend url", backendUrl);
+      const response = await axios.post(`${backendUrl}/register`, data);
       console.log(response);
+      if (response.status == 201) {
+        toast.success(`${response.data.message},Please login in to continue`);
+        router.push("/login");
+      }
     } catch (err) {
-      console.log("couldnt post data", err);
+      if (axios.isAxiosError(err) && err.response) {
+        console.log(err.response.data);
+        toast.error(err.response.data.message);
+        if (err.response.data.code === "DUPLICATE_USERNAME") {
+          setError("username", { message: err.response.data.message });
+        }
+      } else {
+        console.log("something went wrong", err);
+      }
     }
   };
   return (
