@@ -7,9 +7,7 @@ import { Role } from "../generated/prisma/enums";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
-    const username = req.body.username;
-    const password = req.body.password;
-
+    const { username, password } = req.body;
     if (!username || !password) {
       return res.status(400).json({ message: "all fields are required" }); // 400 means bad request
     }
@@ -17,7 +15,11 @@ export const handleRegister = async (req: Request, res: Response) => {
       where: { username },
     });
     if (duplicateUser) {
-      return res.status(409).json({ message: "user already exists" }); // 409 means its a conflict
+      return res.status(409).json({
+        success: false,
+        code: "DUPLICATE_USERNAME",
+        message: "Username already taken",
+      }); // 409 means its a conflict
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const existingUsers = await prisma.users.count();
@@ -35,9 +37,17 @@ export const handleRegister = async (req: Request, res: Response) => {
         role,
       },
     });
-    res.status(201).send(`registered with username ${username}`); // 201 means created
+    res.status(201).json({
+      success: true,
+      code: "ACCOUNT_REGISTERED",
+      message: `Your account has been registered`,
+    }); // 201 means created
   } catch (err) {
-    res.status(500).send(`couldnt perform the action, ${err}`); //500 means internal server error
+    res.status(500).json({
+      success: false,
+      code: "SERVER_FAILURE",
+      message: "couldn't register your account",
+    }); //500 means internal server error
   }
 };
 
