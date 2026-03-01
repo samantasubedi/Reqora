@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import axios from "axios";
 import {
   Card,
   CardContent,
@@ -16,13 +17,20 @@ type formDataType = {
   password: string;
 };
 const page = () => {
+  const backendUrl = process.env.BACKEND_API_URL;
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<formDataType>();
-  const handleFormSubmit: SubmitHandler<formDataType> = (data) => {
+  const handleFormSubmit: SubmitHandler<formDataType> = async (data) => {
     console.log("form data", data);
+    try {
+      const response = await axios.post("backendUrl/register", data);
+      console.log(response);
+    } catch (err) {
+      console.log("couldnt post data", err);
+    }
   };
   return (
     <div className="flex justify-center mt-[10%]">
@@ -42,6 +50,10 @@ const page = () => {
               <Input
                 {...register("username", {
                   required: "username is required !",
+                  minLength: {
+                    value: 3,
+                    message: "username must be atleast 3 characters",
+                  },
                 })}
                 placeholder="Enter your username"
               />
@@ -52,6 +64,10 @@ const page = () => {
               <Input
                 {...register("password", {
                   required: "password is required !",
+                  minLength: {
+                    value: 8,
+                    message: "password must be at least 8 characters !",
+                  },
                 })}
                 placeholder="Enter your password"
                 type="password"

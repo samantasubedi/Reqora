@@ -43,6 +43,7 @@ const page = () => {
                 placeholder="Enter your username"
                 {...register("username", {
                   required: "username is required !",
+                  minLength:{value :3,message:"username must be at least 3 characters !"}
                 })}
               />
               <p className="text-red-600">{errors.username?.message}</p>
@@ -54,6 +55,10 @@ const page = () => {
                 placeholder="Enter your password"
                 {...register("password", {
                   required: "password is required !",
+                  minLength: {
+                    value: 8,
+                    message: "passowrd must me atleast 8 characters !",
+                  },
                 })}
               />
               <p className="text-red-600">{errors.password?.message}</p>
