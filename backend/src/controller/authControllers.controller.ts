@@ -52,8 +52,7 @@ export const handleRegister = async (req: Request, res: Response) => {
 };
 
 export const handleLogin = async (req: Request, res: Response) => {
-  const username = req.body.username;
-  const password = req.body.password;
+  const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ message: "all fields are required" });
   }
@@ -62,18 +61,35 @@ export const handleLogin = async (req: Request, res: Response) => {
     select: { password: true },
   });
   if (!retrivedPassword) {
-    return res.status(400).json({ message: "user not found" });
+    return res.status(404).json({
+      success: false,
+      code: "USER_DONT_EXIST",
+      message: "user not found",
+    });
   }
   const isPasswordCorrect = await bcrypt.compare(
     password,
     retrivedPassword.password,
   );
-  if (isPasswordCorrect) {
+  if (!isPasswordCorrect) {
+    res.status(400).json({
+      success: false,
+      code: "INCORRECT_PASSWORD",
+      message: "Incorrect password !",
+    });
+  } else if (isPasswordCorrect) {
     const roleObj = await prisma.users.findFirst({
       where: { username },
       select: { role: true },
     });
-    if (!roleObj) return;
+    if (!roleObj) {
+      res.status(500).json({
+        success: false,
+        code: "SERVER_ERROR",
+        message: "server error !",
+      });
+      return;
+    }
     const role = roleObj.role;
     const tokenData = { username, role };
     const accessSecret = process.env.ACCESS_SECRET!;
@@ -86,12 +102,11 @@ export const handleLogin = async (req: Request, res: Response) => {
       sameSite: "strict",
     });
     res.status(200).json({
-      message: `you have been logged in as ${username}`,
-      accessToken: accessToken,
-      refreshToken: refreshToken,
+      success: true,
+      code: "LOGIN_SUCCESSFULL",
+      message: `You have been logged in as ${username}`,
+      accessToken,
     });
-  } else if (!isPasswordCorrect) {
-    res.status(200).json({ message: "incorrect password" });
   }
 };
 
