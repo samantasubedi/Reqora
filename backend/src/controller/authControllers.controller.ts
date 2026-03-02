@@ -47,6 +47,7 @@ export const handleRegister = async (req: Request, res: Response) => {
       success: false,
       code: "SERVER_FAILURE",
       message: "couldn't register your account",
+      
     }); //500 means internal server error
   }
 };
@@ -56,41 +57,33 @@ export const handleLogin = async (req: Request, res: Response) => {
   if (!username || !password) {
     return res.status(400).json({ message: "all fields are required" });
   }
-  const retrivedPassword = await prisma.users.findFirst({
+  const user = await prisma.users.findUnique({
     where: { username },
-    select: { password: true },
+    select: { password: true, role: true },
   });
-  if (!retrivedPassword) {
-    return res.status(404).json({
+  if (!user) {
+    return res.status(401).json({
       success: false,
-      code: "USER_DONT_EXIST",
-      message: "user not found",
+      code: "INVALID_CREDIENTIALS",
+      message: "Incorrect username or password",
     });
   }
-  const isPasswordCorrect = await bcrypt.compare(
-    password,
-    retrivedPassword.password,
-  );
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
   if (!isPasswordCorrect) {
-    res.status(400).json({
+    return res.status(401).json({
       success: false,
-      code: "INCORRECT_PASSWORD",
-      message: "Incorrect password !",
+      code: "INVALID_CREDIENTIALS",
+      message: "Incorrect username or password",
     });
   } else if (isPasswordCorrect) {
-    const roleObj = await prisma.users.findFirst({
-      where: { username },
-      select: { role: true },
-    });
-    if (!roleObj) {
-      res.status(500).json({
+    if (!user.role) {
+      return res.status(500).json({
         success: false,
         code: "SERVER_ERROR",
         message: "server error !",
       });
-      return;
     }
-    const role = roleObj.role;
+    const role = user.role;
     const tokenData = { username, role };
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;
@@ -106,6 +99,7 @@ export const handleLogin = async (req: Request, res: Response) => {
       code: "LOGIN_SUCCESSFULL",
       message: `You have been logged in as ${username}`,
       accessToken,
+      role:user.role
     });
   }
 };
