@@ -11,18 +11,33 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
+import { toast } from "react-toastify";
 type formDataType = {
   username: string;
   password: string;
 };
 const page = () => {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<formDataType>();
-  const formSubmitHandler: SubmitHandler<formDataType> = (data) => {
-    console.log("this is form data", data);
+  const formSubmitHandler: SubmitHandler<formDataType> = async (data) => {
+    try {
+      const response = await axios.post(`${backendUrl}/login`, data);
+      if (response.status == 200) {
+        toast.success(response.data.message);
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message);
+        console.log(err.response.data);
+      } else {
+        console.log("unexpected error", err);
+      }
+    }
   };
   return (
     <div className="flex justify-center mt-[10%]">
@@ -43,7 +58,10 @@ const page = () => {
                 placeholder="Enter your username"
                 {...register("username", {
                   required: "username is required !",
-                  minLength:{value :3,message:"username must be at least 3 characters !"}
+                  minLength: {
+                    value: 3,
+                    message: "username must be at least 3 characters !",
+                  },
                 })}
               />
               <p className="text-red-600">{errors.username?.message}</p>
