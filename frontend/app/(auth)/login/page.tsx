@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardHeader,
@@ -18,22 +19,35 @@ type formDataType = {
   password: string;
 };
 const page = () => {
+  const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<formDataType>();
   const formSubmitHandler: SubmitHandler<formDataType> = async (data) => {
     try {
       const response = await axios.post(`${backendUrl}/login`, data);
-      if (response.status == 200) {
+      if (
+        response.status == 200 &&
+        response.data.code === "LOGIN_SUCCESSFULL"
+      ) {
         toast.success(response.data.message);
+        router.push(`/${response.data.role}/dashboard`);
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         toast.error(err.response.data.message);
         console.log(err.response.data);
+        if (
+          err.response.status == 401 &&
+          err.response.data.code === "INVALID_CREDIENTIALS"
+        ) {
+          setError("username", { message: err.response.data.message });
+          setError("password", { message: err.response.data.message });
+        }
       } else {
         console.log("unexpected error", err);
       }
