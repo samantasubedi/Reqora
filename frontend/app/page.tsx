@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div>
       {/* <Test /> */}
-      this is landing page
+      this is the main page
     </div>
   );
 }

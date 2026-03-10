@@ -1,6 +1,9 @@
 "use client";
 import React from "react";
+import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
+
+import { create } from "zustand";
 import {
   Card,
   CardHeader,
@@ -14,10 +17,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { access } from "fs";
 type formDataType = {
   username: string;
   password: string;
 };
+type tokenType = {
+  accessToken: string;
+  decodedToken: {
+    username: string;
+    role: string;
+  };
+};
+
+const globalState = create<tokenType>((set) => ({
+  accessToken: "",
+  decodedToken: {
+    username: "",
+    role: "",
+  },
+  setAccessToken: ({ accessToken, decodedToken }: tokenType) =>
+    set((state) => ({ accessToken: accessToken, decodedToken: decodedToken })),
+}));
+
 const page = () => {
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -34,6 +56,11 @@ const page = () => {
         response.status == 200 &&
         response.data.code === "LOGIN_SUCCESSFULL"
       ) {
+        const accessToken = response.data.accessToken;
+        console.log(accessToken);
+        const decodedToken = jwtDecode(accessToken);
+        console.log(`this is decoded token`, decodedToken);
+
         toast.success(response.data.message);
         router.push(`/${response.data.role}/dashboard`);
       }
@@ -53,7 +80,12 @@ const page = () => {
       }
     }
   };
+  // const { count, increase } = useStore();
   return (
+    // <div>
+    //   <div>{count}</div>
+    //   <button onClick={increase}>increase</button>
+    // </div>
     <div className="flex justify-center mt-[10%]">
       <Card className="w-[30%]">
         <CardHeader>
