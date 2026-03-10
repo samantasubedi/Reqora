@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 
 import { create } from "zustand";
+import { globalState } from "@/app/store/authStore";
 import {
   Card,
   CardHeader,
@@ -18,30 +19,14 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { access } from "fs";
+import { tokenType } from "@/app/store/authStore";
 type formDataType = {
   username: string;
   password: string;
 };
-type tokenType = {
-  accessToken: string;
-  decodedToken: {
-    username: string;
-    role: string;
-  };
-};
-
-const globalState = create<tokenType>((set) => ({
-  accessToken: "",
-  decodedToken: {
-    username: "",
-    role: "",
-  },
-  setAccessToken: ({ accessToken, decodedToken }: tokenType) =>
-    set((state) => ({ accessToken: accessToken, decodedToken: decodedToken })),
-}));
-
 const page = () => {
   const router = useRouter();
+  const {setAccessToken } = globalState();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
@@ -56,13 +41,15 @@ const page = () => {
         response.status == 200 &&
         response.data.code === "LOGIN_SUCCESSFULL"
       ) {
-        const accessToken = response.data.accessToken;
-        console.log(accessToken);
-        const decodedToken = jwtDecode(accessToken);
-        console.log(`this is decoded token`, decodedToken);
-
+        const token: string = response.data.accessToken;
+        console.log(token);
+        const tokenData = jwtDecode<tokenType["decodedToken"]>(token);
+        console.log(`this is decoded token`, tokenData);
+        setAccessToken({ accessToken: token, decodedToken: tokenData });
+      
         toast.success(response.data.message);
         router.push(`/${response.data.role}/dashboard`);
+        
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
@@ -80,12 +67,9 @@ const page = () => {
       }
     }
   };
-  // const { count, increase } = useStore();
+
   return (
-    // <div>
-    //   <div>{count}</div>
-    //   <button onClick={increase}>increase</button>
-    // </div>
+
     <div className="flex justify-center mt-[10%]">
       <Card className="w-[30%]">
         <CardHeader>
