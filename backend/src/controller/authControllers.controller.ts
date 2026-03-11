@@ -47,7 +47,6 @@ export const handleRegister = async (req: Request, res: Response) => {
       success: false,
       code: "SERVER_FAILURE",
       message: "couldn't register your account",
-      
     }); //500 means internal server error
   }
 };
@@ -99,11 +98,31 @@ export const handleLogin = async (req: Request, res: Response) => {
       code: "LOGIN_SUCCESSFULL",
       message: `You have been logged in as ${username}`,
       accessToken,
-      role:user.role
+      role: user.role,
     });
   }
 };
 
 export const handleLogout = (req: Request, res: Response) => {
   res.json({ message: "this is logout page" });
+};
+export const handleRefresh = (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    return res.status(401).json({
+      success: false,
+      message: "refresh token not found",
+      code: "TOKEN_NOT_FOUND",
+    });
+  }
+  const refreshSecret = process.env.REFRESH_SECRET!;
+  const accessSecret = process.env.ACCESS_SECRET!;
+  const decodedToken = jwt.verify(refreshToken, refreshSecret);
+  const accessToken = jwt.sign(decodedToken, accessSecret);
+  res.status(201).json({
+    success: true,
+    message: "your access token has been regenerated",
+    code: "TOKEN_REGENERATED",
+    accessToken,
+  });
 };
