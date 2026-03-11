@@ -86,8 +86,10 @@ export const handleLogin = async (req: Request, res: Response) => {
     const tokenData = { username, role };
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;
-    const accessToken = jwt.sign(tokenData, accessSecret);
-    const refreshToken = jwt.sign(tokenData, refreshSecret);
+    const accessToken = jwt.sign(tokenData, accessSecret, { expiresIn: "15m" });
+    const refreshToken = jwt.sign(tokenData, refreshSecret, {
+      expiresIn: "15d",
+    });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
