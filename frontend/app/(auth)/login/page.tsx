@@ -26,7 +26,7 @@ type formDataType = {
 };
 const page = () => {
   const router = useRouter();
-  const {setAccessToken } = globalState();
+  const { setAccessToken } = globalState();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
@@ -36,7 +36,9 @@ const page = () => {
   } = useForm<formDataType>();
   const formSubmitHandler: SubmitHandler<formDataType> = async (data) => {
     try {
-      const response = await axios.post(`${backendUrl}/login`, data);
+      const response = await axios.post(`${backendUrl}/login`, data, {
+        withCredentials: true,
+      });
       if (
         response.status == 200 &&
         response.data.code === "LOGIN_SUCCESSFULL"
@@ -48,7 +50,6 @@ const page = () => {
         setAccessToken({ accessToken: token, decodedToken: tokenData });
         toast.success(response.data.message);
         router.push(`/${response.data.role}/dashboard`);
-        
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
@@ -68,7 +69,6 @@ const page = () => {
   };
 
   return (
-
     <div className="flex justify-center mt-[10%]">
       <Card className="w-[30%]">
         <CardHeader>
