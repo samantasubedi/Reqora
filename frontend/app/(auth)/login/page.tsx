@@ -46,7 +46,6 @@ const page = () => {
         const tokenData = jwtDecode<tokenType["decodedToken"]>(token);
         console.log(`this is decoded token`, tokenData);
         setAccessToken({ accessToken: token, decodedToken: tokenData });
-      
         toast.success(response.data.message);
         router.push(`/${response.data.role}/dashboard`);
         

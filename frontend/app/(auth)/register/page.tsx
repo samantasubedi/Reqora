@@ -3,7 +3,6 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { globalState } from "@/app/store/authStore";
 import {
   Card,
   CardContent,
@@ -21,8 +20,6 @@ type formDataType = {
 };
 
 const page = () => {
-  const { accessToken, decodedToken } = globalState();
-  console.log(accessToken, decodedToken, "these are the stored data");
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
