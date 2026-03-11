@@ -92,7 +92,15 @@ export const handleLogin = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
+      maxAge: 15 * 24 * 60 * 60 * 1000, //15 days
     });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+      maxAge: 15 * 60 * 1000, //15 minutes
+    });
+
     res.status(200).json({
       success: true,
       code: "LOGIN_SUCCESSFULL",
