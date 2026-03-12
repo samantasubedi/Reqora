@@ -109,7 +109,7 @@ export const handleLogin = async (req: Request, res: Response) => {
       success: true,
       code: "LOGIN_SUCCESSFULL",
       message: `You have been logged in as ${username}`,
-      accessToken,
+
       role: user.role,
     });
   }
