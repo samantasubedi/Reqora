@@ -4,6 +4,8 @@ import { prisma } from "../lib/prisma";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { Role } from "../generated/prisma/enums";
+import strict from "node:assert/strict";
+import { isExpressionWithTypeArguments } from "typescript";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
@@ -86,7 +88,7 @@ export const handleLogin = async (req: Request, res: Response) => {
     const tokenData = { username, role };
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;
-    const accessToken = jwt.sign(tokenData, accessSecret, { expiresIn: "15m" });
+    const accessToken = jwt.sign(tokenData, accessSecret, { expiresIn: "15m" }); //we can also give numeric time in ms instead of string
     const refreshToken = jwt.sign(tokenData, refreshSecret, {
       expiresIn: "15d",
     });
@@ -128,11 +130,27 @@ export const handleRefresh = (req: Request, res: Response) => {
   const refreshSecret = process.env.REFRESH_SECRET!;
   const accessSecret = process.env.ACCESS_SECRET!;
   const decodedToken = jwt.verify(refreshToken, refreshSecret);
-  const accessToken = jwt.sign(decodedToken, accessSecret);
+  const accessToken = jwt.sign(decodedToken, accessSecret, {
+    expiresIn: "15m",
+  });
+  const NewRefreshToken = jwt.sign(decodedToken, refreshSecret, {
+    expiresIn: "15d",
+  });
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 15 * 60 * 1000,
+  });
+  res.cookie("refreshToken", NewRefreshToken, {
+    sameSite: "strict",
+    httpOnly: true,
+    secure: true,
+    maxAge: 15 * 24 * 60 * 60 * 1000,
+  });
   res.status(201).json({
     success: true,
     message: "your access token has been regenerated",
     code: "TOKEN_REGENERATED",
-    accessToken,
   });
 };
