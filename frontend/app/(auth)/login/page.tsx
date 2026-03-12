@@ -1,10 +1,7 @@
 "use client";
-import React from "react";
-import { jwtDecode } from "jwt-decode";
+
 import { useRouter } from "next/navigation";
 
-import { create } from "zustand";
-import { globalState } from "@/app/store/authStore";
 import {
   Card,
   CardHeader,
@@ -19,14 +16,14 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { access } from "fs";
-import { tokenType } from "@/app/store/authStore";
+
 type formDataType = {
   username: string;
   password: string;
 };
 const page = () => {
   const router = useRouter();
-  const { setAccessToken } = globalState();
+
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
@@ -43,11 +40,11 @@ const page = () => {
         response.status == 200 &&
         response.data.code === "LOGIN_SUCCESSFULL"
       ) {
-        const token: string = response.data.accessToken;
-        console.log(token);
-        const tokenData = jwtDecode<tokenType["decodedToken"]>(token);
-        console.log(`this is decoded token`, tokenData);
-        setAccessToken({ accessToken: token, decodedToken: tokenData });
+        // const token: string = response.data.accessToken;
+        // console.log(token);
+        // const tokenData = jwtDecode<tokenType["decodedToken"]>(token);
+        // console.log(`this is decoded token`, tokenData);
+        // setAccessToken({ accessToken: token, decodedToken: tokenData });
         toast.success(response.data.message);
         router.push(`/${response.data.role}/dashboard`);
       }
