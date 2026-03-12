@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt-ts";
 import { prisma } from "../lib/prisma";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
 import { Role } from "../generated/prisma/enums";
 import strict from "node:assert/strict";
@@ -127,30 +127,41 @@ export const handleRefresh = (req: Request, res: Response) => {
       code: "TOKEN_NOT_FOUND",
     });
   }
-  const refreshSecret = process.env.REFRESH_SECRET!;
-  const accessSecret = process.env.ACCESS_SECRET!;
-  const decodedToken = jwt.verify(refreshToken, refreshSecret);
-  const accessToken = jwt.sign(decodedToken, accessSecret, {
-    expiresIn: "15m",
-  });
-  const NewRefreshToken = jwt.sign(decodedToken, refreshSecret, {
-    expiresIn: "15d",
-  });
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    maxAge: 15 * 60 * 1000,
-  });
-  res.cookie("refreshToken", NewRefreshToken, {
-    sameSite: "strict",
-    httpOnly: true,
-    secure: true,
-    maxAge: 15 * 24 * 60 * 60 * 1000,
-  });
-  res.status(201).json({
-    success: true,
-    message: "your access token has been regenerated",
-    code: "TOKEN_REGENERATED",
-  });
+  try {
+    const refreshSecret = process.env.REFRESH_SECRET!;
+    const accessSecret = process.env.ACCESS_SECRET!;
+    const decodedToken = jwt.verify(refreshToken, refreshSecret);
+
+    const { iat, exp, ...tokenData } = decodedToken as JwtPayload;
+
+    const accessToken = jwt.sign(tokenData, accessSecret, {
+      expiresIn: "15m",
+    });
+    const NewRefreshToken = jwt.sign(tokenData, refreshSecret, {
+      expiresIn: "15d",
+    });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
+    res.cookie("refreshToken", NewRefreshToken, {
+      sameSite: "strict",
+      httpOnly: true,
+      secure: true,
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+    });
+    res.status(201).json({
+      success: true,
+      message: "your access token has been regenerated",
+      code: "TOKEN_REGENERATED",
+    });
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: "invalid or expired refresh token",
+      code: "INVALID_TOKEN",
+    });
+  }
 };
