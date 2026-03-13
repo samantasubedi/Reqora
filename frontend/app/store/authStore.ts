@@ -1,27 +1,21 @@
-// import {create} from "zustand"
-// export type tokenType = {
-//   accessToken: string;
-//   decodedToken: {
-//     username: string;
-//     role: string;
-//   };
-// };
+import { create } from "zustand";
+enum role {
+  admin,
+  manager,
+  employee,
+  unauthorized,
+}
 
-// export  type globalStateType = {
-//   accessToken: string;
-//   decodedToken: {
-//     username: string;
-//     role: string;
-//   };
-//   setAccessToken: ({ accessToken, decodedToken }: tokenType) => void;
-// };
-
-// export const globalState = create<globalStateType>((set) => ({
-//   accessToken: "",
-//   decodedToken: {
-//     username: "",
-//     role: "",
-//   },
-//   setAccessToken: ({ accessToken, decodedToken }: tokenType) =>
-//     set((state) => ({ accessToken: accessToken, decodedToken: decodedToken })),
-// }));
+export type userDataType = {
+  role: role;
+  username: string;
+};
+export type storeType = {
+  user: { role: role; username: string };
+  setUserData: ({ username, role }: userDataType) => void;
+};
+export const useGlobalStore = create<storeType>((set) => ({
+  user: { role: role.unauthorized, username: "" },
+  setUserData: ({ username, role }: userDataType) =>
+    set(() => ({ user: { username: username, role: role } })),
+}));

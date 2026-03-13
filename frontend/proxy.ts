@@ -27,14 +27,14 @@ export async function proxy(request: NextRequest) {
     if (allowedRoles.includes(userRole)) {
       return NextResponse.next();
     } else {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
   } else {
     console.log("Access token not found in cookie");
     const refreshToken = request.cookies.get("refreshToken")?.value;
     if (!refreshToken) {
       console.log("refresh token not found");
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
     const refreshResponse = await axios.post(`${backendUrl}/refresh`, null, {

@@ -15,7 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { access } from "fs";
+import { useGlobalStore } from "@/app/store/authStore";
+import { storeType } from "@/app/store/authStore";
+import { userDataType } from "@/app/store/authStore";
 
 type formDataType = {
   username: string;
@@ -40,11 +42,8 @@ const page = () => {
         response.status == 200 &&
         response.data.code === "LOGIN_SUCCESSFULL"
       ) {
-        // const token: string = response.data.accessToken;
-        // console.log(token);
-        // const tokenData = jwtDecode<tokenType["decodedToken"]>(token);
-        // console.log(`this is decoded token`, tokenData);
-        // setAccessToken({ accessToken: token, decodedToken: tokenData });
+const setUserData=useGlobalStore((state)=>state.setUserData)
+
         toast.success(response.data.message);
         router.push(`/${response.data.role}/dashboard`);
       }

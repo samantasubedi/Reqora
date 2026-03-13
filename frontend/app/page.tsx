@@ -2,10 +2,7 @@ import Image from "next/image";
 import Test from "@/components/Test";
 
 export default function Home() {
-  return (
-    <div>
-      {/* <Test /> */}
-      this is the main page
-    </div>
-  );
+
+  
+  return <div>this is landing page</div>;
 }
