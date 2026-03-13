@@ -53,17 +53,21 @@ const AdminDashboard = () => {
   ];
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const handleLogout = async () => {
-    const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
-      withCredentials: true,
-    });
-    if (
-      logoutResponse.data.success === true &&
-      logoutResponse.data.code === "LOGOUT_SUCCESSFULL"
-    ) {
-      toast.success(logoutResponse.data.message);
-      router.push("/");
+    try {
+      const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
+        withCredentials: true,
+      });
+      if (
+        logoutResponse.data.success === true &&
+        logoutResponse.data.code === "LOGOUT_SUCCESSFULL"
+      ) {
+        toast.success(logoutResponse.data.message);
+        router.push("/");
+      }
+      console.log(logoutResponse.data);
+    } catch (err) {
+      console.log("request failed", err);
     }
-    console.log(logoutResponse.data);
   };
 
   return (

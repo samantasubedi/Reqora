@@ -1,5 +1,6 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -13,17 +14,22 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const allowedRoles: string[] = routeRoles[path];
-  if (!allowedRoles) {
+  if (!allowedRoles && path !== "/") {
     // if allowedRoles is empty then it means the path is not listed in routeRoles object which means it is not a protected route so we simply give the access
     return NextResponse.next();
   }
-  const accessToken: string | undefined =
-    request.cookies.get("accessToken")?.value;
+  const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
   if (accessToken) {
     const decodedToken = jwtDecode<{ role: string; username: string }>(
       accessToken,
     );
     const userRole = decodedToken.role;
+    if (path == "/") {
+      return NextResponse.redirect(
+        new URL(`/${userRole}/dashboard`, request.url),
+      );
+    }
     if (allowedRoles.includes(userRole)) {
       return NextResponse.next();
     } else {
@@ -31,7 +37,7 @@ export async function proxy(request: NextRequest) {
     }
   } else {
     console.log("Access token not found in cookie");
-    const refreshToken = request.cookies.get("refreshToken")?.value;
+
     if (!refreshToken) {
       console.log("refresh token not found");
       return NextResponse.redirect(new URL("/", request.url));
@@ -56,10 +62,11 @@ export async function proxy(request: NextRequest) {
         });
       }
       return redirectResponse;
+    } else if (refreshResponse.data.success === false) {
+      return NextResponse.redirect(new URL("/", request.url));
     }
-    console.log("this is the response from /refresh", refreshResponse.data);
   }
 }
 export const config = {
-  matcher: ["/admin/:path*", "/employee/:path*", "/manager/:path*"],
+  matcher: ["/admin/:path*", "/employee/:path*", "/manager/:path*", "/"],
 };
