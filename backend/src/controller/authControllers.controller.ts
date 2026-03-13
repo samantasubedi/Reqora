@@ -60,7 +60,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   }
   const user = await prisma.users.findUnique({
     where: { username },
-    select: { password: true, role: true },
+    select: { password: true, role: true , username:true},
   });
   if (!user) {
     return res.status(401).json({
@@ -109,8 +109,8 @@ export const handleLogin = async (req: Request, res: Response) => {
       success: true,
       code: "LOGIN_SUCCESSFULL",
       message: `You have been logged in as ${username}`,
-
       role: user.role,
+      username:user.username
     });
   }
 };
