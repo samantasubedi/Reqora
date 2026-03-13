@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import test from "../Test";
 import { Check, CircleAlert, LucideIcon, Plus, TrendingUp } from "lucide-react";
@@ -13,6 +14,9 @@ import {
 import { Book, Package } from "lucide-react";
 import { Button } from "../ui/button";
 import { ResourceTable } from "./ResourceTable";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 export interface statCardInterface {
   title: string;
   number: number;
@@ -21,6 +25,7 @@ export interface statCardInterface {
   subtext?: string;
 }
 const AdminDashboard = () => {
+  const router = useRouter();
   const AdminStat: statCardInterface[] = [
     {
       title: "Total Resources",
@@ -46,13 +51,36 @@ const AdminDashboard = () => {
       subtext: "10% of total",
     },
   ];
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const handleLogout = async () => {
+    const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
+      withCredentials: true,
+    });
+    if (
+      logoutResponse.data.success === true &&
+      logoutResponse.data.code === "LOGOUT_SUCCESSFULL"
+    ) {
+      toast.success(logoutResponse.data.message);
+      router.push("/");
+    }
+    console.log(logoutResponse.data);
+  };
 
   return (
     <>
       <div>
-        <h1 className="text-4xl font-bold text-slate-600 m-2">
-          Admin Dashboard
-        </h1>
+        <div className="flex justify-between">
+          <h1 className="text-4xl font-bold text-slate-600 m-2">
+            Admin Dashboard
+          </h1>
+
+          <Button
+            className="text-white bg-red-700 hover:bg-red-600 m-3"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
         <div className="flex justify-between px-3">
           {" "}
           <p className="text-gray-500 m-2">

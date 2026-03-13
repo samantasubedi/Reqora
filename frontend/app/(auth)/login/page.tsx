@@ -25,6 +25,7 @@ type formDataType = {
 };
 const page = () => {
   const router = useRouter();
+  const setUserData = useGlobalStore((state) => state.setUserData);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
@@ -42,8 +43,9 @@ const page = () => {
         response.status == 200 &&
         response.data.code === "LOGIN_SUCCESSFULL"
       ) {
-const setUserData=useGlobalStore((state)=>state.setUserData)
-
+        const username = response.data.username;
+        const role = response.data.role;
+        setUserData({ username, role });
         toast.success(response.data.message);
         router.push(`/${response.data.role}/dashboard`);
       }
