@@ -60,7 +60,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   }
   const user = await prisma.users.findUnique({
     where: { username },
-    select: { password: true, role: true , username:true},
+    select: { password: true, role: true, username: true },
   });
   if (!user) {
     return res.status(401).json({
@@ -110,13 +110,35 @@ export const handleLogin = async (req: Request, res: Response) => {
       code: "LOGIN_SUCCESSFULL",
       message: `You have been logged in as ${username}`,
       role: user.role,
-      username:user.username
+      username: user.username,
     });
   }
 };
 
 export const handleLogout = (req: Request, res: Response) => {
-  res.json({ message: "this is logout page" });
+  try {
+    res.clearCookie("accessToken", {
+      sameSite: "strict",
+      httpOnly: true,
+      secure: true,
+    });
+    res.clearCookie("refreshToken", {
+      sameSite: "strict",
+      httpOnly: true,
+      secure: true,
+    });
+    res.status(200).json({
+      code: "LOGOUT_SUCCESSFULL",
+      message: "You have been successfully logged out !",
+      success: true,
+    });
+  } catch (err) {
+    res.status(401).json({
+      code: "LOGOUT_FAILED",
+      message: "Couldn't log you out !",
+      success: false,
+    });
+  }
 };
 export const handleRefresh = (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;

@@ -7,7 +7,7 @@ export const authMiddlware = (
   next: NextFunction,
 ) => {
   try {
-    const accessToken = req.header("Authorization");
+    const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
       const refreshSecret = process.env.REFRESH_SECRET;
@@ -17,7 +17,7 @@ export const authMiddlware = (
       if (!refreshToken) {
         console.log("refresh token not found");
       }
-      console.log("this is refreshToken", refreshToken);
+
       if (refreshSecret && accessSecret) {
         const decodedData = jwt.verify(refreshToken, refreshSecret);
         const accessToken = jwt.sign(decodedData, accessSecret);
