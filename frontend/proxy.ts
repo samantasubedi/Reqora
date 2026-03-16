@@ -25,11 +25,7 @@ export async function proxy(request: NextRequest) {
       accessToken,
     );
     const userRole = decodedToken.role;
-    if (path == "/") {
-      return NextResponse.redirect(
-        new URL(`/${userRole}/dashboard`, request.url),
-      );
-    }
+
     if (allowedRoles.includes(userRole)) {
       return NextResponse.next();
     } else {
@@ -68,5 +64,5 @@ export async function proxy(request: NextRequest) {
   }
 }
 export const config = {
-  matcher: ["/admin/:path*", "/employee/:path*", "/manager/:path*", "/"],
+  matcher: ["/admin/:path*", "/employee/:path*", "/manager/:path*"],
 };
