@@ -4,8 +4,6 @@ import { prisma } from "../lib/prisma";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
 import { Role } from "../generated/prisma/enums";
-import strict from "node:assert/strict";
-import { isExpressionWithTypeArguments } from "typescript";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
@@ -180,6 +178,11 @@ export const handleRefresh = (req: Request, res: Response) => {
       code: "TOKEN_REGENERATED",
     });
   } catch (err) {
+    res.clearCookie("refreshToken", {
+      sameSite: "strict",
+      httpOnly: true,
+      secure: true,
+    });
     return res.status(401).json({
       success: false,
       message: "invalid or expired refresh token",
