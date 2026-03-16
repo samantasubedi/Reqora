@@ -172,7 +172,7 @@ export const handleRefresh = (req: Request, res: Response) => {
       secure: true,
       maxAge: 15 * 24 * 60 * 60 * 1000,
     });
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "your access token has been regenerated",
       code: "TOKEN_REGENERATED",
@@ -189,4 +189,31 @@ export const handleRefresh = (req: Request, res: Response) => {
       code: "INVALID_TOKEN",
     });
   }
+};
+
+export const isLoggedIn = (req: Request, res: Response) => {
+  const accessToken = req.cookies.accessToken;
+  const refreshToken = req.cookies.refreshToken;
+  const accessSecret = process.env.ACCESS_SECRET!;
+  if (!accessToken) {
+    if (!refreshToken) {
+      return res.json({
+        code: "NOT_LOGGEDIN",
+        message: "the user is not logged in ",
+      });
+    }
+    handleRefresh(req, res);
+    res.json({
+      code: "TOKEN_REFRESHED",
+      message:
+        "access token is regenerated try again to check the login status",
+    });
+  }
+  const userData = jwt.verify(accessToken, accessSecret) as JwtPayload;
+  res.json({
+    code: "LOGGEDIN",
+    role: userData.role,
+    username: userData.username,
+    message: "user is logged in ",
+  });
 };
