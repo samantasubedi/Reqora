@@ -175,7 +175,7 @@ export const handleRefresh = (req: Request, res: Response) => {
     return res.status(201).json({
       success: true,
       message: "your access token has been regenerated",
-      code: "TOKEN_REGENERATED",
+      code: "TOKEN_REFRESHED",
     });
   } catch (err) {
     res.clearCookie("refreshToken", {
@@ -202,12 +202,7 @@ export const isLoggedIn = (req: Request, res: Response) => {
         message: "the user is not logged in ",
       });
     }
-    handleRefresh(req, res);
-    res.json({
-      code: "TOKEN_REFRESHED",
-      message:
-        "access token is regenerated try again to check the login status",
-    });
+    return handleRefresh(req, res);
   }
   const userData = jwt.verify(accessToken, accessSecret) as JwtPayload;
   res.json({
