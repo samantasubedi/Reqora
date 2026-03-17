@@ -3,6 +3,7 @@ import Image from "next/image";
 import Test from "@/components/Test";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const router = useRouter();
@@ -30,5 +31,21 @@ export default function Home() {
     }
   };
   isLoggedIn();
-  return <div>this is landing page</div>;
+  return (
+    <>
+      {" "}
+      <div>this is landing page</div>
+      <div className="flex justify-end ">
+        {" "}
+        <Button
+          className="m-3 bg-linear-to-r from-green-500 to-green-800 cursor-pointer "
+          onClick={() => {
+            router.push("/login");
+          }}
+        >
+          Sign In
+        </Button>
+      </div>
+    </>
+  );
 }
