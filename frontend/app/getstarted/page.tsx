@@ -28,11 +28,11 @@ const page = () => {
       <div className="w-full flex justify-center mt-10">
         {" "}
         <div className="flex gap-10  w-[60%] ">
-          <Card className="w-full p-5">
+          <Card className="w-full p-5 shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1">
             <CardHeader>
-              <CardTitle className="text-center">Join a Company</CardTitle>
-              <CardDescription className="text-center">
-            Use your invite code to connect with your team and access shared resources..
+              <CardTitle className="text-center text-4xl text-amber-900">Join a Company</CardTitle>
+              <CardDescription className="text-center text-md">
+            Use your invite code to connect with your team and access shared resources.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -46,10 +46,11 @@ const page = () => {
                   src="/joinCompany.jpg"
                 ></Image>
               </div>
+              <p className="text-gray-500 font-semibold">Have a code ?</p>
               <CardAction className="w-full">
                 <Button
                   size="lg"
-                  className="bg-orange-400 w-full text-2xl cursor-pointer hover:bg-blue-700 transition-all duration-300 ease-in-out"
+                  className="bg-orange-400 w-full text-2xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out"
                 >
                   Join
                   <Icon icon="line-md:login" width="24" height="50" />
@@ -57,10 +58,10 @@ const page = () => {
               </CardAction>
             </CardContent>
           </Card>
-          <Card className=" p-5 w-full">
+          <Card className=" p-5 w-full shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1">
             <CardHeader>
-              <CardTitle className="text-center">Create a Company</CardTitle>
-              <CardDescription className="text-center">
+              <CardTitle className="text-center text-4xl text-amber-900">Create a Company</CardTitle>
+              <CardDescription className="text-center text-md">
              
                 Create a new workspace for your company and set up your team, roles, and workflow.
               </CardDescription>
@@ -76,10 +77,11 @@ const page = () => {
                   src="/createCompany.webp"
                 ></Image>
               </div>
+               <p className="text-gray-500 font-semibold">Want to start fresh?</p>
               <CardAction className="w-full">
                 <Button
                   size="lg"
-                  className="bg-orange-400 w-full text-2xl cursor-pointer hover:bg-blue-700 transition-all duration-300 ease-in-out"
+                  className="bg-orange-400 w-full text-2xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out "
                 >
                   Create
           <Icon icon="wordpress:create" width="24" height="24" />
