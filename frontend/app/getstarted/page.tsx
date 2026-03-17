@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 const page = () => {
+    const cardClass="w-full p-5 shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1"
+    const buttonClass="bg-orange-400 w-full h-15 text-3xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out p-3 "
   return (
     <div className="bg-linear-to-r from-orange-50 to-orange-100 h-screen p-2">
       <h1 className="font-bold text-7xl font-sans text-center mt-[8%]">
@@ -28,7 +30,7 @@ const page = () => {
       <div className="w-full flex justify-center mt-10">
         {" "}
         <div className="flex gap-10  w-[60%] ">
-          <Card className="w-full p-5 shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1">
+          <Card className={cardClass}>
             <CardHeader>
               <CardTitle className="text-center text-4xl text-amber-900">Join a Company</CardTitle>
               <CardDescription className="text-center text-md">
@@ -39,7 +41,7 @@ const page = () => {
               <div className="flex justify-center">
                 {" "}
                 <Image
-                  className="w-100 h-100 "
+                  className="w-80 h-80 "
                   width={1000}
                   height={1000}
                   alt="join image"
@@ -50,7 +52,7 @@ const page = () => {
               <CardAction className="w-full">
                 <Button
                   size="lg"
-                  className="bg-orange-400 w-full text-2xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out"
+                  className={buttonClass}
                 >
                   Join
                   <Icon icon="line-md:login" width="24" height="50" />
@@ -58,7 +60,7 @@ const page = () => {
               </CardAction>
             </CardContent>
           </Card>
-          <Card className=" p-5 w-full shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1">
+          <Card className={cardClass}>
             <CardHeader>
               <CardTitle className="text-center text-4xl text-amber-900">Create a Company</CardTitle>
               <CardDescription className="text-center text-md">
@@ -70,7 +72,7 @@ const page = () => {
                  <div className="flex justify-center">
                 {" "}
                 <Image
-                  className="w-100 h-100 "
+                  className="w-80 h-80 "
                   width={1000}
                   height={1000}
                   alt="join image"
@@ -81,7 +83,7 @@ const page = () => {
               <CardAction className="w-full">
                 <Button
                   size="lg"
-                  className="bg-orange-400 w-full text-2xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out "
+                  className={buttonClass}
                 >
                   Create
           <Icon icon="wordpress:create" width="24" height="24" />
