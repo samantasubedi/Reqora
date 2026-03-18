@@ -16,7 +16,7 @@ export const getSpecificUser = (req: Request, res: Response) => {
 export const changeUserRole = (req: Request, res: Response) => {
   res.json({ message: "used to change the userroles by admin" });
 };
-// export const deleteAllusers = async (req: Request, res: Response) => {
-//   await prisma.users.deleteMany({});
-//   res.send("all users has been deleted");
-// };
+export const deleteAllusers = async (req: Request, res: Response) => {
+  await prisma.users.deleteMany({});
+  res.send("all users has been deleted");
+};

@@ -7,8 +7,8 @@ import { Role } from "../generated/prisma/enums";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
-    const { username, password } = req.body;
-    if (!username || !password) {
+    const { username,email, password } = req.body;
+    if (!username || !password||!password) {
       return res.status(400).json({ message: "all fields are required" }); // 400 means bad request
     }
     const duplicateUser = await prisma.users.findUnique({
@@ -33,6 +33,7 @@ export const handleRegister = async (req: Request, res: Response) => {
     await prisma.users.create({
       data: {
         username,
+        
         password: hashedPassword,
         role,
       },

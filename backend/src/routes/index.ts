@@ -9,5 +9,5 @@ const router = Router();
 router.use(authRoutes);
 router.use(authMiddlware,requestRoutes);
 router.use(authMiddlware,resourceRoutes)
-router.use(authMiddlware,userRoutes)
+router.use(userRoutes)
 export default router;

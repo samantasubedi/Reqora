@@ -18,9 +18,11 @@ enum Role {
   manager
   employee
 }
+
 model users {
   username String @unique
   id       String @id @default(cuid())
+  email    String @unique
   role     Role
   password String
 }
