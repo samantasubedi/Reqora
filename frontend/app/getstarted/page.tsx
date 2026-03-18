@@ -13,8 +13,10 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 const page = () => {
-    const cardClass="w-full p-5 shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1"
-    const buttonClass="bg-orange-400 w-full h-15 text-3xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out p-3 "
+  const cardClass =
+    "w-full p-5 shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1";
+  const buttonClass =
+    "bg-orange-400 w-full h-15 text-3xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out p-3 ";
   return (
     <div className="bg-linear-to-r from-orange-50 to-orange-100 h-screen p-2">
       <h1 className="font-bold text-7xl font-sans text-center mt-[8%]">
@@ -32,9 +34,12 @@ const page = () => {
         <div className="flex gap-10  w-[60%] ">
           <Card className={cardClass}>
             <CardHeader>
-              <CardTitle className="text-center text-4xl text-amber-900">Join a Company</CardTitle>
+              <CardTitle className="text-center text-4xl text-amber-900">
+                Join a Company
+              </CardTitle>
               <CardDescription className="text-center text-md">
-            Use your invite code to connect with your team and access shared resources.
+                Use your invite code to connect with your team and access shared
+                resources.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -50,26 +55,25 @@ const page = () => {
               </div>
               <p className="text-gray-500 font-semibold">Have a code ?</p>
               <CardAction className="w-full">
-                <Button
-                  size="lg"
-                  className={buttonClass}
-                >
+                <Button size="lg" className={buttonClass}>
                   Join
-                  <Icon icon="line-md:login" width="24" height="50" />
+                  <Icon icon="line-md:login" className="h-10! w-10!" />
                 </Button>
               </CardAction>
             </CardContent>
           </Card>
           <Card className={cardClass}>
             <CardHeader>
-              <CardTitle className="text-center text-4xl text-amber-900">Create a Company</CardTitle>
+              <CardTitle className="text-center text-4xl text-amber-900">
+                Create a Company
+              </CardTitle>
               <CardDescription className="text-center text-md">
-             
-                Create a new workspace for your company and set up your team, roles, and workflow.
+                Create a new workspace for your company and set up your team,
+                roles, and workflow.
               </CardDescription>
             </CardHeader>
             <CardContent>
-                 <div className="flex justify-center">
+              <div className="flex justify-center">
                 {" "}
                 <Image
                   className="w-80 h-80 "
@@ -79,14 +83,12 @@ const page = () => {
                   src="/createCompany.webp"
                 ></Image>
               </div>
-               <p className="text-gray-500 font-semibold">Want to start fresh?</p>
+              <p className="text-gray-500 font-semibold">
+                Want to start fresh?
+              </p>
               <CardAction className="w-full">
-                <Button
-                  size="lg"
-                  className={buttonClass}
-                >
-                  Create
-          <Icon icon="wordpress:create" width="24" height="24" />
+                <Button size="lg" className={buttonClass}>
+                  Create<Icon icon="wordpress:create" className="w-15! h-15!" />
                 </Button>
               </CardAction>
             </CardContent>

@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 type formDataType = {
   username: string;
   password: string;
+  email:string
 };
 
 const page = () => {
@@ -63,6 +64,21 @@ const page = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(handleFormSubmit)}>
+<div className="flex flex-col gap-2">
+              <label className="font-semibold">Email</label>
+              <Input
+                {...register("email", {
+                  required: "email is required !",
+                pattern:{
+                  value:/^\S+@\S+\.\S+$/,
+                  message:"Please enter a valid email !"
+                }
+                })}
+                placeholder="Enter your email"
+              />
+              <p className="text-red-600 text-sm">{errors.email?.message}</p>
+            </div>
+
             <div className="flex flex-col gap-2">
               <label className="font-semibold">Username</label>
               <Input
