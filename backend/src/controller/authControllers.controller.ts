@@ -33,9 +33,10 @@ export const handleRegister = async (req: Request, res: Response) => {
     await prisma.users.create({
       data: {
         username,
-        
+        email,
         password: hashedPassword,
         role,
+        
       },
     });
     res.status(201).json({

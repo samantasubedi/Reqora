@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 type formDataType = {
   username: string;
   password: string;
-  email:string
+  email: string;
 };
 
 const page = () => {
@@ -32,7 +32,6 @@ const page = () => {
   const handleFormSubmit: SubmitHandler<formDataType> = async (data) => {
     console.log("form data", data);
     try {
-      console.log("this is backend url", backendUrl);
       const response = await axios.post(`${backendUrl}/register`, data);
       console.log(response);
       if (response.status == 201) {
@@ -64,15 +63,15 @@ const page = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(handleFormSubmit)}>
-<div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
               <label className="font-semibold">Email</label>
               <Input
                 {...register("email", {
                   required: "email is required !",
-                pattern:{
-                  value:/^\S+@\S+\.\S+$/,
-                  message:"Please enter a valid email !"
-                }
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Please enter a valid email !",
+                  },
                 })}
                 placeholder="Enter your email"
               />

@@ -25,4 +25,5 @@ model users {
   email    String @unique
   role     Role
   password String
+  enrolled Boolean @default(false)
 }
