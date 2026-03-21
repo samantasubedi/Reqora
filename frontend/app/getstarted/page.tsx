@@ -12,7 +12,9 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 const page = () => {
+  const router = useRouter();
   const cardClass =
     "w-full p-5 shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1";
   const buttonClass =
@@ -87,8 +89,15 @@ const page = () => {
                 Want to start fresh?
               </p>
               <CardAction className="w-full">
-                <Button size="lg" className={buttonClass}>
-                  Create<Icon icon="wordpress:create" className="w-15! h-15!" />
+                <Button
+                  onClick={() => {
+                    router.push("/getstarted/createcompany");
+                  }}
+                  size="lg"
+                  className={buttonClass}
+                >
+                  Create
+                  <Icon icon="wordpress:create" className="w-15! h-15!" />
                 </Button>
               </CardAction>
             </CardContent>
