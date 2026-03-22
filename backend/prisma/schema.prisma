@@ -20,19 +20,21 @@ enum Role {
 }
 
 model users {
-  username String @unique
-  userId       String @id @default(cuid())
-  email    String @unique
-  role     Role
-  password String
-  enrolled Boolean @default(false)
- company company
+  username  String   @unique
+  userId    String   @id @default(cuid())
+  email     String   @unique
+  role      Role
+  password  String
+  enrolled  Boolean  @default(false)
+  companyId String?
+  company   company? @relation(fields: [companyId], references: [id])
 }
-model company{
-  companyId String @unique @default(cuid())
+
+model company {
+  id          String  @unique @default(cuid())
   companyName String
-  email String @unique
-  address String
-  size Int
-enrolledUsers users @relation(fields: [companyId],references: [username])
+  email       String  @unique
+  address     String
+  size        Int
+  users       users[] 
 }

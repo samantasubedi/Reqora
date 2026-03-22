@@ -9,7 +9,7 @@ import { authMiddlware } from "../middleware/authMiddleware";
 const router = Router();
 router.use(authRoutes);
 router.use(companyRoutes)
-router.use(authMiddlware,userRoutes)
+router.use(userRoutes)
 router.use(authMiddlware,requestRoutes);
 router.use(authMiddlware,resourceRoutes)
 export default router;
