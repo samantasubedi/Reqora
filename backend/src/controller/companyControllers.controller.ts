@@ -3,23 +3,40 @@ import { prisma } from "../lib/prisma";
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, email, address, size } = req.body;
   if (!companyName || !email || !address || !size) {
-    res.json({
+    return res.status(400).json({
+      success: false,
+      code: "INSUFFICIENT_DATA",
       message: "please provide all fields",
     });
   } else {
     const username = res.locals.user.username;
-    const duplicateCompany=await prisma.company.findUnique({
-        select:{
-           companyName:true
-        },
-        where:{
-            email
-        }
-    })
-if(duplicateCompany){
-    return res.json({message:`company already exists`})
-}
+    const duplicateEmail = await prisma.company.findUnique({
+      select: {
+        companyName: true,
+      },
+      where: {
+        email,
+      },
+    });
+    if (duplicateEmail) {
+      return res.status(409).json({
+        success: false,
+        code: "DUPLICATE_EMAIL",
+        message: `company already registered with this email`,
+      });
+    }
 
+    const userData=await prisma.users.findFirst({
+      select:{enrolled:true},
+      where:{username}
+    })
+if(userData?.enrolled){
+  return res.status(400).json({
+    success:false,
+    code:"USER_ENROLLED",
+    message:"User is already enrolled in a company"
+  })
+}
     const response = await prisma.company.create({
       data: {
         companyName,
@@ -38,7 +55,7 @@ if(duplicateCompany){
       },
     });
     if (companyIdObj) {
-      const userResponse = await prisma.users.updateMany({
+      await prisma.users.updateMany({
         data: {
           enrolled: true,
           companyId: companyIdObj.id,
@@ -47,12 +64,13 @@ if(duplicateCompany){
           username,
         },
       });
-     
     }
 
-    res.json({
-      message:
-        "company data added , company id retrived and user table updated successfully",
+    res.status(200).json({
+      success:true,
+      code:"COMPANY_CREATED",
+      message: "company created successfully",
+      
     });
   }
 };

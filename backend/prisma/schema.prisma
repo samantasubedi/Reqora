@@ -23,7 +23,7 @@ model users {
   username  String   @unique
   userId    String   @id @default(cuid())
   email     String   @unique
-  role      Role
+  role      Role?
   password  String
   enrolled  Boolean  @default(false)
   companyId String?
@@ -36,5 +36,5 @@ model company {
   email       String  @unique
   address     String
   size        Int
-  users       users[] 
+  users       users[]
 }

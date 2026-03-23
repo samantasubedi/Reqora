@@ -24,18 +24,13 @@ export const handleRegister = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const existingUsers = await prisma.users.count();
     console.log(" total number of existing users are", existingUsers);
-    let role: Role;
-    if (existingUsers === 0) {
-      role = Role.admin;
-    } else {
-      role = Role.employee;
-    }
+    
     await prisma.users.create({
       data: {
         username,
         email,
         password: hashedPassword,
-        role,
+        
         
       },
     });
