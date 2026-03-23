@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 const page = () => {
   const schema = z.object({
@@ -40,8 +41,9 @@ const page = () => {
     resolver: zodResolver(schema),
   });
 
-  const handleFormSubmit: SubmitHandler<formData> = (data: formData) => {
-    console.log("this is form data", data);
+  const handleFormSubmit: SubmitHandler<formData> = async(data: formData) => {
+    const backendUrl=process.env.NEXT_PUBLIC_BACKEND_API_URL
+  const response=axios.post(`${backendUrl}/createcompany`,{data})
   };
   return (
     <div className="flex justify-center p-5">
@@ -115,6 +117,7 @@ const page = () => {
             <Button
               type="submit"
               className="bg-purple-900 hover:bg-purple-800 cursor-pointer transition-all duration-300"
+             
             >
               Submit
             </Button>
