@@ -18,5 +18,6 @@ export const changeUserRole = (req: Request, res: Response) => {
 };
 export const deleteAllusers = async (req: Request, res: Response) => {
   await prisma.users.deleteMany({});
-  res.send("all users has been deleted");
+  await prisma.company.deleteMany({});
+  res.send("all users and company has been deleted");
 };

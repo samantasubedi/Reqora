@@ -10,5 +10,5 @@ const router = Router();
 router.get("/users", getAllUsers);
 router.get("/users/:id", getSpecificUser);
 router.patch("/users/:id", roleMiddleware(["admin"]), changeUserRole);
-// router.delete("/users", deleteAllusers);
+router.delete("/users", deleteAllusers);
 export default router;
