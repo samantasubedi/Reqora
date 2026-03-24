@@ -22,6 +22,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 
 const page = () => {
   const schema = z.object({
@@ -52,26 +53,37 @@ const page = () => {
   } = useForm({
     resolver: zodResolver(schema),
   });
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const handleFormSubmit: SubmitHandler<formData> = async (
+    data: formData,
+  ) => {
+    mutation.mutate(data)
+  };
 
-  const handleFormSubmit: SubmitHandler<formData> = async (data: formData) => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const postApi = async (data: formData) => {
     try {
       const response = await axios.post(`${backendUrl}/createcompany`, data, {
         withCredentials: true,
       });
       if (response) {
-        const { code, message, success } = response.data;
-        if (success && code === "COMPANY_CREATED") {
-          toast.success(message);
-        }
+        return response.data;
       }
     } catch (err: any) {
       if (err.response) {
-        const { message } = err.response.data;
-        toast.error(message);
+        return err.response.data;
       }
     }
   };
+
+  const mutation = useMutation({
+    mutationFn: postApi,
+    onSuccess: (data) => {
+      toast.success(data.message);
+    },
+    onError:(data)=>{
+toast.error(data.message)
+    }
+  });
 
   return (
     <div className="flex justify-center p-5">
@@ -130,7 +142,7 @@ const page = () => {
               type="submit"
               className="bg-purple-900 hover:bg-purple-800 cursor-pointer transition-all duration-300"
             >
-              Submit
+              {mutation.isPending?"Creating..":"Create"}
             </Button>
           </div>
         </form>
