@@ -19,24 +19,25 @@ export const createCompany = async (req: Request, res: Response) => {
       },
     });
     if (duplicateEmail) {
-      return res.status(409).json({
+      return res.status(400).json({
         success: false,
         code: "DUPLICATE_EMAIL",
         message: `company already registered with this email`,
       });
     }
 
-    const userData=await prisma.users.findFirst({
-      select:{enrolled:true},
-      where:{username}
-    })
-if(userData?.enrolled){
-  return res.status(400).json({
-    success:false,
-    code:"USER_ENROLLED",
-    message:"User is already enrolled in a company"
-  })
-}
+    const userData = await prisma.users.findFirst({
+      select: { enrolled: true },
+      where: { username },
+    });
+    if (userData?.enrolled) {
+      return res.status(400).json({
+        success: false,
+        code: "USER_ENROLLED",
+        message:
+          "You are already enrolled in a company, leave the current company to join new one",
+      });
+    }
     const response = await prisma.company.create({
       data: {
         companyName,
@@ -67,10 +68,9 @@ if(userData?.enrolled){
     }
 
     res.status(200).json({
-      success:true,
-      code:"COMPANY_CREATED",
+      success: true,
+      code: "COMPANY_CREATED",
       message: "company created successfully",
-      
     });
   }
 };

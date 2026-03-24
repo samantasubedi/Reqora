@@ -54,10 +54,8 @@ const page = () => {
     resolver: zodResolver(schema),
   });
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const handleFormSubmit: SubmitHandler<formData> = async (
-    data: formData,
-  ) => {
-    mutation.mutate(data)
+  const handleFormSubmit: SubmitHandler<formData> = async (data: formData) => {
+    mutation.mutate(data);
   };
 
   const postApi = async (data: formData) => {
@@ -80,9 +78,9 @@ const page = () => {
     onSuccess: (data) => {
       toast.success(data.message);
     },
-    onError:(data)=>{
-toast.error(data.message)
-    }
+    onError: (data) => {
+      toast.error(data.message);
+    },
   });
 
   return (
@@ -141,8 +139,9 @@ toast.error(data.message)
             <Button
               type="submit"
               className="bg-purple-900 hover:bg-purple-800 cursor-pointer transition-all duration-300"
+              disabled={mutation.isPending}
             >
-              {mutation.isPending?"Creating..":"Create"}
+              {mutation.isPending ? "Creating.." : "Create"}
             </Button>
           </div>
         </form>
