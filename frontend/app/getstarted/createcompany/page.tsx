@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 type formData = {
-  name: string;
+  companyName: string;
   address: string;
   email: string;
   size: number;
@@ -20,16 +20,28 @@ import {
 } from "@/components/ui/card";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 const page = () => {
   const schema = z.object({
-    name: z.string({ message: "Name is required" }).min(1, "Name is required"),
-    email: z.email({ message: "INvalid email" }),
+    companyName: z
+      .string({ message: "Name is required" })
+      .trim()
+      .min(1, "Name is required")
+      .min(3, "Name must be at least 3 characters"),
+    email: z
+      .email({ message: "Email is required" })
+      .trim()
+      .min(1, "Email is required"),
     address: z
-      .string({ message: "address is required" })
-      .min(1, "address is required"),
-    size: z.number({ message: "size is required" }),
+      .string({ message: "Address is required" })
+      .trim()
+      .min(1, "Address is required")
+      .min(3, "Address must be at least 3 characters"),
+    size: z.coerce
+      .number({ message: "Size is required" })
+      .min(1, "Size is required"),
   });
 
   const {
@@ -41,10 +53,26 @@ const page = () => {
     resolver: zodResolver(schema),
   });
 
-  const handleFormSubmit: SubmitHandler<formData> = async(data: formData) => {
-    const backendUrl=process.env.NEXT_PUBLIC_BACKEND_API_URL
-  const response=axios.post(`${backendUrl}/createcompany`,{data})
+  const handleFormSubmit: SubmitHandler<formData> = async (data: formData) => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+    try {
+      const response = await axios.post(`${backendUrl}/createcompany`, data, {
+        withCredentials: true,
+      });
+      if (response) {
+        const { code, message, success } = response.data;
+        if (success && code === "COMPANY_CREATED") {
+          toast.success(message);
+        }
+      }
+    } catch (err: any) {
+      if (err.response) {
+        const { message } = err.response.data;
+        toast.error(message);
+      }
+    }
   };
+
   return (
     <div className="flex justify-center p-5">
       <Card className="w-[40%] p-5">
@@ -63,28 +91,18 @@ const page = () => {
               <label className="font-semibold text-md">Company Name</label>
               <Input
                 placeholder="Enter your company name"
-                {...register("name", {
-                  required: "company name is required !",
-                  minLength: {
-                    value: 3,
-                    message: "Name must be at least 3 characters ! ",
-                  },
-                })}
+                {...register("companyName")}
               />
-              <p className="text-red-600 text-sm">{errors.name?.message}</p>
+              <p className="text-red-600 text-sm">
+                {errors.companyName?.message}
+              </p>
             </div>
             <div className="flex flex-col gap-2">
               {" "}
               <label className="font-semibold text-md">Address</label>
               <Input
                 placeholder="Enter your company address"
-                {...register("address", {
-                  required: "company address is required !",
-                  minLength: {
-                    value: 3,
-                    message: "Address must be at least 3 characters !",
-                  },
-                })}
+                {...register("address")}
               />
               <p className="text-red-600 text-sm">{errors.address?.message}</p>
             </div>
@@ -93,13 +111,7 @@ const page = () => {
               <label className="font-semibold text-md">Email</label>
               <Input
                 placeholder="Enter your company email"
-                {...register("email", {
-                  required: "Email is required!",
-                  pattern: {
-                    value: /^\S+@\S+\.\S+$/,
-                    message: "Invalid email !",
-                  },
-                })}
+                {...register("email")}
               />
               <p className="text-red-600 text-sm">{errors.email?.message}</p>
             </div>
@@ -117,7 +129,6 @@ const page = () => {
             <Button
               type="submit"
               className="bg-purple-900 hover:bg-purple-800 cursor-pointer transition-all duration-300"
-             
             >
               Submit
             </Button>
