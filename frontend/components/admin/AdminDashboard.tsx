@@ -72,7 +72,7 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <div>
+      <div className="w-full">
         <div className="flex justify-between">
           <h1 className="text-4xl font-bold text-slate-600 m-2">
             Admin Dashboard
