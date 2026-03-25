@@ -13,6 +13,13 @@ import {
   SidebarGroupLabel,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Icon } from "@iconify/react";
 
 const Sidebarmenu = () => {
@@ -49,13 +56,50 @@ const Sidebarmenu = () => {
             <SidebarMenuItem>
               <SidebarMenuButton>
                 <Icon icon="grommet-icons:resources" className="size-5!" />
-                <span>Resources</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>Resources</DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <Icon icon="material-symbols:grid-view-outline-rounded" />{" "}
+                      View Resources
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      {" "}
+                      <Icon icon="hugeicons:resources-add" />
+                      Add Resources
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      {" "}
+                      <Icon icon="hugeicons:resources-remove" />
+                      Remove Resources
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton>
                 <Icon icon="ic:baseline-people" className="size-5!" />
-                <span>Employees</span>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>Employees</DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <Icon icon="material-symbols:view-day-rounded" /> View
+                      Employees
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Icon icon="mdi:invite" />
+                      Invite Employees
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Icon icon="carbon:user-role" /> Manage Roles
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Icon icon="mingcute:user-remove-fill" />
+                      Remove Employees
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
