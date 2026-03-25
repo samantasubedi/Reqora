@@ -23,28 +23,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+const schema = z.object({
+  companyName: z
+    .string({ message: "Name is required" })
+    .trim()
+    .min(1, "Name is required")
+    .min(3, "Name must be at least 3 characters"),
+  email: z
+    .email({ message: "Email is required" })
+    .trim()
+    .min(1, "Email is required"),
+  address: z
+    .string({ message: "Address is required" })
+    .trim()
+    .min(1, "Address is required")
+    .min(3, "Address must be at least 3 characters"),
+  size: z.coerce
+    .number({ message: "Size is required" })
+    .min(1, "Size is required"),
+});
 
 const page = () => {
-  const schema = z.object({
-    companyName: z
-      .string({ message: "Name is required" })
-      .trim()
-      .min(1, "Name is required")
-      .min(3, "Name must be at least 3 characters"),
-    email: z
-      .email({ message: "Email is required" })
-      .trim()
-      .min(1, "Email is required"),
-    address: z
-      .string({ message: "Address is required" })
-      .trim()
-      .min(1, "Address is required")
-      .min(3, "Address must be at least 3 characters"),
-    size: z.coerce
-      .number({ message: "Size is required" })
-      .min(1, "Size is required"),
-  });
-
+  const router = useRouter();
   const {
     register,
     setError,
@@ -77,6 +78,7 @@ const page = () => {
     mutationFn: postApi,
     onSuccess: (data) => {
       toast.success(data.message);
+      router.push("/admin/dashboard");
     },
     onError: (data) => {
       toast.error(data.message);
