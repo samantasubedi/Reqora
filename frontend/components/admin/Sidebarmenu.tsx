@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Icon } from "@iconify/react";
+import { Button } from "../ui/button";
 
 const Sidebarmenu = () => {
   return (
@@ -39,12 +40,14 @@ const Sidebarmenu = () => {
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton>
-                <Icon
-                  icon="material-symbols-light:home-rounded"
-                  className="size-6!"
-                />
-                <span>Dashboard</span>
+              <SidebarMenuButton asChild className="flex justify-start">
+                <Button className="bg-transparent" variant={"secondary"}>
+                  <Icon
+                    icon="material-symbols-light:home-rounded"
+                    className="size-6!"
+                  />
+                  Dashboard
+                </Button>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -54,53 +57,58 @@ const Sidebarmenu = () => {
           <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton>
-                <Icon icon="grommet-icons:resources" className="size-5!" />
-                <DropdownMenu>
-                  <DropdownMenuTrigger>Resources</DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>
-                      <Icon icon="material-symbols:grid-view-outline-rounded" />{" "}
-                      View Resources
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      {" "}
-                      <Icon icon="hugeicons:resources-add" />
-                      Add Resources
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      {" "}
-                      <Icon icon="hugeicons:resources-remove" />
-                      Remove Resources
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton className="flex justify-start">
+                    <Icon icon="grommet-icons:resources" className="size-5!" />
+                    Resources
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Icon icon="material-symbols:grid-view-outline-rounded" />{" "}
+                    View Resources
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    {" "}
+                    <Icon icon="hugeicons:resources-add" />
+                    Add Resources
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    {" "}
+                    <Icon icon="hugeicons:resources-remove" />
+                    Remove Resources
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </SidebarMenuItem>
+
             <SidebarMenuItem>
-              <SidebarMenuButton>
-                <Icon icon="ic:baseline-people" className="size-5!" />
-                <DropdownMenu>
-                  <DropdownMenuTrigger>Employees</DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>
-                      <Icon icon="material-symbols:view-day-rounded" /> View
-                      Employees
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icon icon="mdi:invite" />
-                      Invite Employees
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icon icon="carbon:user-role" /> Manage Roles
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icon icon="mingcute:user-remove-fill" />
-                      Remove Employees
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton>
+                    <Icon icon="ic:baseline-people" className="size-5!" />
+                    Employees
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>
+                    <Icon icon="material-symbols:view-day-rounded" /> View
+                    Employees
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Icon icon="mdi:invite" />
+                    Invite Employees
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Icon icon="carbon:user-role" /> Manage Roles
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Icon icon="mingcute:user-remove-fill" />
+                    Remove Employees
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
@@ -110,7 +118,7 @@ const Sidebarmenu = () => {
             <SidebarMenuItem>
               <SidebarMenuButton>
                 <Icon icon="material-symbols:settings" className="size-5!" />
-                <span>Settings</span>
+                Settings
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
