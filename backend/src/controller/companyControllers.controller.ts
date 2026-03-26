@@ -74,3 +74,18 @@ export const createCompany = async (req: Request, res: Response) => {
     });
   }
 };
+
+import crypto from "crypto";
+import nodemailer from "nodemailer"
+
+export const inviteToCompany = (req: Request, res: Response) => {
+  const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
+  const token = crypto.randomBytes(32).toString("hex");
+  const inviteUrl = `${frontendUrl}/join?token=${token}`;
+  res.json({
+    inviteLink: inviteUrl,
+  });
+
+  
+
+};
