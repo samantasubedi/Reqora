@@ -1,12 +1,3 @@
-import React from "react";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardTitle,
-  CardHeader,
-} from "../ui/card";
 import {
   Popover,
   PopoverDescription,
@@ -14,47 +5,57 @@ import {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-  PopoverAnchor,
 } from "../ui/popover";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+
+import { useForm, SubmitHandler } from "react-hook-form";
+
 const InviteForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm<{ email: string }>();
+  const handleInvite: SubmitHandler<{ email: string }> = (emailObj) => {
+    console.log(emailObj.email);
+  };
   return (
     <div className="flex gap-30">
-      {/* <Card>
-        <CardHeader>
-          <CardTitle className="font-semibold text-center">
-            Invitation form
-          </CardTitle>
-          <CardDescription className="text-center">
-            Enter the user email to send invite
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <label>Email</label>
-          <Input placeholder="Enter the Email"></Input>
-          <CardAction>
-            <Button className="mt-2 bg-purple-800 hover:bg-purple-700 cursor-pointer">
-              Invite
-            </Button>
-          </CardAction>
-        </CardContent>
-      </Card> */}
-
       <Popover>
         <PopoverTrigger>Invite</PopoverTrigger>
         <PopoverContent>
           <PopoverHeader>
-            <PopoverTitle className="font-bold text-lg text-center">Invitation Form</PopoverTitle>
+            <PopoverTitle className="font-bold text-lg text-center">
+              Invitation Form
+            </PopoverTitle>
             <PopoverDescription className="text-center">
               Invite users through their Email
             </PopoverDescription>
           </PopoverHeader>
-        <div className="mt-5"><label className="m-1 text-md">Email</label>
-          <Input placeholder="Enter the Email"></Input>
-        <Button className="mt-2 bg-purple-800 hover:bg-purple-700 cursor-pointer min-w-full">
-              Invite
-            </Button></div>  
+          <div className="mt-5">
+            <form onSubmit={handleSubmit(handleInvite)}>
+              <label className="m-1 text-md">Email</label>
+              <Input
+                {...register("email", {
+                  required: "Please enter the email!",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Invalid Email!",
+                  },
+                })}
+                placeholder="Enter the Email"
+              ></Input>
+              <p>{errors.email?.message}</p>
+              <Button
+                className="mt-2 bg-purple-800 hover:bg-purple-700 cursor-pointer min-w-full"
+                type="submit"
+              >
+                Invite
+              </Button>
+            </form>
+          </div>
         </PopoverContent>
       </Popover>
     </div>
