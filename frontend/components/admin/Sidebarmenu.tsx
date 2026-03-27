@@ -18,10 +18,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
+import InviteForm from "./InviteForm";
 
 const Sidebarmenu = () => {
   return (
@@ -96,9 +98,8 @@ const Sidebarmenu = () => {
                     <Icon icon="material-symbols:view-day-rounded" /> View
                     Employees
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Icon icon="mdi:invite" />
-                    Invite Employees
+                  <DropdownMenuItem asChild >
+                    <InviteForm />
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Icon icon="carbon:user-role" /> Manage Roles
