@@ -10,6 +10,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 import { useForm, SubmitHandler } from "react-hook-form";
+import axios from "axios";
 
 const InviteForm = () => {
   const {
@@ -18,14 +19,22 @@ const InviteForm = () => {
     formState: { errors },
     setError,
   } = useForm<{ email: string }>();
-  const handleInvite: SubmitHandler<{ email: string }> = (emailObj) => {
-    console.log(emailObj.email);
+  const handleInvite: SubmitHandler<{ email: string }> = async (emailObj) => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL!;
+    try {
+      const response = await axios.post(`${backendUrl}/invite`, emailObj, {
+        withCredentials: true,
+      });
+      console.log(response.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="flex gap-30">
       <Popover>
         <PopoverTrigger>Invite</PopoverTrigger>
-        <PopoverContent>
+        <PopoverContent className="w-100">
           <PopoverHeader>
             <PopoverTitle className="font-bold text-lg text-center">
               Invitation Form
@@ -47,7 +56,9 @@ const InviteForm = () => {
                 })}
                 placeholder="Enter the Email"
               ></Input>
-              <p>{errors.email?.message}</p>
+              <p className="text-red-500 text-sm p-1">
+                {errors.email?.message}
+              </p>
               <Button
                 className="mt-2 bg-purple-800 hover:bg-purple-700 cursor-pointer min-w-full"
                 type="submit"
