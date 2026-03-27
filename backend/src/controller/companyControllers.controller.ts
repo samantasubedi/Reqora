@@ -76,16 +76,41 @@ export const createCompany = async (req: Request, res: Response) => {
 };
 
 import crypto from "crypto";
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
+import { transporter } from "../lib/sendMail";
 
-export const inviteToCompany = (req: Request, res: Response) => {
+export const inviteToCompany = async (req: Request, res: Response) => {
+  const userEmail = req.body.email;
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
   const token = crypto.randomBytes(32).toString("hex");
   const inviteUrl = `${frontendUrl}/join?token=${token}`;
-  res.json({
-    inviteLink: inviteUrl,
-  });
+  const companyEmail = process.env.COMPANY_EMAIL;
+  if (!userEmail) {
+    res.status(400).json({
+      message: "please provide an email",
+    });
+  }
 
-  
-
+  try {
+    await transporter.sendMail({
+      from: companyEmail,
+      to: userEmail,
+      subject: "You're invited to join Reqora",
+      html: `<h2>Join reqora</h2>
+  <p>Click below to accept invitation</p>
+  <a href=${inviteUrl}>Join</a>
+  `,
+    });
+    return res.json({
+      success: true,
+      code: "EMAIL_SENT",
+      message: "email sent successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.json({
+      succes: false,
+      message: "couldnt send email",
+    });
+  }
 };
