@@ -92,9 +92,30 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     });
   }
 
+  console.log(res.locals.user.username, "this is the user name");
+  const username = res.locals.user.username;
+
+  if (!username) {
+    return res.json({ message: "authentication failed!" });
+  }
+  const userInfo = await prisma.users.findFirst({
+    where: {
+      username,
+    },
+    select: { companyId: true },
+  });
+  if (!userInfo?.companyId) {
+    return console.log("authentication failed!");
+  }
   try {
     await prisma.joinToken.create({
-      data: { email: userEmail, token: hashedToken },
+      data: {
+        email: userEmail,
+        token: hashedToken,
+        companyId: userInfo?.companyId,
+        used: false,
+        expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
+      },
     });
 
     await transporter.sendMail({
@@ -134,13 +155,10 @@ const joinCompany = async (req: Request, res: Response) => {
       .createHash("sha256")
       .update(token)
       .digest("hex");
-      if(retrivedToken.email===email&&retrivedToken.token===hanshedToken){
-        await prisma.users.updateMany({
-          data:{enrolled:true,
-            role:"employee",
-          
-          }
-        })
-      }
+    if (retrivedToken.email === email && retrivedToken.token === hanshedToken) {
+      await prisma.users.updateMany({
+        data: { enrolled: true, role: "employee" },
+      });
+    }
   } catch (err) {}
 };
