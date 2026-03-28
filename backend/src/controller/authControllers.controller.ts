@@ -7,8 +7,8 @@ import { Role } from "../generated/prisma/enums";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
-    const { username,email, password } = req.body;
-    if (!username || !password||!password) {
+    const { username, email, password } = req.body;
+    if (!username || !password || !password) {
       return res.status(400).json({ message: "all fields are required" }); // 400 means bad request
     }
     const duplicateUser = await prisma.users.findUnique({
@@ -24,14 +24,12 @@ export const handleRegister = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const existingUsers = await prisma.users.count();
     console.log(" total number of existing users are", existingUsers);
-    
+
     await prisma.users.create({
       data: {
         username,
         email,
         password: hashedPassword,
-        
-        
       },
     });
     res.status(201).json({
@@ -55,7 +53,6 @@ export const handleLogin = async (req: Request, res: Response) => {
   }
   const user = await prisma.users.findUnique({
     where: { username },
-    select: { password: true, role: true, username: true },
   });
   if (!user) {
     return res.status(401).json({
@@ -80,7 +77,7 @@ export const handleLogin = async (req: Request, res: Response) => {
       });
     }
     const role = user.role;
-    const tokenData = { username, role };
+    const tokenData = { username, role, email: user.email };
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;
     const accessToken = jwt.sign(tokenData, accessSecret, { expiresIn: "15m" }); //we can also give numeric time in ms instead of string

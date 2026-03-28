@@ -38,3 +38,11 @@ model company {
   size        Int
   users       users[]
 }
+
+model joinToken {
+  email      String  @unique
+  token      String
+  companyId  String
+  expiryDate String
+  used       Boolean
+}

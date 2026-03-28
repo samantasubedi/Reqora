@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, email, address, size } = req.body;
   if (!companyName || !email || !address || !size) {
@@ -76,13 +77,13 @@ export const createCompany = async (req: Request, res: Response) => {
 };
 
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 import { transporter } from "../lib/sendMail";
 
 export const inviteToCompany = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
   const token = crypto.randomBytes(32).toString("hex");
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const inviteUrl = `${frontendUrl}/join?token=${token}`;
   const companyEmail = process.env.COMPANY_EMAIL;
   if (!userEmail) {
@@ -92,6 +93,10 @@ export const inviteToCompany = async (req: Request, res: Response) => {
   }
 
   try {
+    await prisma.joinToken.create({
+      data: { email: userEmail, token: hashedToken },
+    });
+
     await transporter.sendMail({
       from: companyEmail,
       to: userEmail,
@@ -113,4 +118,29 @@ export const inviteToCompany = async (req: Request, res: Response) => {
       message: "couldnt send email",
     });
   }
+};
+
+const joinCompany = async (req: Request, res: Response) => {
+  const token = req.body.token;
+  const email = res.locals.users.email;
+  try {
+    const retrivedToken = await prisma.joinToken.findUnique({
+      where: { email },
+    });
+    if (!retrivedToken) {
+      return res.json({ message: "Token is expired!" });
+    }
+    const hanshedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+      if(retrivedToken.email===email&&retrivedToken.token===hanshedToken){
+        await prisma.users.updateMany({
+          data:{enrolled:true,
+            role:"employee",
+          
+          }
+        })
+      }
+  } catch (err) {}
 };
