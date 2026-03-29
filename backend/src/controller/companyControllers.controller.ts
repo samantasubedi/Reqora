@@ -148,17 +148,28 @@ const joinCompany = async (req: Request, res: Response) => {
     const retrivedToken = await prisma.joinToken.findUnique({
       where: { email },
     });
+
     if (!retrivedToken) {
       return res.json({ message: "Token is expired!" });
     }
-    const hanshedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
-    if (retrivedToken.email === email && retrivedToken.token === hanshedToken) {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    if (retrivedToken.email === email && retrivedToken.token === hashedToken) {
       await prisma.users.updateMany({
-        data: { enrolled: true, role: "employee" },
+        data: {
+          enrolled: true,
+          role: "employee",
+          companyId: retrivedToken.companyId,
+        },
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "You have been joined to the company",
+        code: "JOIN_SUCCESSFULL",
       });
     }
-  } catch (err) {}
+  } catch (err) {
+    res.json({ message: "couldnt join to the company" });
+  }
 };
