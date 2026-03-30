@@ -98,7 +98,7 @@ const Sidebarmenu = () => {
                     <Icon icon="material-symbols:view-day-rounded" /> View
                     Employees
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild >
+                  <DropdownMenuItem asChild>
                     <InviteForm />
                   </DropdownMenuItem>
                   <DropdownMenuItem>
