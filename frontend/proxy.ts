@@ -25,6 +25,9 @@ export async function proxy(request: NextRequest) {
       accessToken,
     );
     const userRole = decodedToken.role;
+    if (userRole == null) {
+      return NextResponse.redirect(new URL("/getstarted", request.url));
+    }
 
     if (allowedRoles.includes(userRole)) {
       return NextResponse.next();
