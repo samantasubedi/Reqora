@@ -98,13 +98,13 @@ export const inviteToCompany = async (req: Request, res: Response) => {
   if (!username) {
     return res.json({ message: "authentication failed!" });
   }
-  const userInfo = await prisma.users.findFirst({
+  const companyInfo = await prisma.users.findFirst({
     where: {
       username,
     },
-    select: { companyId: true },
+    select: { company: true },
   });
-  if (!userInfo?.companyId) {
+  if (!companyInfo?.company) {
     return console.log("authentication failed!");
   }
   try {
@@ -112,7 +112,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
       data: {
         email: userEmail,
         token: hashedToken,
-        companyId: userInfo?.companyId,
+        companyId: companyInfo?.company?.id,
         used: false,
         expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
       },
@@ -121,21 +121,52 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     await transporter.sendMail({
       from: companyEmail,
       to: userEmail,
-      subject: "You're invited to join Reqora",
-      html: `<h2>Join reqora</h2>
-  <p>Click below to accept invitation</p>
-  <a href=${inviteUrl}>Join</a>
+      subject: `Invitation to Join ${companyInfo.company.companyName} on Reqora`,
+      html: `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <h2 style="color: #333;">You're Invited!</h2>
+      <p>
+        You have been invited to join <strong>${companyInfo.company.companyName}</strong> on Reqora.
+      </p>
+      <p>
+        To accept this invitation and get started, please click the button below:
+      </p>
+      <p>
+        <a href="${inviteUrl}" 
+           style="
+             display: inline-block;
+             padding: 10px 20px;
+             background-color: #2563eb;
+             color: #ffffff;
+             text-decoration: none;
+             border-radius: 5px;
+             font-weight: bold;
+           ">
+          Accept Invitation
+        </a>
+      </p>
+      
+      <p>If the button above does not work, you can also use the following link:</p>
+      <p><a href="${inviteUrl}">${inviteUrl}</a></p>
+      
+      <br />
+     <p>
+  Best regards,<br />
+  <strong>${companyInfo.company.companyName}</strong><br />
+  via Reqora
+</p>
+    </div>
   `,
     });
-    return res.json({
+    return res.status(200).json({
       success: true,
       code: "EMAIL_SENT",
-      message: "email sent successfully",
+      message: "Join inviation sent successfully",
     });
   } catch (err) {
     console.log(err);
     return res.json({
-      succes: false,
+      success: false,
       message: "couldnt send email",
     });
   }
