@@ -4,7 +4,7 @@ import Test from "@/components/Test";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { EffectCallback, useEffect } from "react";
+import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -19,8 +19,13 @@ export default function Home() {
 
         if (response.data.code == "LOGGEDIN") {
           const { role, username } = response.data;
-          router.push(`/${role}/dashboard`);
-          return;
+
+          if (role) {
+            router.push(`/${role}/dashboard`);
+            return;
+          } else if (!role) {
+            router.push(`/getstarted`);
+          }
         } else if (response.data.code == "NOT_LOGGEDIN") {
           console.log(response.data.message);
           return;

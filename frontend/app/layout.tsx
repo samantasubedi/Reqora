@@ -31,7 +31,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ToastContainer />
-        <QueryClientProviderWrapper>{children}</QueryClientProviderWrapper>
+        <SidebarProvider>
+          {" "}
+          <QueryClientProviderWrapper>{children}</QueryClientProviderWrapper>
+        </SidebarProvider>
       </body>
     </html>
   );
