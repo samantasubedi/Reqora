@@ -39,7 +39,7 @@ export const createCompany = async (req: Request, res: Response) => {
           "You are already enrolled in a company, leave the current company to join new one",
       });
     }
-    const response = await prisma.company.create({
+ await prisma.company.create({
       data: {
         companyName,
         email,
@@ -74,6 +74,9 @@ export const createCompany = async (req: Request, res: Response) => {
       code: "COMPANY_CREATED",
       message: "company created successfully",
     });
+
+
+    
   }
 };
 

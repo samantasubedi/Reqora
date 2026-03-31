@@ -131,7 +131,7 @@ export const handleLogout = (req: Request, res: Response) => {
     });
   }
 };
-export const handleRefresh = (req: Request, res: Response) => {
+export const handleRefresh = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
     return res.status(401).json({
@@ -147,10 +147,41 @@ export const handleRefresh = (req: Request, res: Response) => {
 
     const { iat, exp, ...tokenData } = decodedToken as JwtPayload;
 
-    const accessToken = jwt.sign(tokenData, accessSecret, {
+    const userData = await prisma.users.findUnique({
+      where: { username: tokenData.username },
+    });
+    if (!userData) {
+      res.clearCookie("refreshToken", {
+        sameSite: "strict",
+        httpOnly: true,
+        secure: true,
+      });
+      return res.status(401).json({
+        success: false,
+        message: "invalid or expired refresh token",
+        code: "INVALID_TOKEN",
+      });
+    }
+    let data;
+    if (userData?.enrolled) {
+      data = {
+        username: userData.username,
+        email: userData.email,
+        role: userData.role,
+      };
+    } else if (!userData?.enrolled) {
+      data = {
+        username: userData.username,
+        email: userData.email,
+      };
+    }
+    if (!data) {
+      return;
+    }
+    const accessToken = jwt.sign(data, accessSecret, {
       expiresIn: "15m",
     });
-    const NewRefreshToken = jwt.sign(tokenData, refreshSecret, {
+    const NewRefreshToken = jwt.sign(data, refreshSecret, {
       expiresIn: "15d",
     });
     res.cookie("accessToken", accessToken, {
