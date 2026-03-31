@@ -30,6 +30,7 @@ export const handleRegister = async (req: Request, res: Response) => {
         username,
         email,
         password: hashedPassword,
+        role: null,
       },
     });
     res.status(201).json({
@@ -69,15 +70,13 @@ export const handleLogin = async (req: Request, res: Response) => {
       message: "Incorrect username or password",
     });
   } else if (isPasswordCorrect) {
-    if (!user.role) {
-      return res.status(500).json({
-        success: false,
-        code: "SERVER_ERROR",
-        message: "server error !",
-      });
+    let tokenData: { username: string; email: string; role?: string } = {
+      username,
+      email: user.email,
+    };
+    if (user.enrolled && user.role) {
+      tokenData = { username, email: user.email, role: user.role };
     }
-    const role = user.role;
-    const tokenData = { username, role, email: user.email };
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;
     const accessToken = jwt.sign(tokenData, accessSecret, { expiresIn: "15m" }); //we can also give numeric time in ms instead of string

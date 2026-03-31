@@ -59,6 +59,7 @@ export const createCompany = async (req: Request, res: Response) => {
     if (companyIdObj) {
       await prisma.users.updateMany({
         data: {
+          role: "admin",
           enrolled: true,
           companyId: companyIdObj.id,
         },
@@ -92,12 +93,30 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     });
   }
 
-  console.log(res.locals.user.username, "this is the user name");
   const username = res.locals.user.username;
 
   if (!username) {
     return res.json({ message: "authentication failed!" });
   }
+
+  const invitingUser = await prisma.users.findUnique({
+    where: {
+      email: userEmail,
+    },
+  });
+
+  if (invitingUser?.enrolled === true) {
+    console.log(
+      "hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    );
+    return res.status(409).json({
+      success: false,
+      code: "ENROLLED",
+      message:
+        "Couldn't send invitation,This user is already enrolled in a company",
+    });
+  }
+
   const companyInfo = await prisma.users.findFirst({
     where: {
       username,
