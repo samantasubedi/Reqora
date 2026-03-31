@@ -21,12 +21,13 @@ export async function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
   if (accessToken) {
-    const decodedToken = jwtDecode<{ role: string; username: string }>(
-      accessToken,
-    );
+    const decodedToken = jwtDecode<{
+      role?: string;
+      username: string;
+    }>(accessToken);
     const userRole = decodedToken.role;
-    if (userRole == null) {
-      return NextResponse.redirect(new URL("/getstarted", request.url));
+    if (!userRole) {
+      return NextResponse.redirect(new URL("/getstarted", request.url)); //this means user is not enrolled in the company so we redirect them to getstarted page
     }
 
     if (allowedRoles.includes(userRole)) {
