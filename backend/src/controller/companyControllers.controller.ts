@@ -71,11 +71,7 @@ export const createCompany = async (req: Request, res: Response) => {
         },
       });
     }
-      res.status(200).json({
-      success: true,
-      code: "COMPANY_CREATED",
-      message: "company created successfully",
-    });
+
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
       try {
@@ -104,7 +100,11 @@ export const createCompany = async (req: Request, res: Response) => {
         });
       }
     }
-  
+    res.status(200).json({
+      success: true,
+      code: "COMPANY_CREATED",
+      message: "company created successfully",
+    });
   } catch (err) {
     res.json({
       success: false,
@@ -226,8 +226,14 @@ export const inviteToCompany = async (req: Request, res: Response) => {
   }
 };
 
-const joinCompany = async (req: Request, res: Response) => {
+export const joinCompany = async (req: Request, res: Response) => {
   const token = req.body.token;
+  if (!token) {
+    console.log("token is required");
+    return res.json({
+      message: "token is required",
+    });
+  }
   const email = res.locals.users.email;
   try {
     const retrivedToken = await prisma.joinToken.findUnique({
@@ -235,7 +241,10 @@ const joinCompany = async (req: Request, res: Response) => {
     });
 
     if (!retrivedToken) {
-      return res.json({ message: "Token is expired!" });
+      return res.json({ 
+        success:false,
+        code:"JOIN_FAILED",
+        message: "Token is expired!" });
     }
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
@@ -254,7 +263,18 @@ const joinCompany = async (req: Request, res: Response) => {
         code: "JOIN_SUCCESSFULL",
       });
     }
+    else{
+         return res.status(404).json({
+        success: true,
+        message: "Couldn't join to the company, token may have been expired",
+        code: "JOIN_FAILED",
+      });
+    }
   } catch (err) {
-    res.json({ message: "couldnt join to the company" });
+    res.status(404).json({
+      success: false,
+      code: "JOIN_FAILED",
+      message: "Couldn't join to the company, token may have been expired",
+    });
   }
 };
