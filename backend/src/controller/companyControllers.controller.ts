@@ -10,7 +10,9 @@ export const createCompany = async (req: Request, res: Response) => {
       code: "INSUFFICIENT_DATA",
       message: "please provide all fields",
     });
-  } else {
+  }
+
+  try {
     const username = res.locals.user.username;
     const duplicateEmail = await prisma.company.findUnique({
       select: {
@@ -69,19 +71,52 @@ export const createCompany = async (req: Request, res: Response) => {
         },
       });
     }
-
-    res.status(200).json({
+      res.status(200).json({
       success: true,
       code: "COMPANY_CREATED",
       message: "company created successfully",
     });
-
-   
+    const refreshToken = req.cookies.refreshToken;
+    if (refreshToken) {
+      try {
+        const { code, accessToken, NewRefreshToken } =
+          await refresh(refreshToken);
+        if (code === "USER_NOT_FOUND") {
+          throw new Error("user not found");
+        }
+        res.cookie("accessToken", accessToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "strict",
+          maxAge: 15 * 60 * 1000,
+        });
+        res.cookie("refreshToken", NewRefreshToken, {
+          sameSite: "strict",
+          httpOnly: true,
+          secure: true,
+          maxAge: 15 * 24 * 60 * 60 * 1000,
+        });
+      } catch (err) {
+        res.clearCookie("refreshToken", {
+          sameSite: "strict",
+          httpOnly: true,
+          secure: true,
+        });
+      }
+    }
+  
+  } catch (err) {
+    res.json({
+      success: false,
+      code: "CREATION_FAILED",
+      message: "failed to create company",
+    });
   }
 };
 
 import crypto from "crypto";
 import { transporter } from "../lib/sendMail";
+import { refresh } from "../services/authService.service";
 
 export const inviteToCompany = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
@@ -109,9 +144,6 @@ export const inviteToCompany = async (req: Request, res: Response) => {
   });
 
   if (invitingUser?.enrolled === true) {
-    console.log(
-      "hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    );
     return res.status(409).json({
       success: false,
       code: "ENROLLED",
