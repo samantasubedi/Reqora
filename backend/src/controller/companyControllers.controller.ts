@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { handleRefresh } from "./authControllers.controller";
 
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, email, address, size } = req.body;
@@ -39,7 +40,7 @@ export const createCompany = async (req: Request, res: Response) => {
           "You are already enrolled in a company, leave the current company to join new one",
       });
     }
- await prisma.company.create({
+    await prisma.company.create({
       data: {
         companyName,
         email,
@@ -75,8 +76,7 @@ export const createCompany = async (req: Request, res: Response) => {
       message: "company created successfully",
     });
 
-
-    
+   
   }
 };
 

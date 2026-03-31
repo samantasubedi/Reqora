@@ -3,7 +3,7 @@ import bcrypt from "bcrypt-ts";
 import { prisma } from "../lib/prisma";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
-import { Role } from "../generated/prisma/enums";
+import { refresh } from "../services/authService.service";
 
 export const handleRegister = async (req: Request, res: Response) => {
   try {
@@ -141,49 +141,10 @@ export const handleRefresh = async (req: Request, res: Response) => {
     });
   }
   try {
-    const refreshSecret = process.env.REFRESH_SECRET!;
-    const accessSecret = process.env.ACCESS_SECRET!;
-    const decodedToken = jwt.verify(refreshToken, refreshSecret);
-
-    const { iat, exp, ...tokenData } = decodedToken as JwtPayload;
-
-    const userData = await prisma.users.findUnique({
-      where: { username: tokenData.username },
-    });
-    if (!userData) {
-      res.clearCookie("refreshToken", {
-        sameSite: "strict",
-        httpOnly: true,
-        secure: true,
-      });
-      return res.status(401).json({
-        success: false,
-        message: "invalid or expired refresh token",
-        code: "INVALID_TOKEN",
-      });
+    const{code,accessToken,NewRefreshToken}=  await refresh(refreshToken)
+    if(code=== "USER_NOT_FOUND"){
+     throw new Error("user not found")
     }
-    let data;
-    if (userData?.enrolled) {
-      data = {
-        username: userData.username,
-        email: userData.email,
-        role: userData.role,
-      };
-    } else if (!userData?.enrolled) {
-      data = {
-        username: userData.username,
-        email: userData.email,
-      };
-    }
-    if (!data) {
-      return;
-    }
-    const accessToken = jwt.sign(data, accessSecret, {
-      expiresIn: "15m",
-    });
-    const NewRefreshToken = jwt.sign(data, refreshSecret, {
-      expiresIn: "15d",
-    });
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,
