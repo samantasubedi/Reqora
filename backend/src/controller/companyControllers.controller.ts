@@ -234,17 +234,19 @@ export const joinCompany = async (req: Request, res: Response) => {
       message: "token is required",
     });
   }
-  const email = res.locals.users.email;
+  const email = res.locals.user.email;
+
   try {
     const retrivedToken = await prisma.joinToken.findUnique({
       where: { email },
     });
 
     if (!retrivedToken) {
-      return res.json({ 
-        success:false,
-        code:"JOIN_FAILED",
-        message: "Token is expired!" });
+      return res.json({
+        success: false,
+        code: "JOIN_FAILED",
+        message: "Token is expired!",
+      });
     }
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
@@ -262,9 +264,10 @@ export const joinCompany = async (req: Request, res: Response) => {
         message: "You have been joined to the company",
         code: "JOIN_SUCCESSFULL",
       });
-    }
-    else{
-         return res.status(404).json({
+    } else {
+      return res.status(404).json({
+        retrivedToken:retrivedToken.token,
+        hashedToken:hashedToken,
         success: true,
         message: "Couldn't join to the company, token may have been expired",
         code: "JOIN_FAILED",

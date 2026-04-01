@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import QueryClientProviderWrapper from "@/components/QueryClientProviderWrapper";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,7 +33,6 @@ export default function RootLayout({
       >
         <ToastContainer />
         <SidebarProvider>
-          {" "}
           <QueryClientProviderWrapper>{children}</QueryClientProviderWrapper>
         </SidebarProvider>
       </body>
