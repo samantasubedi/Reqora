@@ -162,7 +162,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     return console.log("authentication failed!");
   }
   try {
-    prisma.joinToken.create({
+    await prisma.joinToken.create({
       data: {
         email: userEmail,
         token: hashedToken,
@@ -235,6 +235,18 @@ export const joinCompany = async (req: Request, res: Response) => {
     });
   }
   const email = res.locals.user.email;
+  const userEnrolled = await prisma.users.findUnique({
+    where: { email },
+    select: { enrolled: true },
+  });
+  if (userEnrolled?.enrolled) {
+    return res.status(400).json({
+      success: false,
+      code: "ENROLLED",
+      message:
+        "Couldnt accept invitation, you are already enrolled in a company",
+    });
+  }
 
   try {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -244,6 +256,8 @@ export const joinCompany = async (req: Request, res: Response) => {
 
     if (!retrivedToken) {
       return res.json({
+        hashedToken: hashedToken,
+        retrivedToken: retrivedToken,
         success: false,
         code: "JOIN_FAILED",
         message: "Invalid token!",
