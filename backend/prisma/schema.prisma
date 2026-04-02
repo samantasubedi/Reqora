@@ -40,8 +40,8 @@ model company {
 }
 
 model joinToken {
-  email      String  @unique
-  token      String
+  email      String 
+  token      String @unique
   companyId  String
   expiresAt DateTime
   used       Boolean

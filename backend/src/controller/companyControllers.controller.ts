@@ -168,7 +168,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
         token: hashedToken,
         companyId: companyInfo?.company?.id,
         used: false,
-        expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
       },
     });
 
@@ -237,26 +237,41 @@ export const joinCompany = async (req: Request, res: Response) => {
   const email = res.locals.user.email;
 
   try {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const retrivedToken = await prisma.joinToken.findUnique({
-      where: { email },
+      where: { token: hashedToken },
     });
 
     if (!retrivedToken) {
       return res.json({
         success: false,
         code: "JOIN_FAILED",
-        message: "Token is expired!",
+        message: "Invalid token!",
       });
     }
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    if (retrivedToken.email === email && retrivedToken.token === hashedToken) {
-      await prisma.users.updateMany({
+    if (retrivedToken.email === email) {
+      if (retrivedToken.used === true || retrivedToken.expiresAt < new Date()) {
+        return res.status(400).json({
+          success: false,
+          message: "Your token has been expired",
+          code: "TOKEN_EXPIRED",
+        });
+      }
+
+      await prisma.users.update({
+        where: { email },
         data: {
           enrolled: true,
           role: "employee",
           companyId: retrivedToken.companyId,
         },
+      });
+      await prisma.joinToken.update({
+        data: {
+          used: true,
+        },
+        where: { token: hashedToken },
       });
 
       return res.status(201).json({
@@ -265,16 +280,14 @@ export const joinCompany = async (req: Request, res: Response) => {
         code: "JOIN_SUCCESSFULL",
       });
     } else {
-      return res.status(404).json({
-        retrivedToken:retrivedToken.token,
-        hashedToken:hashedToken,
-        success: true,
+      return res.status(400).json({
+        success: false,
         message: "Couldn't join to the company, token may have been expired",
         code: "JOIN_FAILED",
       });
     }
   } catch (err) {
-    res.status(404).json({
+    res.status(500).json({
       success: false,
       code: "JOIN_FAILED",
       message: "Couldn't join to the company, token may have been expired",
