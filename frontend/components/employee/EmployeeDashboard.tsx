@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Plus,
@@ -8,7 +9,6 @@ import {
   Search,
   Filter,
 } from "lucide-react";
-
 
 import {
   Card,
@@ -28,11 +28,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { handleLogout } from "../admin/AdminDashboard";
+import { useRouter } from "next/navigation";
 
 export default function EmployeeDashboard() {
+  const router = useRouter();
   return (
     <div className="flex-1 space-y-8 p-8 pt-6">
-
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
@@ -41,15 +43,20 @@ export default function EmployeeDashboard() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
+          <Button
+            className="bg-red-700 hover:bg-red-600"
+            onClick={() => handleLogout(router)}
+          >
+            Logout
+          </Button>
           <Button className="text-white! text-bold! bg-purple-900 hover:bg-purple-700 duration-300 transition-all cursor-pointer">
             <Plus className="mr-2 h-4 w-4" /> New Request
           </Button>
         </div>
       </div>
 
-
       <div className="grid gap-4 md:grid-cols-3">
-        <Card  className="hover:bg-purple-100 bg-purple-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
+        <Card className="hover:bg-purple-100 bg-purple-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-medium">My Resources</CardTitle>
             <Package className="h-8 w-8 text-muted-foreground" />
@@ -61,7 +68,7 @@ export default function EmployeeDashboard() {
             </p>
           </CardContent>
         </Card>
-        <Card  className="hover:bg-orange-100 bg-orange-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
+        <Card className="hover:bg-orange-100 bg-orange-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xl font-medium">
               Pending Approvals
@@ -91,9 +98,7 @@ export default function EmployeeDashboard() {
         </Card>
       </div>
 
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
- 
         <Card className="col-span-4">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -126,15 +131,16 @@ export default function EmployeeDashboard() {
                   <TableCell className="font-medium">MacBook Pro 14"</TableCell>
                   <TableCell>Oct 12, 2023</TableCell>
                   <TableCell>
-                    <Badge
-                     
-                      className="bg-green-100 text-green-600"
-                    >
+                    <Badge className="bg-green-100 text-green-600">
                       Approved
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="secondary" size="sm" className="text-blue-500 bg-zinc-100 hover:bg-zinc-200 cursor-pointer transition-all duration-300 ease-in-out">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="text-blue-500 bg-zinc-100 hover:bg-zinc-200 cursor-pointer transition-all duration-300 ease-in-out"
+                    >
                       View
                     </Button>
                   </TableCell>
@@ -153,7 +159,11 @@ export default function EmployeeDashboard() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="secondary" size="sm" className="text-blue-500 bg-zinc-100 hover:bg-zinc-200 cursor-pointer transition-all duration-300 ease-in-out">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="text-blue-500 bg-zinc-100 hover:bg-zinc-200 cursor-pointer transition-all duration-300 ease-in-out"
+                    >
                       View
                     </Button>
                   </TableCell>
@@ -161,12 +171,13 @@ export default function EmployeeDashboard() {
               </TableBody>
             </Table>
             <div className="flex justify-end w-full mt-10">
-              <Button className="cursor-pointer text-blue-600 bg-blue-100 hover:bg-blue-200 transition-all duration-300 ease-in-out font-bold">View All</Button>
+              <Button className="cursor-pointer text-blue-600 bg-blue-100 hover:bg-blue-200 transition-all duration-300 ease-in-out font-bold">
+                View All
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-   
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle className="text-2xl">My Active Gear</CardTitle>

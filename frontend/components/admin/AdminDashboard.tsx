@@ -1,22 +1,13 @@
 "use client";
-import React from "react";
-import test from "../Test";
 import { Check, CircleAlert, LucideIcon, Plus, TrendingUp } from "lucide-react";
 import StatCard from "./StatCard";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
 import { Book, Package } from "lucide-react";
 import { Button } from "../ui/button";
 import { ResourceTable } from "./ResourceTable";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 export interface statCardInterface {
   title: string;
   number: number;
@@ -24,7 +15,26 @@ export interface statCardInterface {
   IconName?: LucideIcon;
   subtext?: string;
 }
-const AdminDashboard = () => {
+
+export const handleLogout = async (router:AppRouterInstance) => {
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+    const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
+      withCredentials: true,
+    });
+    if (
+      logoutResponse.data.success === true &&
+      logoutResponse.data.code === "LOGOUT_SUCCESSFULL"
+    ) {
+      toast.success(logoutResponse.data.message);
+      router.push("/");
+    }
+    console.log(logoutResponse.data);
+  } catch (err) {
+    console.log("request failed", err);
+  }
+};
+export const AdminDashboard = () => {
   const router = useRouter();
   const AdminStat: statCardInterface[] = [
     {
@@ -51,24 +61,6 @@ const AdminDashboard = () => {
       subtext: "10% of total",
     },
   ];
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const handleLogout = async () => {
-    try {
-      const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
-        withCredentials: true,
-      });
-      if (
-        logoutResponse.data.success === true &&
-        logoutResponse.data.code === "LOGOUT_SUCCESSFULL"
-      ) {
-        toast.success(logoutResponse.data.message);
-        router.push("/");
-      }
-      console.log(logoutResponse.data);
-    } catch (err) {
-      console.log("request failed", err);
-    }
-  };
 
   return (
     <>
@@ -80,7 +72,7 @@ const AdminDashboard = () => {
 
           <Button
             className="text-white bg-red-700 hover:bg-red-600 m-3"
-            onClick={handleLogout}
+            onClick={()=>handleLogout(router)}
           >
             Logout
           </Button>
@@ -113,4 +105,3 @@ const AdminDashboard = () => {
     </>
   );
 };
-export default AdminDashboard;

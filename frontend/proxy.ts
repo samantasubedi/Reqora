@@ -50,7 +50,7 @@ export async function proxy(request: NextRequest) {
         Cookie: `refreshToken=${refreshToken}`,
       },
     });
-    if (refreshResponse.data.success === true) {
+    if (refreshResponse.data.success) {
       const redirectResponse = NextResponse.redirect(
         new URL(path, request.url),
       );
@@ -62,7 +62,7 @@ export async function proxy(request: NextRequest) {
         });
       }
       return redirectResponse;
-    } else if (refreshResponse.data.success === false) {
+    } else if (!refreshResponse.data.success) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }

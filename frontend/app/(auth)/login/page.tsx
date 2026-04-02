@@ -47,8 +47,11 @@ const page = () => {
         const role = response.data.role;
         setUserData({ username, role });
         toast.success(response.data.message);
-        // router.push(`/${response.data.role}/dashboard`);
-        router.push("/getstarted");
+        if (!role) {
+          router.push("/getstarted");
+        } else if (role) {
+          router.push(`/${response.data.role}/dashboard`);
+        }
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {

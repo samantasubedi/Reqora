@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { handleLogout } from "@/components/admin/AdminDashboard";
 const page = () => {
   const router = useRouter();
   const cardClass =
@@ -21,6 +22,12 @@ const page = () => {
     "bg-orange-400 w-full h-15 text-3xl cursor-pointer hover:bg-orange-500 transition-all duration-300 ease-in-out p-3 ";
   return (
     <div className="bg-linear-to-r from-orange-50 to-orange-100 h-screen p-2">
+      <Button
+        className="bg-red-600 hover:bg-red-500"
+        onClick={() => handleLogout(router)}
+      >
+        Logout
+      </Button>
       <h1 className="font-bold text-7xl font-sans text-center mt-[8%]">
         Get started
       </h1>

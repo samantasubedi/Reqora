@@ -1,4 +1,4 @@
-import AdminDashboard from "@/components/admin/AdminDashboard";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import SidebarMenu from "@/components/admin/Sidebarmenu";
 
 export default function AdminDashboardPage() {
