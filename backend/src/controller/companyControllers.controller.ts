@@ -162,7 +162,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     return console.log("authentication failed!");
   }
   try {
-    await prisma.joinToken.create({
+    prisma.joinToken.create({
       data: {
         email: userEmail,
         token: hashedToken,
@@ -172,7 +172,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
       },
     });
 
-    await transporter.sendMail({
+    transporter.sendMail({
       from: companyEmail,
       to: userEmail,
       subject: `Invitation to Join ${companyInfo.company.companyName} on Reqora`,
@@ -258,22 +258,22 @@ export const joinCompany = async (req: Request, res: Response) => {
           code: "TOKEN_EXPIRED",
         });
       }
-
-      await prisma.users.update({
-        where: { email },
-        data: {
-          enrolled: true,
-          role: "employee",
-          companyId: retrivedToken.companyId,
-        },
-      });
-      await prisma.joinToken.update({
-        data: {
-          used: true,
-        },
-        where: { token: hashedToken },
-      });
-
+      await prisma.$transaction([
+        prisma.users.update({
+          where: { email },
+          data: {
+            enrolled: true,
+            role: "employee",
+            companyId: retrivedToken.companyId,
+          },
+        }),
+        prisma.joinToken.update({
+          data: {
+            used: true,
+          },
+          where: { token: hashedToken },
+        }),
+      ]);
       return res.status(201).json({
         success: true,
         message: "You have been joined to the company",
