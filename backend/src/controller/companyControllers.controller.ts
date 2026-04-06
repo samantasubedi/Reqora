@@ -230,7 +230,9 @@ export const joinCompany = async (req: Request, res: Response) => {
   const token = req.body.token;
   if (!token) {
     console.log("token is required");
-    return res.json({
+    return res.status(400).json({
+      success: false,
+      code: "TOKEN_NOT_FOUND",
       message: "token is required",
     });
   }
@@ -255,7 +257,7 @@ export const joinCompany = async (req: Request, res: Response) => {
     });
 
     if (!retrivedToken) {
-      return res.json({
+      return res.status(404).json({
         hashedToken: hashedToken,
         retrivedToken: retrivedToken,
         success: false,
@@ -265,7 +267,7 @@ export const joinCompany = async (req: Request, res: Response) => {
     }
 
     if (retrivedToken.email === email) {
-      if (retrivedToken.used === true || retrivedToken.expiresAt < new Date()) {
+      if (retrivedToken.used || retrivedToken.expiresAt < new Date()) {
         return res.status(400).json({
           success: false,
           message: "Your token has been expired",
