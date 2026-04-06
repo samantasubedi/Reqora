@@ -25,19 +25,27 @@ const page = () => {
       const response = await axios.post(`${backendUrl}/isloggedin`, null, {
         withCredentials: true,
       });
+
       if (response.data.code === "LOGGEDIN") {
         try {
-          const response = await axios.post(`${backendUrl}/join`, token, {
-            withCredentials: true,
-          });
+          const response = await axios.post(
+            `${backendUrl}/join`,
+            { token },
+            {
+              withCredentials: true,
+            },
+          );
           const { code, message, success } = response.data;
+          console.log("this his the response", code, message, success);
           if (success && code == "JOIN_SUCCESSFULL") {
             toast.success(message);
             router.push("/employee/dashboard");
           }
         } catch (err: any) {
           if (err.response) {
+            console.log("hereeeeeeeeeeeeee");
             const { code, message } = err.response.data;
+            console.log("this is the error message", message);
             toast.error(message);
           } else {
             toast.error("server error");
