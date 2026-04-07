@@ -310,3 +310,10 @@ export const joinCompany = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const leaveCompany = (req: Request, res: Response) => {
+  const userdata = res.locals.user;
+  res.json({
+    email: userdata.email,
+  });
+};
