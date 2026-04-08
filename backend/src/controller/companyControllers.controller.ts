@@ -314,7 +314,6 @@ export const joinCompany = async (req: Request, res: Response) => {
 export const leaveCompany = async (req: Request, res: Response) => {
   const userdata = res.locals.user;
   const email = userdata.email;
-
   try {
     await prisma.users.updateMany({
       data: {
@@ -324,16 +323,16 @@ export const leaveCompany = async (req: Request, res: Response) => {
       },
       where: { email },
     });
-
     res.json({
       success: true,
       message: "company left successfully",
       code: "COMPANY_LEFT",
     });
-  } catch (err) {}
-  res.json({
-    success: false,
-    message: "unable to leave the company",
-    code: "EXIT_FAILED",
-  });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: "unable to leave the company",
+      code: "EXIT_FAILED",
+    });
+  }
 };
