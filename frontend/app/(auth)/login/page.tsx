@@ -16,8 +16,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useGlobalStore } from "@/app/store/authStore";
-import { storeType } from "@/app/store/authStore";
-import { userDataType } from "@/app/store/authStore";
+
 
 type formDataType = {
   username: string;

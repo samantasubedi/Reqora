@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import React from "react";
+import React, { useEffect } from "react";
 import { Icon } from "@iconify/react";
 import {
   CardHeader,
@@ -14,8 +14,26 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { handleLogout } from "@/components/admin/AdminDashboard";
+import axios from "axios";
 const page = () => {
   const router = useRouter();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  useEffect(() => {
+    const getUserStatus = async () => {
+      try {
+        const userInfo = await axios.post(`${backendUrl}/isloggedIn`, null, {
+          withCredentials: true,
+        });
+        const role = userInfo.data.role;
+        if (role) {
+          router.push(`/${role}/dashboard`);
+        }
+        console.log("this is the data", role);
+      } catch (err) {}
+    };
+    getUserStatus();
+  }, []);
+
   const cardClass =
     "w-full p-5 shadow-lg hover:shadow-orange-400 transition-all duration-300 ease-in-out hover:translate-x-1";
   const buttonClass =

@@ -20,7 +20,6 @@ const page = () => {
   const params = useSearchParams();
   const token = params.get("token");
   const handleAccept = async () => {
-    console.log("button clickeddddddddddddddd");
     try {
       const response = await axios.post(`${backendUrl}/isloggedin`, null, {
         withCredentials: true,
@@ -43,7 +42,6 @@ const page = () => {
           }
         } catch (err: any) {
           if (err.response) {
-            console.log("hereeeeeeeeeeeeee");
             const { code, message } = err.response.data;
             console.log("this is the error message", message);
             toast.error(message);
