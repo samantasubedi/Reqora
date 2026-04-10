@@ -30,9 +30,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { handleLogout } from "../admin/AdminDashboard";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function EmployeeDashboard() {
   const router = useRouter();
+
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const handleLeave = async () => {
+    try {
+      const response = await axios.post(`${backendUrl}/leave`, null, {
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+      }
+    } catch (err: any) {
+      console.log(err);
+      if (err.response.data) {
+        const { message, code, success } = err.response.data;
+        if (!success) {
+          toast.error(message);
+        }
+      }
+    }
+  };
   return (
     <div className="flex-1 space-y-8 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -48,6 +71,14 @@ export default function EmployeeDashboard() {
             onClick={() => handleLogout(router)}
           >
             Logout
+          </Button>
+
+          <Button
+            onClick={() => {
+              handleLeave();
+            }}
+          >
+            Leave this Company
           </Button>
           <Button className="text-white! text-bold! bg-purple-900 hover:bg-purple-700 duration-300 transition-all cursor-pointer">
             <Plus className="mr-2 h-4 w-4" /> New Request
