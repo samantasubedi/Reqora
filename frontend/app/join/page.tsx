@@ -60,10 +60,14 @@ const page = () => {
       toast.error("server error");
     }
   };
+  const handleDecline = () => {
+    console.log("decline clikcked");
+    router.push("/");
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-zinc-950">
-      <Card className="w-full  shadow-lg border-2 border-red-500">
+      <Card className="w-[40%]  shadow-lg border-2 border-gray-300 bg-gray-100!">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Building2 className="h-8 w-8 text-primary" />
@@ -92,7 +96,10 @@ const page = () => {
           >
             <Check className="mr-2 h-4 w-4" /> Accept Invite
           </Button>
-          <Button className="w-[45%] bg-red-700 hover:bg-red-600">
+          <Button
+            className="w-[45%] bg-red-700 hover:bg-red-600"
+            onClick={() => handleDecline()}
+          >
             <X className="mr-2 h-4 w-4" /> Decline
           </Button>
         </CardFooter>
