@@ -7,7 +7,8 @@ import { useEffect } from "react";
 import Navbar from "@/components/others/Navbar";
 
 import { GradientBackground } from "@/components/animate-ui/components/backgrounds/gradient";
-import { LiquidButton } from "@/components/animate-ui/primitives/buttons/liquid";
+import { LiquidButton } from "@/components/animate-ui/components/buttons/liquid";
+import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 
 export default function Home() {
   const router = useRouter();
@@ -51,26 +52,27 @@ export default function Home() {
           <p className="font-bold text-6xl text-blue-900">
             Streamline Resource Requests.
           </p>
-          <p className="font-bold text-6xl text-blue-900">Eliminate Chaos.</p>
+          <AnimatedGradientText
+            speed={1.7}
+            colorFrom="#00a870"
+            colorTo="#0600a8"
+            className="font-bold text-6xl"
+          >
+            Eliminate Chaos.
+          </AnimatedGradientText>
         </div>
-        <div className="flex flex-col justify-center items-center gap-2 mt-[2%] text-purple-900 font-semibold">
+        <div className="flex flex-col justify-center items-center gap-2 mt-[2%] text-purple-800 font-semibold">
           <p className=" ">
             Reqora brings clarity to every resource request — from laptops to
             software access.
           </p>
           <p className="">One platform for employees, managers, and admins.</p>
         </div>
-        <LiquidButton
-          className="text-white px-6 py-3 rounded-xl"
-          style={
-            {
-              "--liquid-button-color": "#ffffff",
-              "--liquid-button-background-color": "#4f46e5",
-            } as React.CSSProperties
-          }
-        >
-          Get Started
-        </LiquidButton>
+        <div className="flex justify-center mt-10">
+          <LiquidButton className="cursor-pointer [--liquid-button-background-color:theme(colors.blue.400)] [--liquid-button-color:theme(colors.green.400)] text-white font-bold text-xl h-15 w-40">
+            Get Started
+          </LiquidButton>
+        </div>
       </GradientBackground>
     </>
   );
