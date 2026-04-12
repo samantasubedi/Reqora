@@ -17,7 +17,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useGlobalStore } from "@/app/store/authStore";
 
-
 type formDataType = {
   username: string;
   password: string;
@@ -70,21 +69,22 @@ const page = () => {
   };
 
   return (
-    <div className="flex justify-center mt-[10%]">
-      <Card className="w-[30%]">
+    <div className="flex justify-center  bg-linear-to-l from-blue-950 to-teal-800  min-h-screen">
+      <Card className="w-[30%] h-fit mt-[10%] bg-transparent/70 border-teal-950 shadow-md shadow-black">
         <CardHeader>
-          <CardTitle className="text-3xl text-center">
+          <CardTitle className="text-3xl text-center text-cyan-400">
             Login to your account
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-white">
             Enter your username below to login to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(formSubmitHandler)}>
             <div className="flex flex-col gap-2">
-              <label className="font-semibold">Username</label>
+              <label className="font-semibold text-white">Username</label>
               <Input
+                className="bg-slate-400 border-none font-semibold "
                 placeholder="Enter your username"
                 {...register("username", {
                   required: "username is required !",
@@ -97,8 +97,9 @@ const page = () => {
               <p className="text-red-600">{errors.username?.message}</p>
             </div>
             <div className="flex flex-col gap-2 mt-4">
-              <label className="font-semibold">Password</label>
+              <label className="font-semibold text-white">Password</label>
               <Input
+                className="bg-slate-400 border-none font-semibold"
                 type="password"
                 placeholder="Enter your password"
                 {...register("password", {
@@ -113,14 +114,14 @@ const page = () => {
             </div>
             <Button
               type="submit"
-              className="w-full mt-5 cursor-pointer bg-purple-800 hover:bg-purple-700 "
+              className="w-full mt-5 cursor-pointer bg-teal-600 hover:bg-teal-700 "
             >
               Submit
             </Button>
           </form>
           <CardAction className="flex gap-2 mt-4">
-            <p className="font-sans">Don't have an account ?</p>{" "}
-            <a className="text-blue-700 cursor-pointer" href="/register">
+            <p className="font-sans text-white">Don't have an account ?</p>{" "}
+            <a className="text-blue-400 cursor-pointer" href="/register">
               register
             </a>
           </CardAction>
