@@ -1,10 +1,13 @@
 "use client";
-import Image from "next/image";
-import Test from "@/components/Test";
+
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+
 import { useEffect } from "react";
+import Navbar from "@/components/others/Navbar";
+
+import { GradientBackground } from "@/components/animate-ui/components/backgrounds/gradient";
+import { LiquidButton } from "@/components/animate-ui/primitives/buttons/liquid";
 
 export default function Home() {
   const router = useRouter();
@@ -42,19 +45,33 @@ export default function Home() {
   }, []);
   return (
     <>
-      {" "}
-      <div>this is landing page</div>
-      <div className="flex justify-end ">
-        {" "}
-        <Button
-          className="m-3 bg-linear-to-r from-green-500 to-green-800 cursor-pointer "
-          onClick={() => {
-            router.push("/login");
-          }}
+      <GradientBackground className="w-full min-h-screen">
+        <Navbar></Navbar>
+        <div className="flex justify-center mt-20 flex-col items-center">
+          <p className="font-bold text-6xl text-blue-900">
+            Streamline Resource Requests.
+          </p>
+          <p className="font-bold text-6xl text-blue-900">Eliminate Chaos.</p>
+        </div>
+        <div className="flex flex-col justify-center items-center gap-2 mt-[2%] text-purple-900 font-semibold">
+          <p className=" ">
+            Reqora brings clarity to every resource request — from laptops to
+            software access.
+          </p>
+          <p className="">One platform for employees, managers, and admins.</p>
+        </div>
+        <LiquidButton
+          className="text-white px-6 py-3 rounded-xl"
+          style={
+            {
+              "--liquid-button-color": "#ffffff",
+              "--liquid-button-background-color": "#4f46e5",
+            } as React.CSSProperties
+          }
         >
-          Sign In
-        </Button>
-      </div>
+          Get Started
+        </LiquidButton>
+      </GradientBackground>
     </>
   );
 }
