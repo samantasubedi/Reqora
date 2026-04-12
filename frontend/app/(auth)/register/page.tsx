@@ -51,21 +51,22 @@ const page = () => {
     }
   };
   return (
-    <div className="flex justify-center mt-[10%]">
-      <Card className="w-[30%]">
+    <div className="flex justify-center  bg-linear-to-l from-blue-950 to-teal-800  min-h-screen">
+      <Card className="w-[30%] h-fit mt-[10%] bg-transparent/70 border-teal-950 shadow-md shadow-black">
         <CardHeader>
-          <CardTitle className="text-3xl text-center">
+          <CardTitle className="text-3xl text-center text-cyan-400">
             Create an account
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-white">
             Fill the details below to register your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(handleFormSubmit)}>
             <div className="flex flex-col gap-2">
-              <label className="font-semibold">Email</label>
+              <label className="font-semibold text-white">Email</label>
               <Input
+                className="bg-slate-400 border-none font-semibold "
                 {...register("email", {
                   required: "email is required !",
                   pattern: {
@@ -78,9 +79,10 @@ const page = () => {
               <p className="text-red-600 text-sm">{errors.email?.message}</p>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="font-semibold">Username</label>
+            <div className="flex flex-col gap-2 mt-4">
+              <label className="font-semibold text-white">Username</label>
               <Input
+                className="bg-slate-400 border-none font-semibold "
                 {...register("username", {
                   required: "username is required !",
                   minLength: {
@@ -93,8 +95,9 @@ const page = () => {
               <p className="text-red-600 text-sm">{errors.username?.message}</p>
             </div>
             <div className="flex flex-col gap-2 mt-4">
-              <label className="font-semibold">Password</label>
+              <label className="font-semibold text-white">Password</label>
               <Input
+                className="bg-slate-400 border-none font-semibold "
                 {...register("password", {
                   required: "password is required !",
                   minLength: {
@@ -109,14 +112,14 @@ const page = () => {
             </div>
             <Button
               type="submit"
-              className="mt-5 w-full cursor-pointer bg-purple-800 hover:bg-purple-700"
+              className="mt-5 w-full cursor-pointer bg-teal-600 hover:bg-teal-700"
             >
               Register
             </Button>
           </form>
           <CardAction className="flex gap-2 mt-4">
-            <p className="font-sans">Already have an account?</p>
-            <a href="/login" className="text-blue-700 cursor-pointer">
+            <p className="font-sans text-white">Already have an account?</p>
+            <a href="/login" className="text-blue-400 cursor-pointer font-bold">
               Login
             </a>
           </CardAction>

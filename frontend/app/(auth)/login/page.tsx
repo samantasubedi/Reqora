@@ -121,8 +121,8 @@ const page = () => {
           </form>
           <CardAction className="flex gap-2 mt-4">
             <p className="font-sans text-white">Don't have an account ?</p>{" "}
-            <a className="text-blue-400 cursor-pointer" href="/register">
-              register
+            <a className="text-blue-400 cursor-pointer font-bold" href="/register">
+              Register
             </a>
           </CardAction>
         </CardContent>
