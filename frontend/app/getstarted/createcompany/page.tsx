@@ -86,13 +86,13 @@ const page = () => {
   });
 
   return (
-    <div className="flex justify-center p-5">
-      <Card className="w-[40%] p-5">
+    <div className="flex justify-center p-5 bg-linear-to-t from-sky-300 to-blue-950 min-h-screen">
+      <Card className="w-[40%] p-5 h-fit mt-[5%] bg-purple-800/20 shadow-md shadow-blue-900  border-t-3 border-white border-l-0 border-r-0 border-b-0 ">
         <CardHeader>
-          <CardTitle className="font-bold text-3xl text-center">
+          <CardTitle className="font-bold text-3xl text-center text-sky-300">
             Create Your Company
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-gray-400 font-semibold">
             Fill your company details
           </CardDescription>
         </CardHeader>
@@ -100,47 +100,58 @@ const page = () => {
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
               {" "}
-              <label className="font-semibold text-md">Company Name</label>
+              <label className="font-semibold text-md text-white">
+                Company Name
+              </label>
               <Input
+                className="bg-slate-300 border-none"
                 placeholder="Enter your company name"
                 {...register("companyName")}
               />
-              <p className="text-red-600 text-sm">
+              <p className="text-red-400 text-sm">
                 {errors.companyName?.message}
               </p>
             </div>
             <div className="flex flex-col gap-2">
               {" "}
-              <label className="font-semibold text-md">Address</label>
+              <label className="font-semibold text-md text-white">
+                Address
+              </label>
               <Input
+                className="bg-slate-300 border-none"
                 placeholder="Enter your company address"
                 {...register("address")}
               />
-              <p className="text-red-600 text-sm">{errors.address?.message}</p>
+              <p className="text-red-400 text-sm">{errors.address?.message}</p>
             </div>
             <div className="flex flex-col gap-2">
               {" "}
-              <label className="font-semibold text-md">Email</label>
+              <label className="font-semibold text-md text-white">Email</label>
               <Input
+                className="bg-slate-300 border-none"
                 placeholder="Enter your company email"
                 {...register("email")}
               />
-              <p className="text-red-600 text-sm">{errors.email?.message}</p>
+              <p className="text-red-400 text-sm">{errors.email?.message}</p>
             </div>
 
             <div className="flex flex-col gap-2">
               {" "}
-              <label className="font-semibold text-md">Company Size</label>
+              <label className="font-semibold text-md text-white">
+                Company Size
+              </label>
               <Input
+                className="bg-slate-300 border-none"
                 type="number"
                 placeholder="Enter your company size (eg: 50)"
                 {...register("size")}
               />
-              <p className="text-red-600 text-sm">{errors.size?.message}</p>
+              <p className="text-red-400 text-sm">{errors.size?.message}</p>
             </div>
             <Button
               type="submit"
-              className="bg-purple-900 hover:bg-purple-800 cursor-pointer transition-all duration-300"
+              size="lg"
+              className="bg-purple-700 hover:bg-purple-600 cursor-pointer transition-all duration-300 text-xl! font-bold "
               disabled={mutation.isPending}
             >
               {mutation.isPending ? "Creating.." : "Create"}

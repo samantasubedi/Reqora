@@ -76,7 +76,7 @@ const page = () => {
                 })}
                 placeholder="Enter your email"
               />
-              <p className="text-red-600 text-sm">{errors.email?.message}</p>
+              <p className="text-red-400 text-sm">{errors.email?.message}</p>
             </div>
 
             <div className="flex flex-col gap-2 mt-4">
@@ -92,7 +92,7 @@ const page = () => {
                 })}
                 placeholder="Enter your username"
               />
-              <p className="text-red-600 text-sm">{errors.username?.message}</p>
+              <p className="text-red-400 text-sm">{errors.username?.message}</p>
             </div>
             <div className="flex flex-col gap-2 mt-4">
               <label className="font-semibold text-white">Password</label>
@@ -108,7 +108,7 @@ const page = () => {
                 placeholder="Enter your password"
                 type="password"
               />
-              <p className="text-red-600 text-sm">{errors.password?.message}</p>
+              <p className="text-red-400 text-sm">{errors.password?.message}</p>
             </div>
             <Button
               type="submit"

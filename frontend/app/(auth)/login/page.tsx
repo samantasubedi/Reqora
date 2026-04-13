@@ -94,7 +94,7 @@ const page = () => {
                   },
                 })}
               />
-              <p className="text-red-600">{errors.username?.message}</p>
+              <p className="text-red-400">{errors.username?.message}</p>
             </div>
             <div className="flex flex-col gap-2 mt-4">
               <label className="font-semibold text-white">Password</label>
@@ -110,7 +110,7 @@ const page = () => {
                   },
                 })}
               />
-              <p className="text-red-600">{errors.password?.message}</p>
+              <p className="text-red-400">{errors.password?.message}</p>
             </div>
             <Button
               type="submit"
