@@ -1,23 +1,24 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
- export type returnType={
-    code:string,
-    accessToken?:string
-    NewRefreshToken?:string
- }
-export const refresh = async (refreshToken: string):Promise<returnType> => {
+export type returnType = {
+  code: string;
+  accessToken?: string;
+  NewRefreshToken?: string;
+};
+export const refresh = async (refreshToken: string): Promise<returnType> => {
   const refreshSecret = process.env.REFRESH_SECRET!;
   const accessSecret = process.env.ACCESS_SECRET!;
   const decodedToken = jwt.verify(refreshToken, refreshSecret);
   const { iat, exp, ...tokenData } = decodedToken as JwtPayload;
 
   let code: string;
-  const userData = await prisma.users.findUnique({
+  const userData = await prisma.user.findUnique({
     where: { username: tokenData.username },
   });
-  if (!userData) {                      //user may have been removed from the company but token could still exist in users cookie
+  if (!userData) {
+    //user may have been removed from the company but token could still exist in users cookie
     code = "USER_NOT_FOUND";
-    return( { code });
+    return { code };
   }
 
   let data;
@@ -33,8 +34,9 @@ export const refresh = async (refreshToken: string):Promise<returnType> => {
       email: userData.email,
     };
   }
-  if (!data){
-     return({code:"USER_NOT_FOUND"})};
+  if (!data) {
+    return { code: "USER_NOT_FOUND" };
+  }
 
   const accessToken = jwt.sign(data, accessSecret, {
     expiresIn: "15m",

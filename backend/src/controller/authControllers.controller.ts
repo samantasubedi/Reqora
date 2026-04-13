@@ -11,7 +11,7 @@ export const handleRegister = async (req: Request, res: Response) => {
     if (!username || !password || !password) {
       return res.status(400).json({ message: "all fields are required" }); // 400 means bad request
     }
-    const duplicateUser = await prisma.users.findUnique({
+    const duplicateUser = await prisma.user.findUnique({
       where: { username },
     });
     if (duplicateUser) {
@@ -22,10 +22,10 @@ export const handleRegister = async (req: Request, res: Response) => {
       }); // 409 means its a conflict
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const existingUsers = await prisma.users.count();
+    const existingUsers = await prisma.user.count();
     console.log(" total number of existing users are", existingUsers);
 
-    await prisma.users.create({
+    await prisma.user.create({
       data: {
         username,
         email,
@@ -52,7 +52,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   if (!username || !password) {
     return res.status(400).json({ message: "all fields are required" });
   }
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: { username },
   });
   if (!user) {

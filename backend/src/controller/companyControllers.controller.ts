@@ -30,7 +30,7 @@ export const createCompany = async (req: Request, res: Response) => {
       });
     }
 
-    const userData = await prisma.users.findFirst({
+    const userData = await prisma.user.findFirst({
       select: { enrolled: true },
       where: { username },
     });
@@ -60,7 +60,7 @@ export const createCompany = async (req: Request, res: Response) => {
       },
     });
     if (companyIdObj) {
-      await prisma.users.updateMany({
+      await prisma.user.updateMany({
         data: {
           role: "admin",
           enrolled: true,
@@ -137,7 +137,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     return res.json({ message: "authentication failed!" });
   }
 
-  const invitingUser = await prisma.users.findUnique({
+  const invitingUser = await prisma.user.findUnique({
     where: {
       email: userEmail,
     },
@@ -152,7 +152,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     });
   }
 
-  const companyInfo = await prisma.users.findFirst({
+  const companyInfo = await prisma.user.findFirst({
     where: {
       username,
     },
@@ -237,7 +237,7 @@ export const joinCompany = async (req: Request, res: Response) => {
     });
   }
   const email = res.locals.user.email;
-  const userEnrolled = await prisma.users.findUnique({
+  const userEnrolled = await prisma.user.findUnique({
     where: { email },
     select: { enrolled: true },
   });
@@ -275,7 +275,7 @@ export const joinCompany = async (req: Request, res: Response) => {
         });
       }
       await prisma.$transaction([
-        prisma.users.update({
+        prisma.user.update({
           where: { email },
           data: {
             enrolled: true,
@@ -315,7 +315,7 @@ export const leaveCompany = async (req: Request, res: Response) => {
   const userdata = res.locals.user;
   const email = userdata.email;
   try {
-    await prisma.users.updateMany({
+    await prisma.user.updateMany({
       data: {
         role: null,
         companyId: null,

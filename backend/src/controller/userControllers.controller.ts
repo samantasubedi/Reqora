@@ -17,7 +17,7 @@ export const changeUserRole = (req: Request, res: Response) => {
   res.json({ message: "used to change the userroles by admin" });
 };
 export const deleteAllusers = async (req: Request, res: Response) => {
-  await prisma.users.deleteMany({});
+  await prisma.user.deleteMany({});
   await prisma.company.deleteMany({});
   await prisma.joinToken.deleteMany({});
   res.send("all users and company has been deleted");

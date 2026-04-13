@@ -19,30 +19,68 @@ enum Role {
   employee
 }
 
-model users {
+enum Status {
+  pending
+  approved
+  rejected
+}
+
+model user {
   username  String   @unique
-  userId    String   @id @default(cuid())
+  id        String   @id @default(cuid())
   email     String   @unique
   role      Role?
   password  String
   enrolled  Boolean  @default(false)
   companyId String?
   company   company? @relation(fields: [companyId], references: [id])
+
+  createdRequests  request[] @relation("requestedByUser")
+  reviewedRequests request[] @relation("reviewedByUser")
 }
 
 model company {
-  id          String  @unique @default(cuid())
+  id          String     @unique @default(cuid())
   companyName String
-  email       String  @unique
+  email       String     @unique
   address     String
   size        Int
-  users       users[]
+  users       user[]
+  resources   resource[]
+  requests    request[]
+}
+
+model resource {
+  id                String   @unique @default(cuid())
+  name              String
+  location          String
+  department        String
+  availability      Boolean
+  status            String
+  totalQuantity     Int
+  availableQuantity Int
+  createdAt         DateTime
+  updatedAt         DateTime
+  companyId         String
+  company           company  @relation(fields: [companyId], references: [id])
+}
+
+model request {
+  id                String  @unique @default(cuid())
+  requestedById     String
+  reviewedById      String
+  requestedQuantity String
+  status            Status
+  companyId         String
+  company           company @relation(fields: [companyId], references: [id])
+  requestedBy       user    @relation("requestedByUser", fields: [requestedById], references: [id])
+  reviewedBy        user    @relation("reviewedByUser", fields: [reviewedById], references: [id])
 }
 
 model joinToken {
-  email      String 
-  token      String @unique
-  companyId  String
+  email     String
+  token     String   @unique
+  companyId String
   expiresAt DateTime
-  used       Boolean
+  used      Boolean
 }
