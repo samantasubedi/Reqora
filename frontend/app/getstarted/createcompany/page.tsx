@@ -24,6 +24,7 @@ import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 const schema = z.object({
   companyName: z
     .string({ message: "Name is required" })
@@ -86,8 +87,22 @@ const page = () => {
   });
 
   return (
-    <div className="flex justify-center p-5 bg-linear-to-t from-sky-300 to-blue-950 min-h-screen">
-      <Card className="w-[40%] p-5 h-fit mt-[5%] bg-purple-800/20 shadow-md shadow-blue-900  border-t-3 border-white border-l-0 border-r-0 border-b-0 ">
+    <div className=" p-5 bg-linear-to-t from-sky-300 to-blue-950 min-h-screen">
+         <div className="flex justify-start"> <button
+              onClick={() => {
+                router.push("/");
+              }}
+            >
+              <Image
+                src="/reqoraLogo.png"
+                width={500}
+                height={500}
+                alt="logo"
+                className="w-50 h-25"
+              ></Image>
+            </button></div>
+            <div  className="flex justify-center ">
+      <Card className="w-[40%] p-5 h-fit mt-[4%] bg-purple-800/20 shadow-md shadow-blue-900  border-t-3 border-white border-l-0 border-r-0 border-b-0 ">
         <CardHeader>
           <CardTitle className="font-bold text-3xl text-center text-sky-300">
             Create Your Company
@@ -159,6 +174,7 @@ const page = () => {
           </div>
         </form>
       </Card>
+      </div>
     </div>
   );
 };

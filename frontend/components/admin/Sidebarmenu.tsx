@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 import Image from "next/image";
 import {
   Sidebar,
@@ -24,26 +24,34 @@ import {
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
 import InviteForm from "./InviteForm";
+import { useRouter } from "next/navigation";
 
 const Sidebarmenu = () => {
+  const router = useRouter();
   return (
     <Sidebar>
-      <SidebarHeader>
-        <Image
-          src="/ReqoraLogo.png"
-          height={1000}
-          width={1000}
-          alt="company logo"
-          className="h-25 w-40"
-        />
+      <SidebarHeader className="bg-teal-900/80 text-white">
+        <button
+          onClick={() => {
+            router.push("/");
+          }}
+        >
+          <Image
+            src="/reqoraLogo.png"
+            width={500}
+            height={500}
+            alt="logo"
+            className="w-50 h-25"
+          ></Image>
+        </button>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-teal-900/80 text-white">
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className=" text-white font-bold">Main</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuItem>
+            <SidebarMenuItem >
               <SidebarMenuButton asChild className="flex justify-start">
-                <Button className="bg-transparent" variant={"secondary"}>
+                <Button className="bg-transparent text-white font-bold" variant={"secondary"}>
                   <Icon
                     icon="material-symbols-light:home-rounded"
                     className="size-6!"
@@ -56,12 +64,12 @@ const Sidebarmenu = () => {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel className=" text-white font-bold">Management</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton className="flex justify-start">
+                  <SidebarMenuButton className="flex justify-start  text-white font-bold">
                     <Icon icon="grommet-icons:resources" className="size-5!" />
                     Resources
                   </SidebarMenuButton>
@@ -88,8 +96,8 @@ const Sidebarmenu = () => {
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
-                    <Icon icon="ic:baseline-people" className="size-5!" />
+                  <SidebarMenuButton className=" text-white font-bold">
+                    <Icon icon="ic:baseline-people" className="size-5! " />
                     Employees
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
@@ -114,16 +122,16 @@ const Sidebarmenu = () => {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>System</SidebarGroupLabel>
+          <SidebarGroupLabel className=" text-white font-bold">System</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton>
+              <SidebarMenuButton className=" text-white font-bold">
                 <Icon icon="material-symbols:settings" className="size-5!" />
                 Settings
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton>
+              <SidebarMenuButton className=" text-white font-bold">
                 <Icon icon="tabler:logs" className="size-5!" />
                 <span>Logs</span>
               </SidebarMenuButton>
@@ -133,7 +141,7 @@ const Sidebarmenu = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>Your account</SidebarMenuItem>\
+          <SidebarMenuItem>Your account</SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>

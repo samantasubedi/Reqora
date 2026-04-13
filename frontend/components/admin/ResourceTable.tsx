@@ -104,7 +104,7 @@ export const ResourceTable = () => {
   ];
   return (
     <div className="mt-5 px-3">
-      <Table>
+      <Table  className="bg-blue-200/40">
         <TableHeader>
           <TableRow className="bg-slate-200">
             <TableHead>ID</TableHead>
@@ -117,7 +117,7 @@ export const ResourceTable = () => {
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="bg-slate-50">
+        <TableBody>
           {TableData.map((curr) => {
             return (
               <TableRow key={curr.ID}>
