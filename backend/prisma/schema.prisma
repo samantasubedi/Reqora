@@ -19,10 +19,16 @@ enum Role {
   employee
 }
 
-enum Status {
+enum RequestStatus {
   pending
   approved
   rejected
+}
+
+enum ResourceStatus {
+  available
+  inUse
+  underMaintainence
 }
 
 model user {
@@ -51,30 +57,30 @@ model company {
 }
 
 model resource {
-  id                String   @unique @default(cuid())
+  id                String         @unique @default(cuid())
   name              String
   location          String
   department        String
   availability      Boolean
-  status            String
+  status            ResourceStatus
   totalQuantity     Int
   availableQuantity Int
   createdAt         DateTime
   updatedAt         DateTime
   companyId         String
-  company           company  @relation(fields: [companyId], references: [id])
+  company           company        @relation(fields: [companyId], references: [id])
 }
 
 model request {
-  id                String  @unique @default(cuid())
+  id                String        @unique @default(cuid())
   requestedById     String
   reviewedById      String
   requestedQuantity String
-  status            Status
+  status            RequestStatus
   companyId         String
-  company           company @relation(fields: [companyId], references: [id])
-  requestedBy       user    @relation("requestedByUser", fields: [requestedById], references: [id])
-  reviewedBy        user    @relation("reviewedByUser", fields: [reviewedById], references: [id])
+  company           company       @relation(fields: [companyId], references: [id])
+  requestedBy       user          @relation("requestedByUser", fields: [requestedById], references: [id])
+  reviewedBy        user          @relation("reviewedByUser", fields: [reviewedById], references: [id])
 }
 
 model joinToken {
