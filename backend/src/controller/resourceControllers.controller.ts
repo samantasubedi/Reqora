@@ -12,35 +12,59 @@ export const getAllResources = async (req: Request, res: Response) => {
 
 export const addResource = async (req: Request, res: Response) => {
   const { name, location, department, totalQuantity } = req.body;
-  const email = res.locals.user.email;
-  const companyInfo = await prisma.user.findUnique({
-    where: { email },
-    select: {
-      company: {
-        select: { id: true },
-      },
-    },
-  });
-  const companyId = companyInfo?.company?.id;
-
-  if (!companyId) {
-    return res.status(400).json({ error: "User does not belong to a company" });
+  if (!name || !location || !department || !totalQuantity) {
+    res.json({ message: "please provide all fields" });
   }
 
-  await prisma.resource.create({
-    data: {
-      name,
-      location,
-      department,
-      availability: true,
-      status: "available",
-      totalQuantity,
-      availableQuantity: totalQuantity,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      companyId,
-    },
-  });
+  try {
+    const email = res.locals.user.email;
+    const companyInfo = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        company: {
+          select: { id: true },
+        },
+      },
+    });
+    const companyId = companyInfo?.company?.id;
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        code: "USER_NOT_ENROLLED",
+        message: "User does not belong to a company",
+      });
+    }
+
+    await prisma.resource.create({
+      data: {
+        name,
+        location,
+        department,
+        availability: true,
+        status: "available",
+        totalQuantity,
+        availableQuantity: totalQuantity,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        companyId,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      code: "RESOURCE_ADDED",
+      message: "resource added successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      error: err,
+      success: false,
+      code: "SERVER_ERROR",
+      message: "server error",
+    });
+  }
 };
 
 export const getSpecificResource = (req: Request, res: Response) => {
