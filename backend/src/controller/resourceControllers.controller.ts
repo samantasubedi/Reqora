@@ -3,10 +3,17 @@ import { prisma } from "../lib/prisma";
 export const getAllResources = async (req: Request, res: Response) => {
   try {
     const resources = await prisma.resource.findMany();
-    console.log(resources);
-    res.json({ message: "got all resources" });
+    res.json({
+      success: true,
+      message: "got all resources",
+      resources,
+    });
   } catch (err) {
     console.log(err);
+    res.status(400).json({
+      success: false,
+      message: "server error , couldnt retirve the resources",
+    });
   }
 };
 
@@ -72,13 +79,28 @@ export const getSpecificResource = (req: Request, res: Response) => {
   res.send(`gets details for a sepecific user with id ${id}`);
 };
 
-export const editResource = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.json({
-    message: `used to update a particular resource details with id ${id}`,
-  });
+export const editResource = async (req: Request, res: Response) => {
+  const id = req.body.id;
 };
-export const deleteResource = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.json({ message: `used to delete a specific resource with id ${id}` });
+export const deleteResource = async (req: Request, res: Response) => {
+  const id = req.body.id;
+  if (!id) {
+    return res.json({
+      message: "please provide an id",
+    });
+  }
+  try {
+    await prisma.resource.delete({
+      where: { id },
+    });
+    res.json({ message: "resource deleted successfully", success: true });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({
+      error: err,
+      success: false,
+      code: "SERVER_ERROR",
+      message: "server error",
+    });
+  }
 };
