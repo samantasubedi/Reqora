@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 export const getAllResources = async (req: Request, res: Response) => {
+  const companyId = res.locals.companyId;
   try {
-    const resources = await prisma.resource.findMany();
+    const resources = await prisma.resource.findMany({
+      where: { companyId },
+    });
     res.json({
       success: true,
       message: "got all resources",
@@ -126,6 +129,7 @@ export const editResource = async (req: Request, res: Response) => {
 };
 export const deleteResource = async (req: Request, res: Response) => {
   const id = req.body.id;
+  const companyId = res.locals.companyId;
   if (!id) {
     return res.json({
       message: "please provide an id",
@@ -133,7 +137,7 @@ export const deleteResource = async (req: Request, res: Response) => {
   }
   try {
     await prisma.resource.delete({
-      where: { id },
+      where: { id, companyId },
     });
     res.json({ message: "resource deleted successfully", success: true });
   } catch (err) {
