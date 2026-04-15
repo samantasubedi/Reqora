@@ -24,16 +24,7 @@ export const addResource = async (req: Request, res: Response) => {
   }
 
   try {
-    const email = res.locals.user.email;
-    const companyInfo = await prisma.user.findUnique({
-      where: { email },
-      select: {
-        company: {
-          select: { id: true },
-        },
-      },
-    });
-    const companyId = companyInfo?.company?.id;
+    const { companyId } = res.locals.user;
 
     if (!companyId) {
       return res.status(400).json({
@@ -81,7 +72,15 @@ export const getSpecificResource = (req: Request, res: Response) => {
 
 export const editResource = async (req: Request, res: Response) => {
   const { id, name, location, department, totalQuantity } = req.body;
+  if (!id || !name || !location || !department || !totalQuantity) {
+    return res.status(400).json({
+      success: false,
+      message: "please provide all fields",
+      code: "MISSING_FIELDS",
+    });
+  }
   const companyId = res.locals.user.companyId;
+  console.log("this is company id ", companyId);
   const updatedAt = new Date();
   if (!id) {
     return res

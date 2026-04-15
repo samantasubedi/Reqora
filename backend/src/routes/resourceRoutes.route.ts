@@ -11,6 +11,6 @@ const router = Router();
 router.get("/resources", getAllResources);
 router.get("/resources/:id", getSpecificResource);
 router.post("/resources", roleMiddleware(["admin"]), addResource);
-router.patch("/resources/:id", roleMiddleware(["admin"]), editResource);
+router.patch("/resources", roleMiddleware(["admin"]), editResource);
 router.delete("/resources", roleMiddleware(["admin"]), deleteResource);
 export default router;
