@@ -80,7 +80,9 @@ export const getSpecificResource = (req: Request, res: Response) => {
 };
 
 export const editResource = async (req: Request, res: Response) => {
-  const {id,companyId} = req.body;
+  const { id, name, location, department, totalQuantity } = req.body;
+  const companyId = res.locals.user.companyId;
+  const updatedAt = new Date();
   if (!id) {
     return res
       .status(400)
@@ -88,7 +90,7 @@ export const editResource = async (req: Request, res: Response) => {
   }
   try {
     const resourceData = await prisma.resource.findUnique({
-      where: { id ,companyId},
+      where: { id, companyId },
     });
     if (!resourceData) {
       return res.status(400).json({
@@ -97,10 +99,30 @@ export const editResource = async (req: Request, res: Response) => {
         code: "INVALID_ID",
       });
     }
-
-    
+    const editedResource = await prisma.resource.update({
+      where: { id },
+      data: {
+        name,
+        location,
+        department,
+        totalQuantity,
+        updatedAt,
+        companyId,
+      },
+    });
+    res.status(201).json({
+      message: "Resource updated successfully",
+      code: "RESOURCE_UPDATED",
+      success: true,
+    });
   } catch (err) {
-
+    console.log(err);
+    return res.status(400).json({
+      error: err,
+      success: false,
+      code: "SERVER_ERROR",
+      message: "server error",
+    });
   }
 };
 export const deleteResource = async (req: Request, res: Response) => {

@@ -27,6 +27,7 @@ export const refresh = async (refreshToken: string): Promise<returnType> => {
       username: userData.username,
       email: userData.email,
       role: userData.role,
+      companyId: userData.companyId,
     };
   } else if (!userData?.enrolled) {
     data = {
