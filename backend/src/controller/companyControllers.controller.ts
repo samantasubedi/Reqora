@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
-import { handleRefresh } from "./authControllers.controller";
 
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, email, address, size } = req.body;
@@ -290,6 +289,34 @@ export const joinCompany = async (req: Request, res: Response) => {
           where: { token: hashedToken },
         }),
       ]);
+      const refreshToken = req.cookies.refreshToken;
+      if (refreshToken) {
+        try {
+          const { code, accessToken, NewRefreshToken } =
+            await refresh(refreshToken);
+          if (code === "USER_NOT_FOUND") {
+            throw new Error("user not found");
+          }
+          res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 15 * 60 * 1000,
+          });
+          res.cookie("refreshToken", NewRefreshToken, {
+            sameSite: "strict",
+            httpOnly: true,
+            secure: true,
+            maxAge: 15 * 24 * 60 * 60 * 1000,
+          });
+        } catch (err) {
+          res.clearCookie("refreshToken", {
+            sameSite: "strict",
+            httpOnly: true,
+            secure: true,
+          });
+        }
+      }
       return res.status(201).json({
         success: true,
         message: "You have been joined to the company",

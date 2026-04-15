@@ -80,7 +80,28 @@ export const getSpecificResource = (req: Request, res: Response) => {
 };
 
 export const editResource = async (req: Request, res: Response) => {
-  const id = req.body.id;
+  const {id,companyId} = req.body;
+  if (!id) {
+    return res
+      .status(400)
+      .json({ message: "please provide an id", success: false });
+  }
+  try {
+    const resourceData = await prisma.resource.findUnique({
+      where: { id ,companyId},
+    });
+    if (!resourceData) {
+      return res.status(400).json({
+        success: false,
+        message: "resource not found",
+        code: "INVALID_ID",
+      });
+    }
+
+    
+  } catch (err) {
+
+  }
 };
 export const deleteResource = async (req: Request, res: Response) => {
   const id = req.body.id;
