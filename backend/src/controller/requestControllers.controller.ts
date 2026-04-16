@@ -8,7 +8,7 @@ export const getSpecificRequest = (req: Request, res: Response) => {
 export const createRequest = async (req: Request, res: Response) => {
   const { companyId, email } = res.locals.user;
   const { requestedQuantity, resourceId } = req.body;
-  if (!requestedQuantity || !resourceId) {
+  if (!requestedQuantity || requestedQuantity <= 0 || !resourceId) {
     return res.status(400).json({
       message: "please provide all fields",
     });
@@ -24,8 +24,20 @@ export const createRequest = async (req: Request, res: Response) => {
       code: "SERVER_ERROR",
     });
   }
+  const quantityObj = await prisma.resource.findUnique({
+    where: { id: resourceId },
+    select: { availableQuantity: true },
+  });
+  if (!quantityObj) {
+    return;
+  }
+  if (quantityObj.availableQuantity < requestedQuantity) {
+    return res.status(400).json({
+      message: " requested quantity of resource is unavailable",
+      success: false,
+    });
+  }
   try {
-    
     await prisma.request.create({
       data: {
         requestedById: idObj.id,
