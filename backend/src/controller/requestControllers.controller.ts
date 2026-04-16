@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 export const getAllRequest = (req: Request, res: Response) => {};
-// export const getSpecificRequest = (req: Request, res: Response) => {
-//   const id = req.params.id;
-//   res.send(`gets a specific request with id ${id}`);
-// };
+export const getSpecificRequest = (req: Request, res: Response) => {
+  const id = req.params.id;
+  res.send(`gets a specific request with id ${id}`);
+};
 export const createRequest = async (req: Request, res: Response) => {
   const { companyId, email } = res.locals.user;
   const { requestedQuantity, resourceId } = req.body;
@@ -18,11 +18,14 @@ export const createRequest = async (req: Request, res: Response) => {
     select: { id: true },
   });
   if (!idObj) {
-    return res
-      .status(500)
-      .json({ message: "server error ", success: false, code: "SERVER_ERROR" });
+    return res.status(500).json({
+      message: "server error",
+      success: false,
+      code: "SERVER_ERROR",
+    });
   }
   try {
+    
     await prisma.request.create({
       data: {
         requestedById: idObj.id,
@@ -38,7 +41,7 @@ export const createRequest = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (err) {
-    return res.json({
+    return res.status(500).json({
       message: "server error",
       success: false,
       code: "SERVER_ERROR",

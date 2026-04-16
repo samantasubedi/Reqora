@@ -76,7 +76,7 @@ model request {
   id                String        @unique @default(cuid())
   requestedById     String
   reviewedById      String?
-  requestedQuantity String
+  requestedQuantity Int
   status            RequestStatus
   companyId         String
   resourceId        String
