@@ -69,6 +69,7 @@ model resource {
   updatedAt         DateTime
   companyId         String
   company           company        @relation(fields: [companyId], references: [id])
+  requests          request[]
 }
 
 model request {
@@ -78,9 +79,11 @@ model request {
   requestedQuantity String
   status            RequestStatus
   companyId         String
+  resourceId        String
+  resource          resource      @relation(fields: [resourceId], references: [id])
   company           company       @relation(fields: [companyId], references: [id])
   requestedBy       user          @relation("requestedByUser", fields: [requestedById], references: [id])
-  reviewedBy        user   ?       @relation("reviewedByUser", fields: [reviewedById], references: [id])
+  reviewedBy        user?         @relation("reviewedByUser", fields: [reviewedById], references: [id])
 }
 
 model joinToken {
