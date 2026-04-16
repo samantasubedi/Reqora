@@ -1,19 +1,28 @@
 import { Request, Response } from "express";
-export const getAllRequest = (req: Request, res: Response) => {
-  const role = res.locals.user.role;
-  if (role === "employee") {
-    res.json({ message: "this sends all requests sent by a employee" });
+import { prisma } from "../lib/prisma";
+export const getAllRequest = (req: Request, res: Response) => {};
+// export const getSpecificRequest = (req: Request, res: Response) => {
+//   const id = req.params.id;
+//   res.send(`gets a specific request with id ${id}`);
+// };
+export const createRequest = async (req: Request, res: Response) => {
+  const { companyId, email } = res.locals.user;
+  const { requestedQuantity } = req.body;
+  const idObj = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!idObj) {
+    return;
   }
-  if (role == "manager") {
-    res.send("gets all requests used to be viewed by manager");
-  }
-};
-export const getSpecificRequest = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.send(`gets a specific request with id ${id}`);
-};
-export const createRequest = (req: Request, res: Response) => {
-  res.json({ message: "used to create a request" });
+  await prisma.request.create({
+    data: {
+      requestedById: idObj.id,
+      requestedQuantity,
+      companyId,
+      status: "pending",
+    },
+  });
 };
 export const handleApprove = (req: Request, res: Response) => {
   const id = req.params.id;

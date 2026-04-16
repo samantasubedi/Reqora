@@ -74,13 +74,13 @@ model resource {
 model request {
   id                String        @unique @default(cuid())
   requestedById     String
-  reviewedById      String
+  reviewedById      String?
   requestedQuantity String
   status            RequestStatus
   companyId         String
   company           company       @relation(fields: [companyId], references: [id])
   requestedBy       user          @relation("requestedByUser", fields: [requestedById], references: [id])
-  reviewedBy        user          @relation("reviewedByUser", fields: [reviewedById], references: [id])
+  reviewedBy        user   ?       @relation("reviewedByUser", fields: [reviewedById], references: [id])
 }
 
 model joinToken {
