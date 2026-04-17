@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { stat } from "node:fs";
 export const getAllRequest = (req: Request, res: Response) => {};
 export const getSpecificRequest = (req: Request, res: Response) => {
   const id = req.params.id;
@@ -60,9 +61,23 @@ export const createRequest = async (req: Request, res: Response) => {
     });
   }
 };
-export const handleApprove = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.json({ message: `approves the specific request with id ${id}` });
+export const handleApprove = async (req: Request, res: Response) => {
+  const { resourceId, status, requestId } = req.body;
+  if (!resourceId || !status) {
+    return res.json({ message: "please provide all fields" });
+  }
+  const email = res.locals.email;
+  const idObj = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!idObj) {
+    return res.json({ message: "server error" });
+  }
+  await prisma.request.update({
+    where: { id: requestId },
+    data: { reviewedById: idObj.id, status },
+  });
 };
 export const handleReject = (req: Request, res: Response) => {
   const id = req.params.id;
