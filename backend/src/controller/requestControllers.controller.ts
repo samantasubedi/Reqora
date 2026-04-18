@@ -12,6 +12,8 @@ export const createRequest = async (req: Request, res: Response) => {
   if (!requestedQuantity || requestedQuantity <= 0 || !resourceId) {
     return res.status(400).json({
       message: "please provide all fields",
+      code: "INSUFFICIENT_FIELDS",
+      success: false,
     });
   }
   const idObj = await prisma.user.findUnique({
@@ -34,6 +36,7 @@ export const createRequest = async (req: Request, res: Response) => {
   }
   if (quantityObj.availableQuantity < requestedQuantity) {
     return res.status(400).json({
+      code: "INVALID_REQUEST",
       message: " requested quantity of resource is unavailable",
       success: false,
     });
@@ -72,17 +75,18 @@ export const handleApprove = async (req: Request, res: Response) => {
     select: { id: true },
   });
   if (!idObj) {
-    return res.json({ message: "server error" });
+    return res.json({
+      code: "SERVER_ERROR",
+      success: false,
+      message: "server error",
+    });
   }
   await prisma.request.update({
     where: { id: requestId },
     data: { reviewedById: idObj.id, status },
   });
 };
-export const handleReject = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.json({ message: `rejects the specific request with id ${id}` });
-};
+
 export const handleCancel = (req: Request, res: Response) => {
   const id = req.params.id;
   res.json({ message: `cancels the specific request with id ${id}` });
