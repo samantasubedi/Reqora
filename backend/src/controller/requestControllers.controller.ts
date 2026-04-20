@@ -65,8 +65,8 @@ export const createRequest = async (req: Request, res: Response) => {
   }
 };
 export const handleReview = async (req: Request, res: Response) => {
-  const { resourceId, status, requestId } = req.body;
-  if (!resourceId || !status || !requestId) {
+  const { status, requestId } = req.body;
+  if (!status || !requestId) {
     return res.json({ message: "please provide all fields" });
   }
   const email = res.locals.user.email;
@@ -77,7 +77,11 @@ export const handleReview = async (req: Request, res: Response) => {
     where: { email },
     select: { id: true },
   });
-  if (!idObj) {
+  const requestDetails = await prisma.request.findUnique({
+    where: { id: requestId },
+    select: { resourceId: true, requestedQuantity: true, companyId: true },
+  });
+  if (!idObj || !requestDetails) {
     return res.json({
       code: "SERVER_ERROR",
       success: false,
@@ -87,6 +91,12 @@ export const handleReview = async (req: Request, res: Response) => {
   await prisma.request.update({
     where: { id: requestId },
     data: { reviewedById: idObj.id, status },
+  });
+  await prisma.resource.update({
+    where: { id: requestDetails.resourceId },
+    data: {
+      availableQuantity: { decrement: requestDetails.requestedQuantity },
+    },
   });
 
   return res.json({
