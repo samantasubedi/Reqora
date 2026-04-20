@@ -66,10 +66,13 @@ export const createRequest = async (req: Request, res: Response) => {
 };
 export const handleReview = async (req: Request, res: Response) => {
   const { resourceId, status, requestId } = req.body;
-  if (!resourceId || !status) {
+  if (!resourceId || !status || !requestId) {
     return res.json({ message: "please provide all fields" });
   }
-  const email = res.locals.email;
+  const email = res.locals.user.email;
+  if (!email) {
+    return res.json({ message: "authentication failed" });
+  }
   const idObj = await prisma.user.findUnique({
     where: { email },
     select: { id: true },
@@ -84,6 +87,12 @@ export const handleReview = async (req: Request, res: Response) => {
   await prisma.request.update({
     where: { id: requestId },
     data: { reviewedById: idObj.id, status },
+  });
+
+  return res.json({
+    message: "Request status updated",
+    success: true,
+    code: "REQUEST_REVIEWED",
   });
 };
 

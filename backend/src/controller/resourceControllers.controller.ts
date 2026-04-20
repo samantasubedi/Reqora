@@ -36,7 +36,6 @@ export const addResource = async (req: Request, res: Response) => {
         message: "User does not belong to a company",
       });
     }
-
     await prisma.resource.create({
       data: {
         name,
@@ -86,9 +85,7 @@ export const editResource = async (req: Request, res: Response) => {
   console.log("this is company id ", companyId);
   const updatedAt = new Date();
   if (!id) {
-    return res
-      .status(400)
-      .json({ message: "please provide an id", success: false });
+    return res.status(400).json({ message: "please provide an id", success: false });
   }
   try {
     const resourceData = await prisma.resource.findUnique({
