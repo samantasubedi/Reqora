@@ -64,7 +64,7 @@ export const createRequest = async (req: Request, res: Response) => {
     });
   }
 };
-export const handleApprove = async (req: Request, res: Response) => {
+export const handleReview = async (req: Request, res: Response) => {
   const { resourceId, status, requestId } = req.body;
   if (!resourceId || !status) {
     return res.json({ message: "please provide all fields" });
