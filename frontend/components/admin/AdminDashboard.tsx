@@ -8,17 +8,28 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import LogoutDialog from "./LogoutDialog";
 export interface statCardInterface {
   title: string;
   number: number;
   IconName?: LucideIcon;
   subtext?: string;
-  bgColor:string;
-  textColor:string
-
+  bgColor: string;
+  textColor: string;
 }
 
-export const handleLogout = async (router:AppRouterInstance) => {
+export const handleLogout = async (router: AppRouterInstance) => {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
     const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
@@ -43,32 +54,32 @@ export const AdminDashboard = () => {
       title: "Total Resources",
       number: 50,
       IconName: Package,
-      bgColor:"bg-blue-100",
-      textColor:"text-blue-800"
+      bgColor: "bg-blue-100",
+      textColor: "text-blue-800",
     },
     {
       title: "Available",
       number: 39,
       IconName: Check,
       subtext: "70% of total",
-       bgColor:"bg-green-100",
-      textColor:"text-green-800"
+      bgColor: "bg-green-100",
+      textColor: "text-green-800",
     },
     {
       title: "In Use",
       number: 20,
       IconName: TrendingUp,
       subtext: "40% of total",
-       bgColor:"bg-amber-100",
-      textColor:"text-amber-800"
+      bgColor: "bg-amber-100",
+      textColor: "text-amber-800",
     },
     {
       title: "Under Maintenance",
       number: 5,
       IconName: CircleAlert,
       subtext: "10% of total",
-       bgColor:"bg-red-100",
-      textColor:"text-red-800"
+      bgColor: "bg-red-100",
+      textColor: "text-red-800",
     },
   ];
 
@@ -80,19 +91,14 @@ export const AdminDashboard = () => {
             Admin Dashboard
           </h1>
 
-          <Button
-            className="text-white bg-red-700 hover:bg-red-600 m-3"
-            onClick={()=>handleLogout(router)}
-          >
-            Logout
-          </Button>
+      <div className="m-2"> <LogoutDialog/></div> 
+        
         </div>
         <div className="flex justify-between px-3">
           {" "}
           <p className="text-green-800 font-semibold m-2">
             Monitor and manage all organization resource
           </p>
-        
         </div>
         <div className="flex justify-between m-3">
           {AdminStat.map((curr) => {
