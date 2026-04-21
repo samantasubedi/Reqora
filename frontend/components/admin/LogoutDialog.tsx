@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import {
   AlertDialog,
@@ -13,16 +14,15 @@ import {
 import { Button } from "../ui/button";
 import { handleLogout } from "./AdminDashboard";
 import { useRouter } from "next/navigation";
+import { Icon } from "@iconify/react";
 
 const LogoutDialog = () => {
   const router = useRouter();
   return (
     <div>
       <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button className="text-white bg-red-600 hover:bg-red-500 cursor-pointer">
-            Logout
-          </Button>
+        <AlertDialogTrigger className="flex gap-2 hover:text-red-500">
+          <Icon icon="line-md:logout"className="size-5" /> <span className="font-semibold">Logout</span>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

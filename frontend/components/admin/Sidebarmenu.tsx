@@ -25,6 +25,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
 import InviteForm from "./InviteForm";
 import { useRouter } from "next/navigation";
+import LogoutDialog from "./LogoutDialog";
 
 const Sidebarmenu = () => {
   const router = useRouter();
@@ -47,11 +48,16 @@ const Sidebarmenu = () => {
       </SidebarHeader>
       <SidebarContent className="bg-teal-900/80 text-white">
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-white font-bold">Main</SidebarGroupLabel>
+          <SidebarGroupLabel className=" text-white font-bold">
+            Main
+          </SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuItem >
+            <SidebarMenuItem>
               <SidebarMenuButton asChild className="flex justify-start">
-                <Button className="bg-transparent text-white font-bold" variant={"secondary"}>
+                <Button
+                  className="bg-transparent text-white font-bold"
+                  variant={"secondary"}
+                >
                   <Icon
                     icon="material-symbols-light:home-rounded"
                     className="size-6!"
@@ -64,7 +70,9 @@ const Sidebarmenu = () => {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-white font-bold">Management</SidebarGroupLabel>
+          <SidebarGroupLabel className=" text-white font-bold">
+            Management
+          </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>
@@ -122,7 +130,9 @@ const Sidebarmenu = () => {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-white font-bold">System</SidebarGroupLabel>
+          <SidebarGroupLabel className=" text-white font-bold">
+            System
+          </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton className=" text-white font-bold">
@@ -141,7 +151,19 @@ const Sidebarmenu = () => {
       </SidebarContent>
       <SidebarFooter className=" bg-gray-200">
         <SidebarMenu>
-          <SidebarMenuItem className="flex gap-2 cursor-pointer "><Icon icon="codicon:account" className="size-6"/> <span className="font-semibold">Your account</span></SidebarMenuItem>
+          <SidebarMenuItem >
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild  >
+        <SidebarMenuButton className="flex gap-2 " > <Icon icon="codicon:account" className="size-6" />
+                <span className="font-semibold">Your account</span></SidebarMenuButton>      
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem asChild > 
+                  <LogoutDialog/>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
