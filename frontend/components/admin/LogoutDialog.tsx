@@ -21,8 +21,8 @@ const LogoutDialog = () => {
   return (
     <div>
       <AlertDialog>
-        <AlertDialogTrigger className="flex gap-2 hover:text-red-500">
-          <Icon icon="line-md:logout"className="size-5" /> <span className="font-semibold">Logout</span>
+        <AlertDialogTrigger className="flex gap-2 w-full">
+        <Button variant={"secondary"} className="min-w-full  hover:text-red-500 flex gap-2 justify-start"> <Icon icon="line-md:logout"className="size-5" /> <span className="font-semibold">Logout</span></Button> 
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

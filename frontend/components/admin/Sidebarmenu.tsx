@@ -151,16 +151,24 @@ const Sidebarmenu = () => {
       </SidebarContent>
       <SidebarFooter className=" bg-gray-200">
         <SidebarMenu>
-          <SidebarMenuItem >
+          <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild  >
-        <SidebarMenuButton className="flex gap-2 " > <Icon icon="codicon:account" className="size-6" />
-                <span className="font-semibold">Your account</span></SidebarMenuButton>      
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="flex gap-2 ">
+                  {" "}
+                  <Icon icon="codicon:account" className="size-6" />
+                  <span className="font-semibold">Your account</span>
+                </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem asChild > 
-                  <LogoutDialog/>
+                <DropdownMenuItem asChild>
+                  <LogoutDialog />
                 </DropdownMenuItem>
+                <Button variant={"secondary"} className="min-w-full flex gap-2 justify-start">
+                  <Icon icon="tabler:edit-filled" className="size-6" />
+                  <span>Edit Info</span>{" "}
+                </Button>
+                <DropdownMenuItem></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
