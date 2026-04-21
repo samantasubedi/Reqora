@@ -5,9 +5,9 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const routeRoles: { [key: string]: string[] } = {
-  "/employee/dashboard": ["employee"],
+  "/employee/dashboard": ["employee", "admin"],
   "/admin/dashboard": ["admin"],
-  "/manager/dashboard": ["manager"],
+  "/manager/dashboard": ["manager", "admin"],
 };
 
 export async function proxy(request: NextRequest) {

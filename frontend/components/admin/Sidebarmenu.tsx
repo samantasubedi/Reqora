@@ -139,9 +139,9 @@ const Sidebarmenu = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className=" bg-gray-200">
         <SidebarMenu>
-          <SidebarMenuItem>Your account</SidebarMenuItem>
+          <SidebarMenuItem className="flex gap-2 cursor-pointer "><Icon icon="codicon:account" className="size-6"/> <span className="font-semibold">Your account</span></SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>

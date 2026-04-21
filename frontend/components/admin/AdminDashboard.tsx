@@ -92,10 +92,7 @@ export const AdminDashboard = () => {
           <p className="text-green-800 font-semibold m-2">
             Monitor and manage all organization resource
           </p>
-          <Button className="text-white bg-purple-800 font-bold hover:bg-purple-700 cursor-pointer">
-            {" "}
-            <Plus className="font-bold"></Plus> Add Resource
-          </Button>
+        
         </div>
         <div className="flex justify-between m-3">
           {AdminStat.map((curr) => {
