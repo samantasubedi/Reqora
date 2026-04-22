@@ -53,7 +53,11 @@ const Sidebarmenu = () => {
           </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild className="flex justify-start">
+              <SidebarMenuButton
+                asChild
+                suppressHydrationWarning
+                className="flex justify-start"
+              >
                 <Button
                   className="bg-transparent text-white font-bold"
                   variant={"secondary"}
@@ -76,8 +80,11 @@ const Sidebarmenu = () => {
           <SidebarMenu>
             <SidebarMenuItem>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton className="flex justify-start  text-white font-bold">
+                <DropdownMenuTrigger asChild suppressHydrationWarning>
+                  <SidebarMenuButton
+                    suppressHydrationWarning
+                    className="flex justify-start  text-white font-bold"
+                  >
                     <Icon icon="grommet-icons:resources" className="size-5!" />
                     Resources
                   </SidebarMenuButton>
@@ -103,8 +110,11 @@ const Sidebarmenu = () => {
 
             <SidebarMenuItem>
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton className=" text-white font-bold">
+                <DropdownMenuTrigger asChild suppressHydrationWarning>
+                  <SidebarMenuButton
+                    suppressHydrationWarning
+                    className=" text-white font-bold"
+                  >
                     <Icon icon="ic:baseline-people" className="size-5! " />
                     Employees
                   </SidebarMenuButton>
@@ -135,13 +145,19 @@ const Sidebarmenu = () => {
           </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton className=" text-white font-bold">
+              <SidebarMenuButton
+                suppressHydrationWarning
+                className=" text-white font-bold"
+              >
                 <Icon icon="material-symbols:settings" className="size-5!" />
                 Settings
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton className=" text-white font-bold">
+              <SidebarMenuButton
+                suppressHydrationWarning
+                className=" text-white font-bold"
+              >
                 <Icon icon="tabler:logs" className="size-5!" />
                 <span>Logs</span>
               </SidebarMenuButton>
@@ -153,15 +169,18 @@ const Sidebarmenu = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="flex gap-2 ">
+              <DropdownMenuTrigger asChild suppressHydrationWarning>
+                <SidebarMenuButton
+                  suppressHydrationWarning
+                  className="flex gap-2 "
+                >
                   {" "}
                   <Icon icon="codicon:account" className="size-6" />
                   <span className="font-semibold">Your account</span>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem>
                   <LogoutDialog />
                 </DropdownMenuItem>
 
