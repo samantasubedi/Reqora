@@ -164,11 +164,11 @@ const Sidebarmenu = () => {
                 <DropdownMenuItem asChild>
                   <LogoutDialog />
                 </DropdownMenuItem>
-                <Button variant={"secondary"} className="min-w-full flex gap-2 justify-start">
+              
+                <DropdownMenuItem className="w-full" >  <Button variant={"secondary"} className="min-w-full flex gap-2 justify-start">
                   <Icon icon="tabler:edit-filled" className="size-6" />
                   <span>Edit Info</span>{" "}
-                </Button>
-                <DropdownMenuItem></DropdownMenuItem>
+                </Button></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
