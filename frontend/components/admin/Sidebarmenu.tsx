@@ -180,7 +180,7 @@ const Sidebarmenu = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <LogoutDialog />
                 </DropdownMenuItem>
 

@@ -13,9 +13,11 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useGlobalStore } from "@/app/store/authStore";
+import { useMutation } from "@tanstack/react-query";
+import { T_MutaionError} from "@/types/global";
 
 type formDataType = {
   username: string;
@@ -32,40 +34,56 @@ const page = () => {
     formState: { errors },
     setError,
   } = useForm<formDataType>();
+  const postApi = async (data: formDataType) => {
+    // try {
+    const response = await axios.post(`${backendUrl}/login`, data, {
+      withCredentials: true,
+    });
+    // if (response) {
+
+    return response.data;
+    // }
+    // } catch (err: any) {
+    //   if (err.response) {
+    //     return err.response.data;
+
+    //     //   if (
+    //     //     err.response.status == 401 &&
+    //     //     err.response.data.code === "INVALID_CREDIENTIALS"
+    //     //   ) {
+    //     //     setError("username", { message: err.response.data.message });
+    //     //     setError("password", { message: err.response.data.message });
+    //     //   }
+    //     // } else {
+    //     //   console.log("unexpected error", err);
+    //   }
+    // }
+  };
+  const postMutation = useMutation({
+    mutationFn: postApi,
+    onSuccess: (data) => {
+      if (data.success && data.code == "LOGIN_SUCCESSFULL")
+        toast.success(data.message);
+      const username = data.username;
+      const role = data.role;
+      setUserData({ username, role });
+      if (!role) {
+        router.push("/getstarted");
+      } else if (role) {
+        router.push(`/${data.role}/dashboard`);
+      }
+    },
+    onError: (error: T_MutaionError) => {
+      if (error.response?.data.code == "INVALID_CREDIENTIALS") {
+        setError("username", { message: error.response.data.message });
+        setError("password", { message: error.response.data.message });
+      }
+      toast.error(error.response?.data.message);
+    },
+  });
+
   const formSubmitHandler: SubmitHandler<formDataType> = async (data) => {
-    try {
-      const response = await axios.post(`${backendUrl}/login`, data, {
-        withCredentials: true,
-      });
-      if (
-        response.status == 200 &&
-        response.data.code === "LOGIN_SUCCESSFULL"
-      ) {
-        const username = response.data.username;
-        const role = response.data.role;
-        setUserData({ username, role });
-        toast.success(response.data.message);
-        if (!role) {
-          router.push("/getstarted");
-        } else if (role) {
-          router.push(`/${response.data.role}/dashboard`);
-        }
-      }
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message);
-        console.log(err.response.data);
-        if (
-          err.response.status == 401 &&
-          err.response.data.code === "INVALID_CREDIENTIALS"
-        ) {
-          setError("username", { message: err.response.data.message });
-          setError("password", { message: err.response.data.message });
-        }
-      } else {
-        console.log("unexpected error", err);
-      }
-    }
+    postMutation.mutate(data);
   };
 
   return (
@@ -121,7 +139,10 @@ const page = () => {
           </form>
           <CardAction className="flex gap-2 mt-4">
             <p className="font-sans text-white">Don't have an account ?</p>{" "}
-            <a className="text-blue-400 cursor-pointer font-bold" href="/register">
+            <a
+              className="text-blue-400 cursor-pointer font-bold"
+              href="/register"
+            >
               Register
             </a>
           </CardAction>
