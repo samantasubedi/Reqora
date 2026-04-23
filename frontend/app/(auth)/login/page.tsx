@@ -17,7 +17,7 @@ import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useGlobalStore } from "@/app/store/authStore";
 import { useMutation } from "@tanstack/react-query";
-import { T_MutaionError} from "@/types/global";
+import { T_MutaionError } from "@/types/global";
 
 type formDataType = {
   username: string;
@@ -35,29 +35,11 @@ const page = () => {
     setError,
   } = useForm<formDataType>();
   const postApi = async (data: formDataType) => {
-    // try {
     const response = await axios.post(`${backendUrl}/login`, data, {
       withCredentials: true,
     });
-    // if (response) {
 
     return response.data;
-    // }
-    // } catch (err: any) {
-    //   if (err.response) {
-    //     return err.response.data;
-
-    //     //   if (
-    //     //     err.response.status == 401 &&
-    //     //     err.response.data.code === "INVALID_CREDIENTIALS"
-    //     //   ) {
-    //     //     setError("username", { message: err.response.data.message });
-    //     //     setError("password", { message: err.response.data.message });
-    //     //   }
-    //     // } else {
-    //     //   console.log("unexpected error", err);
-    //   }
-    // }
   };
   const postMutation = useMutation({
     mutationFn: postApi,
