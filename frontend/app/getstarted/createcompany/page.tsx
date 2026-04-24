@@ -3,12 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-type formData = {
-  companyName: string;
-  address: string;
-  email: string;
-  size: number;
-};
+type formData = z.infer<typeof schema>
 import {
   Card,
   CardAction,
