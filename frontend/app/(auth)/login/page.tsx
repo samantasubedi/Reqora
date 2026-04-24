@@ -18,11 +18,22 @@ import { toast } from "react-toastify";
 import { useGlobalStore } from "@/app/store/authStore";
 import { useMutation } from "@tanstack/react-query";
 import { T_MutaionError } from "@/types/global";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 
-type formDataType = {
-  username: string;
-  password: string;
-};
+const schema = z.object({
+  username: z
+    .string("Please enter the username")
+    .min(1, "Please enter the username")
+    .min(3, "Please enter a valid username"),
+  password: z
+    .string("Please enter the password")
+    .trim()
+    .min(1, "Please enter the password")
+    .min(8, "Password must be at least 8 characters"),
+});
+type formDataType = z.infer<typeof schema>;
+
 const page = () => {
   const router = useRouter();
   const setUserData = useGlobalStore((state) => state.setUserData);
@@ -33,12 +44,11 @@ const page = () => {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<formDataType>();
+  } = useForm({ resolver: zodResolver(schema) });
   const postApi = async (data: formDataType) => {
     const response = await axios.post(`${backendUrl}/login`, data, {
       withCredentials: true,
     });
-
     return response.data;
   };
   const postMutation = useMutation({
@@ -56,11 +66,15 @@ const page = () => {
       }
     },
     onError: (error: T_MutaionError) => {
-      if (error.response?.data.code == "INVALID_CREDIENTIALS") {
-        setError("username", { message: error.response.data.message });
-        setError("password", { message: error.response.data.message });
+      if (error.response) {
+        if (error.response?.data.code == "INVALID_CREDIENTIALS") {
+          setError("username", { message: error.response.data.message });
+          setError("password", { message: error.response.data.message });
+        }
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error(error.message);
       }
-      toast.error(error.response?.data.message);
     },
   });
 
