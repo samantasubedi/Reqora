@@ -113,10 +113,11 @@ const page = () => {
               <p className="text-red-400">{errors.password?.message}</p>
             </div>
             <Button
+              disabled={postMutation.isPending}
               type="submit"
               className="w-full mt-5 cursor-pointer bg-teal-600 hover:bg-teal-700 "
             >
-              Submit
+              {postMutation.isPending ? "Logging in" : "Login "}
             </Button>
           </form>
           <CardAction className="flex gap-2 mt-4">

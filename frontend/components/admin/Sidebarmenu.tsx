@@ -180,20 +180,18 @@ const Sidebarmenu = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem asChild>
-                  <LogoutDialog />
-                </DropdownMenuItem>
-
-                <DropdownMenuItem className="w-full">
-                  {" "}
-                  <Button
-                    variant={"secondary"}
-                    className="min-w-full flex gap-2 justify-start"
-                  >
-                    <Icon icon="tabler:edit-filled" className="size-6" />
-                    <span>My profile</span>{" "}
-                  </Button>
-                </DropdownMenuItem>
+                {/* <DropdownMenuItem> */}
+                <LogoutDialog />
+                {/* </DropdownMenuItem> */}
+                {/* <DropdownMenuItem className="w-full"> */}{" "}
+                <Button
+                  variant={"secondary"}
+                  className="min-w-full flex gap-2 justify-start"
+                >
+                  <Icon icon="tabler:edit-filled" className="size-6" />
+                  <span>My profile</span>{" "}
+                </Button>
+                {/* </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

@@ -112,6 +112,7 @@ const page = () => {
               Fill your company details
             </CardDescription>
           </CardHeader>
+          <CardContent>
           <form onSubmit={handleSubmit(handleFormSubmit)}>
             <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
@@ -178,6 +179,7 @@ const page = () => {
               </Button>
             </div>
           </form>
+          </CardContent>
         </Card>
       </div>
     </div>
