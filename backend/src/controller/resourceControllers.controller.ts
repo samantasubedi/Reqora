@@ -21,8 +21,16 @@ export const getAllResources = async (req: Request, res: Response) => {
 };
 
 export const addResource = async (req: Request, res: Response) => {
-  const { name, location, department, totalQuantity } = req.body;
-  if (!name || !location || !department || !totalQuantity) {
+  const {
+    resourceName: name,
+    quantity: totalQuantity,
+    type,
+    status,
+    department,
+    location,
+    description,
+  } = req.body; // we are renaming resourceName from frontend as name and so on for other fields to match the naming for db
+  if (!name || !location || !department || !totalQuantity||!type||!status) {
     res.json({ message: "please provide all fields" });
   }
 
@@ -42,7 +50,7 @@ export const addResource = async (req: Request, res: Response) => {
         location,
         department,
         availability: true,
-        status: "available",
+        status,
         totalQuantity,
         availableQuantity: totalQuantity,
         createdAt: new Date(),
@@ -85,7 +93,9 @@ export const editResource = async (req: Request, res: Response) => {
   console.log("this is company id ", companyId);
   const updatedAt = new Date();
   if (!id) {
-    return res.status(400).json({ message: "please provide an id", success: false });
+    return res
+      .status(400)
+      .json({ message: "please provide an id", success: false });
   }
   try {
     const resourceData = await prisma.resource.findUnique({

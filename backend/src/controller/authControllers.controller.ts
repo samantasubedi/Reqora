@@ -52,6 +52,7 @@ export const handleLogin = async (req: Request, res: Response) => {
   if (!username || !password) {
     return res.status(400).json({ message: "all fields are required" });
   }
+  
   const user = await prisma.user.findUnique({
     where: { username },
   });
@@ -141,9 +142,9 @@ export const handleRefresh = async (req: Request, res: Response) => {
     });
   }
   try {
-    const{code,accessToken,NewRefreshToken}=  await refresh(refreshToken)
-    if(code=== "USER_NOT_FOUND"){
-     throw new Error("user not found")
+    const { code, accessToken, NewRefreshToken } = await refresh(refreshToken);
+    if (code === "USER_NOT_FOUND") {
+      throw new Error("user not found");
     }
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
