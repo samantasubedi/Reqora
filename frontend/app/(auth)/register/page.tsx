@@ -14,11 +14,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-type formDataType = {
-  username: string;
-  password: string;
-  email: string;
-};
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+type formDataType = z.infer<typeof schema>;
+const schema = z.object({
+  email: z
+    .email("please enter an valid email")
+    .trim()
+    .min(1, "Please enter an email"),
+  username: z
+    .string("Please enter an username")
+    .trim()
+    .min(1, "Please enter an username")
+    .min(3, "Please enter an valid username"),
+  password: z
+    .string("please enter a password")
+    .trim()
+    .min(1, "Please enter a password")
+    .min(8, "Password must be atleast 8 characters"),
+});
 
 const page = () => {
   const router = useRouter();
@@ -28,7 +42,7 @@ const page = () => {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<formDataType>();
+  } = useForm({ resolver: zodResolver(schema) });
   const handleFormSubmit: SubmitHandler<formDataType> = async (data) => {
     console.log("form data", data);
     try {
@@ -67,13 +81,7 @@ const page = () => {
               <label className="font-semibold text-white">Email</label>
               <Input
                 className="bg-slate-400 border-none font-semibold "
-                {...register("email", {
-                  required: "email is required !",
-                  pattern: {
-                    value: /^\S+@\S+\.\S+$/,
-                    message: "Please enter a valid email !",
-                  },
-                })}
+                {...register("email")}
                 placeholder="Enter your email"
               />
               <p className="text-red-400 text-sm">{errors.email?.message}</p>
@@ -83,13 +91,7 @@ const page = () => {
               <label className="font-semibold text-white">Username</label>
               <Input
                 className="bg-slate-400 border-none font-semibold "
-                {...register("username", {
-                  required: "username is required !",
-                  minLength: {
-                    value: 3,
-                    message: "username must be atleast 3 characters",
-                  },
-                })}
+                {...register("username")}
                 placeholder="Enter your username"
               />
               <p className="text-red-400 text-sm">{errors.username?.message}</p>
@@ -98,13 +100,7 @@ const page = () => {
               <label className="font-semibold text-white">Password</label>
               <Input
                 className="bg-slate-400 border-none font-semibold "
-                {...register("password", {
-                  required: "password is required !",
-                  minLength: {
-                    value: 8,
-                    message: "password must be at least 8 characters !",
-                  },
-                })}
+                {...register("password")}
                 placeholder="Enter your password"
                 type="password"
               />
