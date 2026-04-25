@@ -23,6 +23,7 @@ import {
   ComboboxList,
   ComboboxItem,
 } from "@/components/ui/combobox";
+import SelectBox from "@/components/others/SelectBox";
 
 const schema = z.object({
   resourceName: z
@@ -56,6 +57,8 @@ const page = () => {
     formState: { errors },
     handleSubmit,
     reset,
+    setValue,
+    getValues,
   } = useForm({ resolver: zodResolver(schema) });
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -168,12 +171,8 @@ const page = () => {
                 <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
                   Status
                 </label>
-                {/* <Input
-                  {...register("status")}
-                  placeholder="select a status"
-                  className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
-                /> */}
-                <Combobox items={statusOptions}>
+
+                {/* <Combobox items={statusOptions}>
                   <ComboboxInput
                     {...register("status")}
                     placeholder="Select a status"
@@ -191,7 +190,14 @@ const page = () => {
                       }}
                     </ComboboxList>
                   </ComboboxContent>
-                </Combobox>
+                </Combobox> */}
+                <SelectBox
+                  options={statusOptions}
+                  onChange={(v) => {
+                    setValue("status", v);
+                  }}
+                  value={getValues("status")}
+                />
 
                 <p className="text-xs text-red-500 font-medium">
                   {errors.status?.message}
