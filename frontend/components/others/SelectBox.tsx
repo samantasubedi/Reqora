@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import {
   Combobox,
@@ -19,7 +20,6 @@ const SelectBox = ({
   onChange: (val: string) => void;
   options: statusOptionsType;
 }) => {
-  const { register } = useForm();
   return (
     <Combobox
       onValueChange={(v) => {
@@ -37,7 +37,7 @@ const SelectBox = ({
         <ComboboxList className="text-gray-600">
           {(item) => {
             return (
-              <ComboboxItem key={item.value} value={item.value}>
+              <ComboboxItem key={item.value} value={item.value} >
                 {item.label}
               </ComboboxItem>
             );

@@ -94,15 +94,39 @@ const page = () => {
     { label: "Under Maintainence", value: "underMaintainence" },
   ];
   const typeOptions = [
-    "Hardware",
-    "Software",
-    "Digital Asset",
-    "Human Resource",
-    "Facility",
-    "Service",
-    "Consumable",
-    "Data",
-    "Others",
+    { label: "Hardware", value: "Hardware" },
+    { label: "Software", value: "Software" },
+    { label: "Digital Asset", value: "Digital Asset" },
+    { label: "Human Resource", value: "Human Resource" },
+    { label: "Facility", value: "Faciltiy" },
+    { label: "Service", value: "Service" },
+    { label: "Consumable", value: "Consumable" },
+    { label: "Data", value: "Data" },
+    { label: "Others", value: "Others" },
+  ];
+  const departmentOptions = [
+    { label: "Engineering", value: "Engineering" },
+    { label: "Product Management", value: "Product Management" },
+    { label: "Design", value: "Design" },
+    { label: "Marketing", value: "Marketing" },
+    { label: "Sales", value: "Sales" },
+    { label: "Customer Support", value: "Customer Support" },
+    { label: "Human Resources", value: "Human Resources" },
+    { label: "Finance", value: "Finance" },
+    { label: "Accounting", value: "Accounting" },
+    { label: "Operations", value: "Operations" },
+    { label: "Legal", value: "Legal" },
+    { label: "Administration", value: "Administration" },
+    { label: "Information Technology", value: "Information Technology" },
+    { label: "DevOps", value: "DevOps" },
+    { label: "Quality Assurance", value: "Quality Assurance" },
+    { label: "Research and Development", value: "Research and Development" },
+    { label: "Data Science", value: "Data Science" },
+    { label: "Security", value: "Security" },
+    { label: "Procurement", value: "Procurement" },
+    { label: "Business Development", value: "Business Development" },
+    { label: "Facilities Management", value: "Facilities Management" },
+    { label: "Other", value: "Other" },
   ];
   return (
     <div className="flex justify-center items-start min-h-screen bg-sky-200 py-12 px-4">
@@ -155,10 +179,12 @@ const page = () => {
                 <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
                   Type
                 </label>
-                <Input
-                  {...register("type")}
-                  placeholder="e.g. Hardware"
-                  className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+                <SelectBox
+                  options={typeOptions}
+                  value={getValues("type")}
+                  onChange={(v) => {
+                    setValue("type", v);
+                  }}
                 />
                 <p className="text-xs text-red-500 font-medium">
                   {errors.type?.message}
@@ -172,25 +198,6 @@ const page = () => {
                   Status
                 </label>
 
-                {/* <Combobox items={statusOptions}>
-                  <ComboboxInput
-                    {...register("status")}
-                    placeholder="Select a status"
-                    className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
-                  ></ComboboxInput>
-                  <ComboboxContent>
-                    <ComboboxEmpty>No such status</ComboboxEmpty>
-                    <ComboboxList className="text-gray-600">
-                      {(item) => {
-                        return (
-                          <ComboboxItem key={item.value} value={item.value}>
-                            {item.label}
-                          </ComboboxItem>
-                        );
-                      }}
-                    </ComboboxList>
-                  </ComboboxContent>
-                </Combobox> */}
                 <SelectBox
                   options={statusOptions}
                   onChange={(v) => {
@@ -208,10 +215,12 @@ const page = () => {
                 <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
                   Department
                 </label>
-                <Input
-                  {...register("department")}
-                  placeholder="e.g. Engineering"
-                  className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+                <SelectBox
+                  options={departmentOptions}
+                  onChange={(v) => {
+                    setValue("department", v);
+                  }}
+                  value={getValues("department")}
                 />
                 <p className="text-xs text-red-500 font-medium">
                   {errors.department?.message}
