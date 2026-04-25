@@ -94,7 +94,11 @@ const Sidebarmenu = () => {
                     <Icon icon="material-symbols:grid-view-outline-rounded" />{" "}
                     View Resources
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      router.push("/admin/resources/add");
+                    }}
+                  >
                     {" "}
                     <Icon icon="hugeicons:resources-add" />
                     Add Resources

@@ -15,6 +15,15 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutaionError } from "@/types/global";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxEmpty,
+  ComboboxList,
+  ComboboxItem,
+} from "@/components/ui/combobox";
+
 const schema = z.object({
   resourceName: z
     .string({ message: "please enter the resource name" })
@@ -32,7 +41,7 @@ const schema = z.object({
     .min(1, "please select a status"),
   location: z
     .string({ message: "please enter a location" })
-    .min(1,"Please enter a location")
+    .min(1, "Please enter a location")
     .min(3, "please enter a valid location"),
   department: z
     .string({ message: "please enter the department" })
@@ -63,11 +72,11 @@ const page = () => {
       reset();
     },
     onError: (error: T_MutaionError) => {
-      if(error.response){  toast.error(error.response?.data.message)}
-      else{
-        toast.error(error.message)
+      if (error.response) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error(error.message);
       }
-    
     },
   });
 
@@ -75,6 +84,23 @@ const page = () => {
     mutation.mutate(data);
     console.log(data);
   };
+
+  const statusOptions = [
+    { label: "Available", value: "available" },
+    { label: "In use", value: "inUse" },
+    { label: "Under Maintainence", value: "underMaintainence" },
+  ];
+  const typeOptions = [
+    "Hardware",
+    "Software",
+    "Digital Asset",
+    "Human Resource",
+    "Facility",
+    "Service",
+    "Consumable",
+    "Data",
+    "Others",
+  ];
   return (
     <div className="flex justify-center items-start min-h-screen bg-sky-200 py-12 px-4">
       <Card className="w-full max-w-2xl shadow-xl border-0 rounded-2xl overflow-hidden bg-blue-100">
@@ -142,11 +168,31 @@ const page = () => {
                 <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
                   Status
                 </label>
-                <Input
+                {/* <Input
                   {...register("status")}
                   placeholder="select a status"
                   className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
-                />
+                /> */}
+                <Combobox items={statusOptions}>
+                  <ComboboxInput
+                    {...register("status")}
+                    placeholder="Select a status"
+                    className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+                  ></ComboboxInput>
+                  <ComboboxContent>
+                    <ComboboxEmpty>No such status</ComboboxEmpty>
+                    <ComboboxList className="text-gray-600">
+                      {(item) => {
+                        return (
+                          <ComboboxItem key={item.value} value={item.value}>
+                            {item.label}
+                          </ComboboxItem>
+                        );
+                      }}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+
                 <p className="text-xs text-red-500 font-medium">
                   {errors.status?.message}
                 </p>
@@ -166,7 +212,7 @@ const page = () => {
                 </p>
               </div>
             </div>
-                <div className="space-y-1.5">
+            <div className="space-y-1.5">
               <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
                 Location
               </label>
