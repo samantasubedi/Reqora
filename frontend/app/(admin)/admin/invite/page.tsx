@@ -1,36 +1,39 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client"
+import EmailInviteForm from "@/components/admin/EmailInviteForm";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
-import React from "react";
+import React, { useState } from "react";
 
 const page = () => {
+  const [emailForm, setEmailForm] = useState(true);
+
   return (
-    <div className="flex justify-center">
-      <div className="flex gap-10 w-[30%] border-2 justify-evenly px-5">
-        <div className="flex items-center gap-3">
-          <Icon icon="ic:outline-email" className="text-2xl" />
-          <span>Email Invite</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Icon icon="pajamas:code" className="text-2xl" />
-          <span>Invite Code</span>
+    <div>
+      <div className="flex justify-center mt-5">
+        <div className="flex gap-10 w-[30%] border-2 justify-evenly px-5">
+          <button
+          onClick={()=>{setEmailForm(true)}}
+          className="flex items-center gap-3">
+            <Icon icon="ic:outline-email" className="text-2xl" />
+            <span>Email Invite</span>
+          </button>
+          <button
+           onClick={()=>{setEmailForm(false)}}
+          className="flex items-center gap-3">
+            <Icon icon="pajamas:code" className="text-2xl" />
+            <span>Invite Code</span>
+          </button>
         </div>
       </div>
-
-      <Card>
-        <CardContent>
-          <label>Email Address </label>
-          <Input placeholder="Enter email"></Input>
-          <label>Role</label>
-          <div>
-            <button>Employee</button>
-            <button>Manager</button>
-            <button>Admin</button>
-          </div>
-          <label>Message</label>
-          <Input placeholder="wirte a message (optional)"></Input>
-        </CardContent>
-      </Card>
+      {emailForm ? <EmailInviteForm /> : <div>code generator</div>}
     </div>
   );
 };
