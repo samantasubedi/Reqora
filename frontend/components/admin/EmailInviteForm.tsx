@@ -33,10 +33,12 @@ const EmailInviteForm = () => {
     setError,
     setValue,
     handleSubmit,
+    watch
   } = useForm({ resolver: zodResolver(schema) });
   const handleFormSubmit = (data: formType) => {
     console.log(data);
   };
+  const selectedRole=watch("role")
   return (
     <Card className="w-[40%] mx-auto shadow-lg border bg-blue-100 rounded-2xl mt-5">
       <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -60,11 +62,11 @@ const EmailInviteForm = () => {
               <div className="flex gap-5">
                 {roleArray.map((curr) => {
                   return (
-                    <button
+                    <button type="button"
                       key={curr.role}
-                      className="h-20 flex flex-1 justify-center items-center  px-4 py-2 rounded-lg border border-slate-300 
+                      className={`h-20 flex flex-1 justify-center items-center  px-4 py-2 rounded-lg border border-slate-300 
               hover:bg-slate-100 hover:border-slate-400  bg-white
-              transition-all duration-200"
+              transition-all duration-200 ${selectedRole==curr.role?"bg-purple-300! ":""} `}
                       onClick={() => {
                         setValue("role", curr.role);
                       }}
