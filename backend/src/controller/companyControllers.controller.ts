@@ -122,7 +122,7 @@ import { userInfo } from "os";
 
 export const inviteToCompany = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
-  const {role}=req.body
+  const { role, expiryTime } = req.body;
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
   const token = crypto.randomBytes(32).toString("hex");
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -172,7 +172,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
         companyId: companyInfo?.company?.id,
         role,
         used: false,
-        expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + expiryTime),
       },
     });
 
@@ -230,42 +230,43 @@ export const inviteToCompany = async (req: Request, res: Response) => {
   }
 };
 export const generateCode = async (req: Request, res: Response) => {
-  const {role,expiryTime}=req.body
+  const { role, expiryTime } = req.body;
+  if (!role || !expiryTime) {
+    return res.json({ message: "please provide all fields" });
+  }
   const joinCode = cryptoRandomString({ length: 10, type: "alphanumeric" });
   const hashedJoinCode = await bcrypt.hash(joinCode, 10);
-const email=res.locals.email
-try{
-const userInfo=await prisma.user.findUnique({
-  where:email
-})
-if(!userInfo?.companyId){
-  return res.json({message:"server error"})
-}
- await prisma.joinCode.create({
-    data:{
+  const email = res.locals.user.email;
 
-      code:hashedJoinCode,
-      companyId:userInfo.companyId,
-      role,
-      used:false,
-      expiresAt:new Date(Date.now()+expiryTime)
-      
+  try {
+    const userInfo = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!userInfo?.companyId) {
+      return res.json({ message: "server error" });
     }
-  })
-}
-catch(err){
-res.json({
-  message:"server error"
-})
-}
+    await prisma.joinCode.create({
+      data: {
+        code: hashedJoinCode,
+        companyId: userInfo.companyId,
+        role,
+        used: false,
+        expiresAt: new Date(Date.now() + expiryTime),
+      },
+    });
 
-
- 
-  res.json({
-    success: true,
-    message: "join code generated successfully",
-    joinCode: joinCode,
-  });
+    res.status(201).json({
+      success: true,
+      code: "CODE_GENERATED",
+      joinCode,
+      message: "code generated successfully",
+    });
+  } catch (err) {
+    res.json({
+      error: err,
+      message: "server error",
+    });
+  }
 };
 
 export const joinCompany = async (req: Request, res: Response) => {
