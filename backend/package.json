@@ -24,6 +24,7 @@
     "bcrypt-ts": "^8.0.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "crypto-random-string": "^5.0.0",
     "crypto-ts": "^1.0.2",
     "dot": "^1.1.3",
     "dotenv": "^17.3.1",

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import bcrypt from "bcrypt-ts";
 
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, email, address, size } = req.body;
@@ -116,6 +117,7 @@ export const createCompany = async (req: Request, res: Response) => {
 import crypto from "crypto";
 import { transporter } from "../lib/sendMail";
 import { refresh } from "../services/authService.service";
+import cryptoRandomString from "crypto-random-string";
 
 export const inviteToCompany = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
@@ -223,6 +225,15 @@ export const inviteToCompany = async (req: Request, res: Response) => {
       message: "couldnt send email",
     });
   }
+};
+export const generateCode = async (req: Request, res: Response) => {
+  const joinCode = cryptoRandomString({ length: 10, type: "alphanumeric" });
+  const hashedJoinCode = await bcrypt.hash(joinCode, 10);
+  res.json({
+    success: true,
+    message: "join code generated successfully",
+    joinCode: joinCode,
+  });
 };
 
 export const joinCompany = async (req: Request, res: Response) => {
