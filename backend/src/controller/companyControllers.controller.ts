@@ -118,9 +118,11 @@ import crypto from "crypto";
 import { transporter } from "../lib/sendMail";
 import { refresh } from "../services/authService.service";
 import cryptoRandomString from "crypto-random-string";
+import { userInfo } from "os";
 
 export const inviteToCompany = async (req: Request, res: Response) => {
   const userEmail = req.body.email;
+  const {role}=req.body
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
   const token = crypto.randomBytes(32).toString("hex");
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -168,6 +170,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
         email: userEmail,
         token: hashedToken,
         companyId: companyInfo?.company?.id,
+        role,
         used: false,
         expiresAt: new Date(Date.now() + 60 * 60 * 1000),
       },
@@ -227,8 +230,37 @@ export const inviteToCompany = async (req: Request, res: Response) => {
   }
 };
 export const generateCode = async (req: Request, res: Response) => {
+  const {role,expiryTime}=req.body
   const joinCode = cryptoRandomString({ length: 10, type: "alphanumeric" });
   const hashedJoinCode = await bcrypt.hash(joinCode, 10);
+const email=res.locals.email
+try{
+const userInfo=await prisma.user.findUnique({
+  where:email
+})
+if(!userInfo?.companyId){
+  return res.json({message:"server error"})
+}
+ await prisma.joinCode.create({
+    data:{
+
+      code:hashedJoinCode,
+      companyId:userInfo.companyId,
+      role,
+      used:false,
+      expiresAt:new Date(Date.now()+expiryTime)
+      
+    }
+  })
+}
+catch(err){
+res.json({
+  message:"server error"
+})
+}
+
+
+ 
   res.json({
     success: true,
     message: "join code generated successfully",

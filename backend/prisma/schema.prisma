@@ -79,7 +79,7 @@ model request {
   requestedQuantity Int
   status            RequestStatus
   companyId         String
-  resourceId        String        
+  resourceId        String
   resource          resource      @relation(fields: [resourceId], references: [id])
   company           company       @relation(fields: [companyId], references: [id])
   requestedBy       user          @relation("requestedByUser", fields: [requestedById], references: [id])
@@ -90,6 +90,15 @@ model joinToken {
   email     String
   token     String   @unique
   companyId String
+  role      Role
+  expiresAt DateTime
+  used      Boolean
+}
+
+model joinCode {
+  code      String   @unique
+  companyId String
+  role      Role
   expiresAt DateTime
   used      Boolean
 }
