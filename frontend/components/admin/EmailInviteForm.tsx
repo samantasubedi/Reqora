@@ -40,42 +40,45 @@ const EmailInviteForm = () => {
   };
   const selectedRole=watch("role")
   return (
-    <Card className="w-[40%] mx-auto shadow-lg border bg-blue-100 rounded-2xl mt-5">
+    <Card className="w-[40%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <CardContent className="p-6">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <label className="text-md font-medium text-slate-700">
+              <label className="text-md font-medium text-teal-800">
                 Email Address
               </label>
               <Input
                 {...register("email")}
                 placeholder="Enter email"
-                className="focus:ring-2 focus:ring-blue-500 bg-white"
+                className="focus:ring-2 focus:ring-teal-400 border-teal-200 bg-white placeholder:text-slate-400"
               />
               <p className="text-sm text-red-500">{errors.email?.message}</p>
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-md font-medium text-slate-700">Role</label>
-              <input type="hidden" {...register("role")}></input>
+              <label className="text-md font-medium text-teal-800">Role</label>
+              <input type="hidden" {...register("role")} />
               <div className="flex gap-5">
                 {roleArray.map((curr) => {
                   return (
-                    <button type="button"
+                    <button
+                      type="button"
                       key={curr.role}
-                      className={`h-20 flex flex-1 justify-center items-center  px-4 py-2 rounded-lg border border-slate-300 
-              hover:bg-slate-100 hover:border-slate-400  bg-white
-              transition-all duration-200 ${selectedRole==curr.role?"bg-purple-300! ":""} `}
-                      onClick={() => {
-                        setValue("role", curr.role);
-                      }}
+                      className={`h-20 flex flex-1 justify-center items-center px-4 py-2 rounded-xl border
+                        transition-all duration-200
+                        ${
+                          selectedRole === curr.role
+                            ? "bg-teal-800/80 border-teal-500 shadow-md shadow-teal-200"
+                            : "bg-white border-teal-100 hover:bg-teal-50 hover:border-teal-300"
+                        }`}
+                      onClick={() => setValue("role", curr.role)}
                     >
                       <div>
-                        <div className="font-semibold text-lg text-slate-600 font-sans">
+                        <div className={`font-semibold text-lg font-sans ${selectedRole === curr.role ? "text-white" : "text-teal-700"}`}>
                           {curr.role}
                         </div>
-                        <div className="text-sm text-slate-500">
+                        <div className={`text-sm ${selectedRole === curr.role ? "text-teal-100" : "text-slate-400"}`}>
                           {curr.description}
                         </div>
                       </div>
@@ -87,15 +90,15 @@ const EmailInviteForm = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-md font-medium text-slate-700">
+              <label className="text-md font-medium text-teal-800">
                 Message
               </label>
               <textarea
                 {...register("description")}
                 rows={3}
                 placeholder="Write a message (optional)"
-                className="border border-slate-300 rounded-lg p-3 text-sm 
-          focus:outline-none  bg-white"
+                className="border border-teal-200 rounded-xl p-3 text-sm
+                  focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white placeholder:text-slate-400 resize-none"
               />
             </div>
           </div>
@@ -104,7 +107,7 @@ const EmailInviteForm = () => {
         <CardFooter className="p-6 pt-0">
           <Button
             type="submit"
-            className="w-full rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all bg-blue-500 cursor-pointer hover:bg-blue-400"
+            className="w-full rounded-xl text-sm font-semibold  hover:shadow-lg  bg-teal-700 hover:bg-teal-600 cursor-pointer text-white"
           >
             Send Invitation
           </Button>

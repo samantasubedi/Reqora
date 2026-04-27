@@ -23,7 +23,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
-import InviteForm from "./InviteForm";
+
 import { useRouter } from "next/navigation";
 import LogoutDialog from "./LogoutDialog";
 
@@ -128,8 +128,13 @@ const Sidebarmenu = () => {
                     <Icon icon="material-symbols:view-day-rounded" /> View
                     Employees
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <InviteForm />
+                  <DropdownMenuItem
+                    onClick={() => {
+                      router.push("/admin/invite");
+                    }}
+                  >
+                    <Icon icon="mdi:invite" />
+                    Invite Employees
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Icon icon="carbon:user-role" /> Manage Roles
