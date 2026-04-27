@@ -1,5 +1,6 @@
 "use client"
 import EmailInviteForm from "@/components/admin/EmailInviteForm";
+import InviteCodeGenerator from "@/components/admin/InviteCodeGenerator";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,7 +34,7 @@ const page = () => {
   </button>
 </div>
       </div>
-      {emailForm ? <EmailInviteForm /> : <div>code generator</div>}
+      {emailForm ? <EmailInviteForm /> : <InviteCodeGenerator/>}
     </div>
   );
 };
