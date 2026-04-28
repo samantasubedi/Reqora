@@ -234,7 +234,10 @@ export const generateCode = async (req: Request, res: Response) => {
     return res.json({ message: "please provide all fields" });
   }
   const joinCode = cryptoRandomString({ length: 10, type: "alphanumeric" });
-  const hashedJoinCode = await bcrypt.hash(joinCode, 10);
+  const hashedJoinCode = crypto
+    .createHash("sha256")
+    .update(joinCode)
+    .digest("hex");
   const email = res.locals.user.email;
 
   try {
@@ -268,7 +271,7 @@ export const generateCode = async (req: Request, res: Response) => {
 };
 
 export const joinByEmail = async (req: Request, res: Response) => {
-  const token = req.body.token;
+  const { token } = req.body;
   if (!token) {
     console.log("token is required");
     return res.status(400).json({
@@ -320,7 +323,7 @@ export const joinByEmail = async (req: Request, res: Response) => {
           where: { email },
           data: {
             enrolled: true,
-            role: "employee",
+            role: retrivedToken.role,
             companyId: retrivedToken.companyId,
           },
         }),
@@ -380,18 +383,19 @@ export const joinByEmail = async (req: Request, res: Response) => {
   }
 };
 export const joinByCode = async (req: Request, res: Response) => {
-  const { code, role } = req.body;
-  if (!code || !role) {
+  const { code } = req.body;
+  if (!code) {
     return res.status(400).json({ message: "please provide all fields" });
   }
   const email = res.locals.user.email;
+  const hashedJoinCode = crypto.createHash("sha256").update(code).digest("hex");
   try {
     const retrivedCode = await prisma.joinCode.findUnique({
-      where: { code },
+      where: { code: hashedJoinCode },
     });
 
     if (!retrivedCode) {
-      return res.status(500).json({ success: false, message: "server errror" });
+      return res.status(500).json({ success: false, message: "wrong code" });
     }
     if (retrivedCode.used) {
       return res.json({
@@ -406,7 +410,7 @@ export const joinByCode = async (req: Request, res: Response) => {
     }
 
     await prisma.joinCode.update({
-      where: { code },
+      where: { code: hashedJoinCode },
       data: { used: true },
     });
     await prisma.user.updateMany({
@@ -418,13 +422,11 @@ export const joinByCode = async (req: Request, res: Response) => {
       },
     });
 
-    return res
-      .status(201)
-      .json({
-        success: "true",
-        code: "JOIN_SUCCESSFULL",
-        message: "You have been joined to the company",
-      });
+    return res.status(201).json({
+      success: "true",
+      code: "JOIN_SUCCESSFULL",
+      message: "You have been joined to the company",
+    });
   } catch (err) {
     return res.status(500).json({ success: false, message: "Server Error" });
   }
