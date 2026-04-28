@@ -92,7 +92,7 @@ model joinToken {
   companyId String
   role      Role
   expiresAt DateTime
-  used      Boolean
+  used      Boolean @default(false)
 }
 
 model joinCode {
@@ -100,5 +100,5 @@ model joinCode {
   companyId String
   role      Role
   expiresAt DateTime
-  used      Boolean
+  used      Boolean @default(false)
 }

@@ -171,7 +171,6 @@ export const inviteToCompany = async (req: Request, res: Response) => {
         token: hashedToken,
         companyId: companyInfo?.company?.id,
         role,
-        used: false,
         expiresAt: new Date(Date.now() + expiryTime),
       },
     });
@@ -250,7 +249,6 @@ export const generateCode = async (req: Request, res: Response) => {
         code: hashedJoinCode,
         companyId: userInfo.companyId,
         role,
-        used: false,
         expiresAt: new Date(Date.now() + expiryTime),
       },
     });
@@ -269,7 +267,7 @@ export const generateCode = async (req: Request, res: Response) => {
   }
 };
 
-export const joinCompany = async (req: Request, res: Response) => {
+export const joinByEmail = async (req: Request, res: Response) => {
   const token = req.body.token;
   if (!token) {
     console.log("token is required");
@@ -381,7 +379,56 @@ export const joinCompany = async (req: Request, res: Response) => {
     });
   }
 };
+export const joinByCode = async (req: Request, res: Response) => {
+  const { code, role } = req.body;
+  if (!code || !role) {
+    return res.status(400).json({ message: "please provide all fields" });
+  }
+  const email = res.locals.user.email;
+  try {
+    const retrivedCode = await prisma.joinCode.findUnique({
+      where: { code },
+    });
 
+    if (!retrivedCode) {
+      return res.status(500).json({ success: false, message: "server errror" });
+    }
+    if (retrivedCode.used) {
+      return res.json({
+        success: false,
+        message: "Code has already been used",
+      });
+    }
+    if (retrivedCode.expiresAt < new Date()) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Code has been expried" });
+    }
+
+    await prisma.joinCode.update({
+      where: { code },
+      data: { used: true },
+    });
+    await prisma.user.updateMany({
+      where: { email },
+      data: {
+        role: retrivedCode.role,
+        enrolled: true,
+        companyId: retrivedCode.companyId,
+      },
+    });
+
+    return res
+      .status(201)
+      .json({
+        success: "true",
+        code: "JOIN_SUCCESSFULL",
+        message: "You have been joined to the company",
+      });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
 export const leaveCompany = async (req: Request, res: Response) => {
   const userdata = res.locals.user;
   const email = userdata.email;
