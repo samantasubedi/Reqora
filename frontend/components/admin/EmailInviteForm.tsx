@@ -5,10 +5,18 @@ import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import z, { email } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios, { AxiosError } from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { T_MutaionError } from "@/types/global";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 const schema = z.object({
   email: z.email("Please enter an email").min(1, "Please enter an email"),
   role: z.string("Please select a role").min(1, "Please select a role"),
   description: z.string().optional(),
+  expiryTime: z.coerce
+    .number()
+    .min(1, "please provide an invitation expiry time"),
 });
 type formType = z.infer<typeof schema>;
 
@@ -33,12 +41,40 @@ const EmailInviteForm = () => {
     setError,
     setValue,
     handleSubmit,
-    watch
+    watch,
   } = useForm({ resolver: zodResolver(schema) });
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const postApi = async (data: formType) => {
+    const response = await axios.post(
+      `${backendUrl}/invite/emailInvite`,
+      data,
+      {
+        withCredentials: true,
+      },
+    );
+    return response.data;
+  };
+  const mutation = useMutation({
+    mutationFn: postApi,
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success(data.message);
+      }
+    },
+    onError: (Error: T_MutaionError) => {
+      if (Error.response) {
+        toast.error(Error.response?.data.message);
+      } else {
+        toast.error(Error.message);
+      }
+    },
+  });
+
   const handleFormSubmit = (data: formType) => {
+    mutation.mutate(data);
     console.log(data);
   };
-  const selectedRole=watch("role")
+  const selectedRole = watch("role");
   return (
     <Card className="w-[40%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
       <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -75,10 +111,14 @@ const EmailInviteForm = () => {
                       onClick={() => setValue("role", curr.role)}
                     >
                       <div>
-                        <div className={`font-semibold text-lg font-sans ${selectedRole === curr.role ? "text-white" : "text-teal-700"}`}>
+                        <div
+                          className={`font-semibold text-lg font-sans ${selectedRole === curr.role ? "text-white" : "text-teal-700"}`}
+                        >
                           {curr.role}
                         </div>
-                        <div className={`text-sm ${selectedRole === curr.role ? "text-teal-100" : "text-slate-400"}`}>
+                        <div
+                          className={`text-sm ${selectedRole === curr.role ? "text-teal-100" : "text-slate-400"}`}
+                        >
                           {curr.description}
                         </div>
                       </div>
@@ -88,7 +128,59 @@ const EmailInviteForm = () => {
               </div>
               <p className="text-sm text-red-500">{errors.role?.message}</p>
             </div>
-
+            <input type="hidden" {...register("expiryTime")}></input>
+            <div className="flex flex-col gap-2">
+              <label className="text-md font-medium text-teal-800">
+                Expiry Time
+              </label>
+              <div>
+                <RadioGroup
+                  className="flex w-full justify-between bg-white p-2 rounded-lg"
+                  onValueChange={(value) => {
+                    setValue("expiryTime", value);
+                  }}
+                >
+                  <div className="flex text-teal-800 items-center gap-2">
+                    <RadioGroupItem
+                      value="180000"
+                      className="border border-teal-600 text-teal-600"
+                    />
+                    <label className="font-semibold">3 min</label>
+                  </div>
+                  <div className="flex text-teal-800 items-center gap-2">
+                    <RadioGroupItem
+                      value="300000"
+                      className="border border-teal-600 text-teal-600"
+                    />
+                    <label className="font-semibold">5 min</label>
+                  </div>
+                  <div className="flex text-teal-800 items-center gap-2">
+                    <RadioGroupItem
+                      value="600000"
+                      className="border border-teal-600 text-teal-600"
+                    />
+                    <label className="font-semibold">10 min</label>
+                  </div>
+                  <div className="flex text-teal-800 items-center gap-2">
+                    <RadioGroupItem
+                      value="1800000"
+                      className="border border-teal-600 text-teal-600"
+                    />
+                    <label className="font-semibold">30 min</label>
+                  </div>
+                  <div className="flex text-teal-800 items-center gap-2">
+                    <RadioGroupItem
+                      value="3600000"
+                      className="border border-teal-600 text-teal-600"
+                    />
+                    <label className="font-semibold">1 hr</label>
+                  </div>
+                </RadioGroup>
+              </div>
+              <p className="text-sm text-red-500">
+                {errors.expiryTime?.message}
+              </p>
+            </div>
             <div className="flex flex-col gap-2">
               <label className="text-md font-medium text-teal-800">
                 Message
