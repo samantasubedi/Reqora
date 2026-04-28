@@ -183,16 +183,12 @@ const Sidebarmenu = () => {
                   suppressHydrationWarning
                   className="flex gap-2 "
                 >
-                  {" "}
                   <Icon icon="codicon:account" className="size-6" />
                   <span className="font-semibold">Your account</span>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {/* <DropdownMenuItem> */}
                 <LogoutDialog />
-                {/* </DropdownMenuItem> */}
-                {/* <DropdownMenuItem className="w-full"> */}{" "}
                 <Button
                   variant={"secondary"}
                   className="min-w-full flex gap-2 justify-start"
@@ -200,7 +196,6 @@ const Sidebarmenu = () => {
                   <Icon icon="tabler:edit-filled" className="size-6" />
                   <span>My profile</span>{" "}
                 </Button>
-                {/* </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

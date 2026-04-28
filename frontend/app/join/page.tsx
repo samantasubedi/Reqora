@@ -28,7 +28,7 @@ const page = () => {
       if (response.data.code === "LOGGEDIN") {
         try {
           const response = await axios.post(
-            `${backendUrl}/join`,
+            `${backendUrl}/join/byEmail`,
             { token },
             {
               withCredentials: true,
