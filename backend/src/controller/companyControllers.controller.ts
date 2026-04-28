@@ -388,6 +388,7 @@ export const joinByCode = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "please provide all fields" });
   }
   const email = res.locals.user.email;
+
   const hashedJoinCode = crypto.createHash("sha256").update(code).digest("hex");
   try {
     const retrivedCode = await prisma.joinCode.findUnique({
@@ -401,6 +402,18 @@ export const joinByCode = async (req: Request, res: Response) => {
       return res.json({
         success: false,
         message: "Code has already been used",
+      });
+    }
+    const userEnrolled = await prisma.user.findUnique({
+      where: { email },
+      select: { enrolled: true },
+    });
+    if (userEnrolled?.enrolled) {
+      return res.status(400).json({
+        success: false,
+        code: "ENROLLED",
+        message:
+          "Couldnt accept invitation, you are already enrolled in a company",
       });
     }
     if (retrivedCode.expiresAt < new Date()) {
