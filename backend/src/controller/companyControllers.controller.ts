@@ -123,9 +123,9 @@ import { userInfo } from "os";
 export const inviteToCompany = async (req: Request, res: Response) => {
   const { email: userEmail, role, message, expiryTime } = req.body;
 
-  if (!userEmail) {
+  if (!userEmail || !role || !expiryTime) {
     res.status(400).json({
-      message: "please provide an email",
+      message: "please provide all fields",
     });
   }
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
@@ -140,13 +140,13 @@ export const inviteToCompany = async (req: Request, res: Response) => {
     return res.json({ message: "authentication failed!" });
   }
 
-  const invitingUser = await prisma.user.findUnique({
+  const invitedUser = await prisma.user.findUnique({
     where: {
       email: userEmail,
     },
   });
 
-  if (invitingUser?.enrolled === true) {
+  if (invitedUser?.enrolled === true) {
     return res.status(409).json({
       success: false,
       code: "ENROLLED",

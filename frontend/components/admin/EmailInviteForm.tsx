@@ -23,7 +23,7 @@ type formType = z.infer<typeof schema>;
 const EmailInviteForm = () => {
   const roleArray = [
     {
-      role: "Employeee",
+      role: "Employee",
       description: "View and collaborate",
     },
     {
@@ -108,7 +108,7 @@ const EmailInviteForm = () => {
                             ? "bg-teal-800/80 border-teal-500 shadow-md shadow-teal-200"
                             : "bg-white border-teal-100 hover:bg-teal-50 hover:border-teal-300"
                         }`}
-                      onClick={() => setValue("role", curr.role)}
+                      onClick={() => setValue("role", curr.role.toLowerCase())}
                     >
                       <div>
                         <div

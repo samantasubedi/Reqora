@@ -17,3 +17,4 @@ router.post("/join/byEmail", joinByEmail);
 router.post("/join/byCode", joinByCode);
 router.post("/leave", leaveCompany);
 export default router;
+
