@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutaionError } from "@/types/global";
 import RoleAndExpiryTime from "./RoleAndExpiryTime";
+import RoleSelector from "./RoleSelector";
 const schema = z.object({
   email: z.email("Please enter an email").min(1, "Please enter an email"),
   role: z.string("Please select a role").min(1, "Please select a role"),
@@ -21,7 +22,12 @@ const schema = z.object({
 export type emailInviteFormType = z.infer<typeof schema>;
 
 const EmailInviteForm = () => {
-  const form = useForm({ resolver: zodResolver(schema) });
+  const form = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      expiryTime: 0,
+    },
+  });
   const {
     register,
     formState: { errors },
@@ -64,9 +70,6 @@ const EmailInviteForm = () => {
     console.log(data);
   };
 
-  const handleSelect = (role: string) => {
-    setValue("role", role);
-  };
   return (
     <Card className="w-[40%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
       <FormProvider {...form}>
@@ -85,10 +88,20 @@ const EmailInviteForm = () => {
                 <p className="text-sm text-red-500">{errors.email?.message}</p>
               </div>
               <RoleAndExpiryTime
-              // register={register}
-              // setValue={setValue}
-              // watch={watch}
-              // errors={errors}
+                errors={{
+                  roleError: errors.role?.message,
+                  expiryTimeError: errors.expiryTime?.message,
+                }}
+                values={{
+                  expiryTime: Number(watch("expiryTime")),
+                  role: watch("role"),
+                }}
+                onChange={(values) => {
+                  setValue("role", values.role);
+                  if (values.role) form.clearErrors("role");
+                  setValue("expiryTime", values.expiryTime);
+                  if (values.expiryTime) form.clearErrors("expiryTime");
+                }}
               />
 
               <div className="flex flex-col gap-2">
