@@ -20,29 +20,38 @@ const schema = z.object({
 });
 export type codeInviteFormType = z.infer<typeof schema>;
 
-
 const InviteCodeGenerator = () => {
-  const form = useForm({ resolver: zodResolver(schema) });
-const {
-  setValue,
-  setError,
-  watch,
-  formState: { errors },
-} = form;
+  const form = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: { role: "", expiryTime: 0 },
+  });
+  const {
+    setValue,
+    setError,
+    watch,
+    formState: { errors },
+    handleSubmit,
+  } = form;
+  const handleFormSubmit = (data: codeInviteFormType) => {
+    console.log(data);
+  };
   return (
-    <div className="flex justify-center mt-[2%]">
-      
-        <Card className="w-[40%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
-          <form>
+    <div className="flex justify-center ">
+      <Card className="md:w-[40%] w-[90%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
           <CardHeader>
             <CardTitle className="text-center text-2xl text-teal-800">
               Generate Invite code
             </CardTitle>
-            <CardContent>
+            <CardContent className="p-6">
               <RoleAndExpiryTime
                 onChange={(values) => {
                   setValue("expiryTime", values.expiryTime);
+                  if (values.expiryTime) {
+                    form.clearErrors("expiryTime");
+                  }
                   setValue("role", values.role);
+                  if(values.role){form.clearErrors("role")}
                 }}
                 values={{
                   expiryTime: Number(watch("expiryTime")),
@@ -71,7 +80,10 @@ const {
           </CardHeader>
           <CardFooter className="flex flex-col">
             <div className="w-full flex justify-center">
-              <Button className="h-12 w-50! text-xl! cursor-pointer bg-cyan-800 hover:bg-cyan-700">
+              <Button
+                type="submit"
+                className="h-12 w-50! text-xl! cursor-pointer bg-cyan-800 hover:bg-cyan-700"
+              >
                 Generate Code
               </Button>
             </div>
@@ -91,8 +103,8 @@ const {
               </ol>
             </div>
           </CardFooter>
-      </form>
-        </Card>
+        </form>
+      </Card>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, CardFooter } from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
@@ -72,7 +72,9 @@ const EmailInviteForm = () => {
 
   return (
     <Card className="w-[40%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
-  
+  <CardHeader>
+    <CardTitle className="text-center text-2xl text-teal-800 font-bold">Send an invitation Email</CardTitle>
+  </CardHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <CardContent className="p-6">
             <div className="flex flex-col gap-6">
