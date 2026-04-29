@@ -66,13 +66,13 @@ const EmailInviteForm = () => {
   const handleFormSubmit: SubmitHandler<emailInviteFormType> = (
     data: emailInviteFormType,
   ) => {
-    // mutation.mutate(data);
+    mutation.mutate(data);
     console.log(data);
   };
 
   return (
     <Card className="w-[40%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
-      <FormProvider {...form}>
+  
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <CardContent className="p-6">
             <div className="flex flex-col gap-6">
@@ -128,7 +128,7 @@ const EmailInviteForm = () => {
             </Button>
           </CardFooter>
         </form>
-      </FormProvider>
+    
     </Card>
   );
 };
