@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,6 +14,10 @@ import RoleAndExpiryTime from "./RoleAndExpiryTime";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { T_MutaionError } from "@/types/global";
 const schema = z.object({
   role: z.string().min(1, "please select a role"),
   expiryTime: z.coerce.number().min(1, "please select an expiry time"),
@@ -27,13 +31,38 @@ const InviteCodeGenerator = () => {
   });
   const {
     setValue,
-    setError,
     watch,
     formState: { errors },
     handleSubmit,
   } = form;
+const [inviteCode,setInviteCode]=useState("")
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const postApi = async (data: codeInviteFormType) => {
+    const response = await axios.post(`${backendUrl}/invite/codeInvite`, data, {
+      withCredentials: true,
+    });
+    return response.data;
+  };
+  const mutation = useMutation({
+    mutationFn: postApi,
+    onSuccess: (data) => {
+      if (data.success) {
+        setInviteCode(data.joinCode)
+        toast.success(data.message);
+      }
+    },
+    onError: (error: T_MutaionError) => {
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
+    },
+  });
+
   const handleFormSubmit = (data: codeInviteFormType) => {
     console.log(data);
+    mutation.mutate(data);
   };
   return (
     <div className="flex justify-center ">
@@ -51,7 +80,9 @@ const InviteCodeGenerator = () => {
                     form.clearErrors("expiryTime");
                   }
                   setValue("role", values.role);
-                  if(values.role){form.clearErrors("role")}
+                  if (values.role) {
+                    form.clearErrors("role");
+                  }
                 }}
                 values={{
                   expiryTime: Number(watch("expiryTime")),
@@ -65,11 +96,15 @@ const InviteCodeGenerator = () => {
 
               <div className="flex items-center gap-5">
                 <Input
+                value={inviteCode}
                   className="h-20 mt-5 text-3xl! bg-slate-200! text-center"
                   disabled
                   placeholder="Your code"
                 ></Input>
-                <button className="flex items-center cursor-pointer">
+                <button
+                  type="button"
+                  className="flex items-center cursor-pointer"
+                >
                   <Icon
                     icon="tabler:copy-filled"
                     className="size-20! text-gray-500"
