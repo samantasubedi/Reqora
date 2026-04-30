@@ -65,7 +65,7 @@ const InviteCodeGenerator = () => {
     console.log(data);
     mutation.mutate(data);
   };
- 
+
   return (
     <div className="flex justify-center ">
       <Card className="md:w-[40%] w-[90%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
@@ -103,7 +103,12 @@ const InviteCodeGenerator = () => {
                   disabled
                   placeholder="Your code"
                 ></Input>
-                <CopyButton className="size-12 text-3xl bg-gray-600 hover:bg-gray-700" content={joinCode} />
+                {joinCode && (
+                  <CopyButton
+                    className="size-12 text-3xl bg-gray-600 hover:bg-gray-700"
+                    content={joinCode}
+                  />
+                )}
               </div>
             </CardContent>
           </CardHeader>

@@ -85,8 +85,12 @@ const page = () => {
       </div>
       <div className="w-full flex justify-center mt-10">
         <div className="flex justify-evenly  w-full">
-          <Card className={`${cardClass} bg-cyan-800/20`}  >
-            <BorderBeam size={300} borderWidth={3} className="opacity-0 group-hover:opacity-100"/>
+          <Card className={`${cardClass} bg-cyan-800/20`}>
+            <BorderBeam
+              size={300}
+              borderWidth={3}
+              className="opacity-0 group-hover:opacity-100"
+            />
             <CardHeader>
               <CardTitle className="text-center text-4xl font-bold text-white py-5 rounded-2xl">
                 Join a Company
@@ -99,11 +103,20 @@ const page = () => {
             <CardContent>
               <div className="flex justify-center">
                 {" "}
-                <Icon icon="fluent:people-add-20-filled"  className="text-cyan-800 size-80" />
+                <Icon
+                  icon="fluent:people-add-20-filled"
+                  className="text-cyan-800 size-80"
+                />
               </div>
               <p className="text-black font-semibold">Have a code ?</p>
               <CardAction className="w-full">
-                <Button size="lg" className={`${buttonClass} text-white bg-blue-800/70 hover:bg-blue-900/70`}>
+                <Button
+                  onClick={() => {
+                    router.push("/getstarted/join");
+                  }}
+                  size="lg"
+                  className={`${buttonClass} text-white bg-blue-800/70 hover:bg-blue-900/70`}
+                >
                   Join
                   <Icon icon="line-md:login" className="h-10! w-10!" />
                 </Button>
@@ -111,8 +124,12 @@ const page = () => {
             </CardContent>
           </Card>
 
-          <Card className={`${cardClass} bg-green-500/30`} >
-           <BorderBeam size={300} borderWidth={3} className="opacity-0 group-hover:opacity-100"/>
+          <Card className={`${cardClass} bg-green-500/30`}>
+            <BorderBeam
+              size={300}
+              borderWidth={3}
+              className="opacity-0 group-hover:opacity-100"
+            />
             <CardHeader>
               <CardTitle className="text-center text-4xl font-bold text-white py-5 rounded-2xl">
                 Create a Company
@@ -125,11 +142,9 @@ const page = () => {
             <CardContent>
               <div className="flex justify-center">
                 {" "}
-               <Icon icon="mdi:company" className="text-teal-800 size-80"/>
+                <Icon icon="mdi:company" className="text-teal-800 size-80" />
               </div>
-              <p className="text-black font-semibold">
-                Want to start fresh?
-              </p>
+              <p className="text-black font-semibold">Want to start fresh?</p>
               <CardAction className="w-full">
                 <Button
                   onClick={() => {
