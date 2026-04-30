@@ -18,6 +18,7 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutaionError } from "@/types/global";
+import { CopyButton } from "../animate-ui/components/buttons/copy";
 const schema = z.object({
   role: z.string().min(1, "please select a role"),
   expiryTime: z.coerce.number().min(1, "please select an expiry time"),
@@ -35,7 +36,7 @@ const InviteCodeGenerator = () => {
     formState: { errors },
     handleSubmit,
   } = form;
-const [inviteCode,setInviteCode]=useState("")
+  const [joinCode, setJoinCode] = useState<string>("");
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const postApi = async (data: codeInviteFormType) => {
     const response = await axios.post(`${backendUrl}/invite/codeInvite`, data, {
@@ -47,7 +48,7 @@ const [inviteCode,setInviteCode]=useState("")
     mutationFn: postApi,
     onSuccess: (data) => {
       if (data.success) {
-        setInviteCode(data.joinCode)
+        setJoinCode(data.joinCode);
         toast.success(data.message);
       }
     },
@@ -64,6 +65,7 @@ const [inviteCode,setInviteCode]=useState("")
     console.log(data);
     mutation.mutate(data);
   };
+ 
   return (
     <div className="flex justify-center ">
       <Card className="md:w-[40%] w-[90%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
@@ -94,22 +96,14 @@ const [inviteCode,setInviteCode]=useState("")
                 }}
               />
 
-              <div className="flex items-center gap-5">
+              <div className="flex justify-center items-center gap-5">
                 <Input
-                value={inviteCode}
+                  value={joinCode}
                   className="h-20 mt-5 text-3xl! bg-slate-200! text-center"
                   disabled
                   placeholder="Your code"
                 ></Input>
-                <button
-                  type="button"
-                  className="flex items-center cursor-pointer"
-                >
-                  <Icon
-                    icon="tabler:copy-filled"
-                    className="size-20! text-gray-500"
-                  />
-                </button>
+                <CopyButton className="size-12 text-3xl bg-gray-600 hover:bg-gray-700" content={joinCode} />
               </div>
             </CardContent>
           </CardHeader>
