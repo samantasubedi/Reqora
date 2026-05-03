@@ -9,17 +9,25 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
+import { toast } from "react-toastify";
 
 const page = () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const postApi = async (data: any) => {
-    const response = await axios.post(`${backendUrl}/joinCode`, data, {
+  const postApi = async (data:{code:string} ) => {
+    const response = await axios.post(`${backendUrl}/joinByCode`, data, {
       withCredentials: true,
     });
-    return response;
+    return response.data;
   };
+  const mutation=useMutation({
+    mutationFn:postApi,
+  onSuccess=(data)=>{
+    toast.success(data.message)
+  }
+  })
   return (
     <div className="flex justify-center">
       <Card className="md:w-[30%] md:mt-[10%] bg-white">
