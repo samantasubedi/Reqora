@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { T_MutaionError } from "@/types/global";
 import { Icon } from "@iconify/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -16,18 +17,27 @@ import { toast } from "react-toastify";
 
 const page = () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const postApi = async (data:{code:string} ) => {
+  const postApi = async (data: { code: string }) => {
     const response = await axios.post(`${backendUrl}/joinByCode`, data, {
       withCredentials: true,
     });
     return response.data;
   };
-  const mutation=useMutation({
-    mutationFn:postApi,
-  onSuccess=(data)=>{
-    toast.success(data.message)
-  }
-  })
+  const mutation = useMutation({
+    mutationFn: postApi,
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success(data.message);
+      }
+    },
+    onError: (error: T_MutaionError) => {
+      if (error.response) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error(error.message);
+      }
+    },
+  });
   return (
     <div className="flex justify-center">
       <Card className="md:w-[30%] md:mt-[10%] bg-white">
