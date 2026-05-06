@@ -131,7 +131,7 @@ export const inviteToCompany = async (req: Request, res: Response) => {
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
   const token = crypto.randomBytes(32).toString("hex");
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-  const inviteUrl = `${frontendUrl}/join?token=${token}`;
+  const inviteUrl = `${frontendUrl}/getstarted/join/accept-invite?token=${token}`;
   const companyEmail = process.env.COMPANY_EMAIL;
 
   const username = res.locals.user.username;
@@ -357,8 +357,8 @@ export const generateCode = async (req: Request, res: Response) => {
 };
 
 export const joinByEmail = async (req: Request, res: Response) => {
-  const { token } = req.body;
-  if (!token) {
+  const { code } = req.body;
+  if (!code) {
     console.log("token is required");
     return res.status(400).json({
       success: false,
@@ -381,14 +381,14 @@ export const joinByEmail = async (req: Request, res: Response) => {
   }
 
   try {
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const hashedCode = crypto.createHash("sha256").update(code).digest("hex");
     const retrivedToken = await prisma.joinToken.findUnique({
-      where: { token: hashedToken },
+      where: { token: hashedCode },
     });
 
     if (!retrivedToken) {
       return res.status(404).json({
-        hashedToken: hashedToken,
+        hashedToken: hashedCode,
         retrivedToken: retrivedToken,
         success: false,
         code: "JOIN_FAILED",
@@ -417,7 +417,7 @@ export const joinByEmail = async (req: Request, res: Response) => {
           data: {
             used: true,
           },
-          where: { token: hashedToken },
+          where: { token: hashedCode },
         }),
       ]);
       const refreshToken = req.cookies.refreshToken;
