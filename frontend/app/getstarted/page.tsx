@@ -112,7 +112,7 @@ const page = () => {
               <CardAction className="w-full">
                 <Button
                   onClick={() => {
-                    router.push("/getstarted/join");
+                    router.push("/getstarted/join/join-code");
                   }}
                   size="lg"
                   className={`${buttonClass} text-white bg-blue-800/70 hover:bg-blue-900/70`}

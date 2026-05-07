@@ -470,6 +470,7 @@ export const joinByEmail = async (req: Request, res: Response) => {
 };
 export const joinByCode = async (req: Request, res: Response) => {
   const { code } = req.body;
+
   if (!code) {
     return res.status(400).json({ message: "please provide all fields" });
   }
@@ -485,7 +486,7 @@ export const joinByCode = async (req: Request, res: Response) => {
       return res.status(500).json({ success: false, message: "Invalid code" });
     }
     if (retrivedCode.used) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Code has already been used",
       });

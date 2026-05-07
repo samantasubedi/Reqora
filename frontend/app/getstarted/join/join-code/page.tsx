@@ -18,10 +18,14 @@ import { toast } from "react-toastify";
 
 const page = () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const postApi = async (data: { code: string }) => {
-    const response = await axios.post(`${backendUrl}/joinByCode`, data, {
-      withCredentials: true,
-    });
+  const postApi = async (code: string) => {
+    const response = await axios.post(
+      `${backendUrl}/join/byCode`,
+      { code },
+      {
+        withCredentials: true,
+      },
+    );
     return response.data;
   };
   const mutation = useMutation({
@@ -72,6 +76,7 @@ const page = () => {
           <Button
             onClick={() => {
               console.log(joinCode);
+              mutation.mutate(joinCode);
             }}
             className="bg-teal-700 w-full! font-extrabold text-lg mt-5 hover:bg-teal-600 cursor-pointer"
           >
