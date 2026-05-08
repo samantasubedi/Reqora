@@ -13,10 +13,12 @@ import { T_MutaionError } from "@/types/global";
 import { Icon } from "@iconify/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 const page = () => {
+  const router=useRouter()
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const postApi = async (code: string) => {
     const response = await axios.post(
@@ -33,6 +35,7 @@ const page = () => {
     onSuccess: (data) => {
       if (data.success) {
         toast.success(data.message);
+        router.push(`/${data.role}/dashboard`)
       }
     },
     onError: (error: T_MutaionError) => {

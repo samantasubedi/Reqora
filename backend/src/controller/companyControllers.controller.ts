@@ -358,6 +358,7 @@ export const generateCode = async (req: Request, res: Response) => {
 
 export const joinByEmail = async (req: Request, res: Response) => {
   const { code } = req.body;
+  console.log("this is the token", code);
   if (!code) {
     console.log("token is required");
     return res.status(400).json({
@@ -388,8 +389,6 @@ export const joinByEmail = async (req: Request, res: Response) => {
 
     if (!retrivedToken) {
       return res.status(404).json({
-        hashedToken: hashedCode,
-        retrivedToken: retrivedToken,
         success: false,
         code: "JOIN_FAILED",
         message: "Invalid token!",
@@ -452,6 +451,7 @@ export const joinByEmail = async (req: Request, res: Response) => {
         success: true,
         message: "You have been joined to the company",
         code: "JOIN_SUCCESSFULL",
+        role: retrivedToken.role,
       });
     } else {
       return res.status(400).json({
@@ -513,7 +513,7 @@ export const joinByCode = async (req: Request, res: Response) => {
       where: { code: hashedJoinCode },
       data: { used: true },
     });
-    await prisma.user.updateMany({
+    await prisma.user.update({
       where: { email },
       data: {
         role: retrivedCode.role,
@@ -551,6 +551,7 @@ export const joinByCode = async (req: Request, res: Response) => {
     }
 
     return res.status(201).json({
+      role: retrivedCode.role,
       success: "true",
       code: "JOIN_SUCCESSFULL",
       message: "You have been joined to the company",

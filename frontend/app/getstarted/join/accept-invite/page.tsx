@@ -21,24 +21,28 @@ const page = () => {
   const token = params.get("token");
   const handleAccept = async () => {
     try {
-      const response = await axios.post(`${backendUrl}/isloggedin`, null, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${backendUrl}/isloggedin`,
+        { token },
+        {
+          withCredentials: true,
+        },
+      );
 
       if (response.data.code === "LOGGEDIN") {
         try {
           const response = await axios.post(
             `${backendUrl}/join/byEmail`,
-            { token },
+            { code: token },
             {
               withCredentials: true,
             },
           );
-          const { code, message, success } = response.data;
+          const { code, message, success ,role} = response.data;
           console.log("this his the response", code, message, success);
           if (success && code == "JOIN_SUCCESSFULL") {
             toast.success(message);
-            router.push("/employee/dashboard");
+            router.push(`/${role}/dashboard`);
           }
         } catch (err: any) {
           if (err.response) {
