@@ -2,21 +2,24 @@ import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
 export const getProfileInfo = async (req: Request, res: Response) => {
   const email = res.locals.email;
-  if(!email){
-    return res.status(500).json({
-      success:false,
-      code:"SERVER_ERROR",
-      message:"server error"})
+  if (!email) {
+    throw new Error("authorization failed");
   }
   try {
     const userInfo = await prisma.user.findUnique({
       where: { email },
+      select: { username: true, role: true, password: true },
     });
+    if (!userInfo) {
+      throw new Error("user not found");
+    }
+    const { username, role, password } = userInfo;
   } catch (err) {
-   return res.status(500).json({
-      success:false,
-      code:"SERVER_ERROR",
-      message:"server error"})
+    return res.status(500).json({
+      success: false,
+      code: "SERVER_ERROR",
+      message: "server error",
+    });
   }
 };
 export const getAllUsers = (req: Request, res: Response) => {
