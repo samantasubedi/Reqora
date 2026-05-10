@@ -1,5 +1,24 @@
 import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
+export const getProfileInfo = async (req: Request, res: Response) => {
+  const email = res.locals.email;
+  if(!email){
+    return res.status(500).json({
+      success:false,
+      code:"SERVER_ERROR",
+      message:"server error"})
+  }
+  try {
+    const userInfo = await prisma.user.findUnique({
+      where: { email },
+    });
+  } catch (err) {
+   return res.status(500).json({
+      success:false,
+      code:"SERVER_ERROR",
+      message:"server error"})
+  }
+};
 export const getAllUsers = (req: Request, res: Response) => {
   res.send("this gets all users for admin dashboard");
 };
