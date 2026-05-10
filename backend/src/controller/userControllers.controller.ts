@@ -8,12 +8,22 @@ export const getProfileInfo = async (req: Request, res: Response) => {
   try {
     const userInfo = await prisma.user.findUnique({
       where: { email },
-      select: { username: true, role: true, password: true },
+      select: {
+        username: true,
+        role: true,
+        password: true,
+        company: { select: { companyName: true, email: true, address: true } },
+      },
     });
     if (!userInfo) {
       throw new Error("user not found");
     }
     const { username, role, password } = userInfo;
+    const {
+      companyName,
+      address,
+      email: companyEmail,
+    } = userInfo.company || {};
   } catch (err) {
     return res.status(500).json({
       success: false,
