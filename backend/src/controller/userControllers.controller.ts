@@ -24,6 +24,15 @@ export const getProfileInfo = async (req: Request, res: Response) => {
       address,
       email: companyEmail,
     } = userInfo.company || {};
+
+    return res.status(201).json({
+      username,
+      role,
+      password,
+      companyName,
+      address,
+      companyEmail,
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
