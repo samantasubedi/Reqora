@@ -22,7 +22,7 @@ const page = () => {
     const response = await axios.get(`${backendUrl}/profile`, {
       withCredentials: true,
     });
-    console.log(response.data);
+
     return response.data;
   };
   const query = useQuery({
@@ -38,7 +38,20 @@ const page = () => {
       }
     }
   }, [query.isError]);
-
+  if (query.isLoading) {
+    return (
+      <div className="text-8xl flex justify-center items-center">
+        Loading.....
+      </div>
+    );
+  }
+  if (query.isError) {
+    return (
+      <div className="text-red text-4xl">
+        Something went wrong please try again later
+      </div>
+    );
+  }
   return (
     <div className="flex justify-center p-5">
       <Card className="w-[60%] p-10">
@@ -51,11 +64,11 @@ const page = () => {
               />
             </div>
             <div>
-              {/* <p className="font-bold text-2xl">{query.data.username}</p>
-              <p className="text-gray-600">{query.data.email}</p>
+              <p className="font-bold text-2xl">{query.data?.username}</p>
+              <p className="text-gray-600">{query.data?.email}</p>
               <p className="text-blue-600 px-2 rounded-2xl bg-blue-200 w-fit font-semibold">
-                {query.data.role}
-              </p> */}
+                {query.data?.role}
+              </p>
             </div>
           </div>
           <Button>Edit profile</Button>
