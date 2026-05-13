@@ -8,7 +8,7 @@ import { authMiddlware } from "../middleware/authMiddleware";
 
 const router = Router();
 router.use(authRoutes);
-router.use(userRoutes);
+router.use(authMiddlware, userRoutes);
 router.use(authMiddlware, companyRoutes);
 router.use(authMiddlware, requestRoutes);
 router.use(authMiddlware, resourceRoutes);

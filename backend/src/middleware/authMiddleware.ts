@@ -11,18 +11,15 @@ export const authMiddlware = (
     const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
-      const refreshSecret = process.env.REFRESH_SECRET!;
-      const accessSecret = process.env.ACCESS_SECRET!;
       const refreshToken = req.cookies.refreshToken;
 
       if (!refreshToken) {
-        return res.json({
+        return res.status(400).json({
           code: "UNAUTHORIZED_USER  ",
           message: "access and refresh token not found",
         });
       } else if (refreshToken) {
-    
-     handleRefresh(req,res)
+        handleRefresh(req, res);
       }
     } else if (accessToken) {
       const accessSecret = process.env.ACCESS_SECRET;
@@ -32,7 +29,7 @@ export const authMiddlware = (
         res.locals.user = decodedData;
 
         next();
-      } 
+      }
     }
   } catch (err) {
     return res

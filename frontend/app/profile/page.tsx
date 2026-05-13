@@ -7,8 +7,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import axios from "axios";
-import React from "react";
+import axios, { isAxiosError } from "axios";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 
 const page = () => {
@@ -19,7 +19,9 @@ const page = () => {
   // const queryClient = useQueryClient();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const fetchProfileInfo = async () => {
-    const response = await axios.get(`${backendUrl}/profile`);
+    const response = await axios.get(`${backendUrl}/profile`, {
+      withCredentials: true,
+    });
     console.log(response.data);
     return response.data;
   };
@@ -27,9 +29,16 @@ const page = () => {
     queryFn: fetchProfileInfo,
     queryKey: ["retrivedProfileInfo"],
   });
-  if (query.isError) {
-    toast.error(query.error.message);
-  }
+  useEffect(() => {
+    if (query.isError) {
+      if (isAxiosError(query.error))
+        toast.error(query.error.response?.data.message);
+      else {
+        toast.error(query.error?.message);
+      }
+    }
+  }, [query.isError]);
+
   return (
     <div className="flex justify-center p-5">
       <Card className="w-[60%] p-10">

@@ -1,7 +1,8 @@
 import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
 export const getProfileInfo = async (req: Request, res: Response) => {
-  const email = res.locals.email;
+  const email = res.locals.user.email;
+
   if (!email) {
     throw new Error("authorization failed");
   }
