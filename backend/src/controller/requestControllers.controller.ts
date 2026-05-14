@@ -4,11 +4,30 @@ import { stat } from "node:fs";
 export const getAllRequest = async (req: Request, res: Response) => {
   const companyId = res.locals.user.companyId;
   try {
-    const requestData = await prisma.request.findMany({ where: { companyId } });
-    if (!requestData) {
+    const response = await prisma.request.findMany({
+      where: { companyId },
+      include: {
+        company: true,
+        requestedBy: true,
+        reviewedBy: true,
+        resource: true,
+      },
+    });
+    if (!response) {
       throw new Error("server error");
     }
-    res.json({ alldata: requestData});
+    const requestData = response.map((curr) => {
+      return {
+        requestId: curr.id,
+        status: curr.status,
+        requestedQuantity: curr.requestedQuantity,
+        resourceId: curr.resourceId,
+        reviewedBy: curr.reviewedBy?.username,
+        requestedBy: curr.requestedBy.username,
+        companyName: curr.company.companyName,
+        resourceName: curr.resource.name,
+      };
+    });
   } catch (err) {
     return res.status(500).json({
       code: "SERVER_ERROR",
