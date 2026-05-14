@@ -1,7 +1,22 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { stat } from "node:fs";
-export const getAllRequest = (req: Request, res: Response) => {};
+export const getAllRequest = async (req: Request, res: Response) => {
+  const companyId = res.locals.user.companyId;
+  try {
+    const requestData = await prisma.request.findMany({ where: { companyId } });
+    if (!requestData) {
+      throw new Error("server error");
+    }
+    res.json({ alldata: requestData});
+  } catch (err) {
+    return res.status(500).json({
+      code: "SERVER_ERROR",
+      message: "server error",
+      success: false,
+    });
+  }
+};
 export const getSpecificRequest = (req: Request, res: Response) => {
   const id = req.params.id;
   res.send(`gets a specific request with id ${id}`);
