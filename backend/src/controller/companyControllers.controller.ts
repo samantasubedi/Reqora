@@ -73,43 +73,61 @@ export const createCompany = async (req: Request, res: Response) => {
     }
 
     const refreshToken = req.cookies.refreshToken;
-    if (refreshToken) {
-      try {
-        const { code, accessToken, NewRefreshToken } =
-          await refresh(refreshToken);
-        if (code === "USER_NOT_FOUND") {
-          throw new Error("user not found");
-        }
-        res.cookie("accessToken", accessToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "strict",
-          maxAge: 15 * 60 * 1000,
-        });
-        res.cookie("refreshToken", NewRefreshToken, {
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-          maxAge: 15 * 24 * 60 * 60 * 1000,
-        });
-      } catch (err) {
-        res.clearCookie("refreshToken", {
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-        });
-      }
+    // if (refreshToken) {
+    //   try {
+    //     const { code, accessToken, NewRefreshToken } =
+    //       await refresh(refreshToken);
+    //     if (code === "USER_NOT_FOUND") {
+    //       throw new Error("user not found");
+    //     }
+    //     res.cookie("accessToken", accessToken, {
+    //       httpOnly: true,
+    //       secure: true,
+    //       sameSite: "strict",
+    //       maxAge: 15 * 60 * 1000,
+    //     });
+    //     res.cookie("refreshToken", NewRefreshToken, {
+    //       sameSite: "strict",
+    //       httpOnly: true,
+    //       secure: true,
+    //       maxAge: 15 * 24 * 60 * 60 * 1000,
+    //     });
+    //   } catch (err) {
+    //     res.clearCookie("refreshToken", {
+    //       sameSite: "strict",
+    //       httpOnly: true,
+    //       secure: true,
+    //     });
+    //   }
+    // }
+    const { code, accessToken, NewRefreshToken } = await refresh(refreshToken);
+
+    if (code === "USER_NOT_FOUND") {
+      throw new Error("user not found");
     }
-    res.status(200).json({
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
+    res.cookie("refreshToken", NewRefreshToken, {
+      sameSite: "strict",
+      httpOnly: true,
+      secure: true,
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
       success: true,
       code: "COMPANY_CREATED",
       message: "company created successfully",
     });
-  } catch (err) {
-    res.json({
+  } catch (err: any) {
+    return res.status(400).json({
       success: false,
       code: "CREATION_FAILED",
-      message: "failed to create company",
+      message: `failed to create company,${err.message}`,
     });
   }
 };
@@ -118,7 +136,8 @@ import crypto from "crypto";
 import { transporter } from "../lib/sendMail";
 import { refresh } from "../services/authService.service";
 import cryptoRandomString from "crypto-random-string";
-import { userInfo } from "os";
+
+import { handleRefresh } from "./authControllers.controller";
 
 export const inviteToCompany = async (req: Request, res: Response) => {
   const { email: userEmail, role, message, expiryTime } = req.body;

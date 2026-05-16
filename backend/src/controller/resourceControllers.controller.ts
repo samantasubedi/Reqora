@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 export const getAllResources = async (req: Request, res: Response) => {
-  const companyId = res.locals.companyId;
+  const companyId = res.locals.user.companyId;
   try {
     const resources = await prisma.resource.findMany({
       where: { companyId },
-      include:{}
     });
     if (!resources) {
       throw new Error("server error");
@@ -25,7 +24,7 @@ export const getAllResources = async (req: Request, res: Response) => {
     res.json({
       success: true,
       message: "got all resources",
-      resources,
+      allResources,
     });
   } catch (err) {
     console.log(err);
@@ -52,6 +51,7 @@ export const addResource = async (req: Request, res: Response) => {
 
   try {
     const { companyId } = res.locals.user;
+    console.log("this is companyId", companyId);
 
     if (!companyId) {
       return res.status(400).json({

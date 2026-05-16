@@ -97,7 +97,7 @@ export const handleLogin = async (req: Request, res: Response) => {
       maxAge: 15 * 60 * 1000, //15 minutes
     });
 
-    res.status(200).json({
+   return res.status(200).json({
       success: true,
       code: "LOGIN_SUCCESSFULL",
       message: `You have been logged in as ${username}`,
