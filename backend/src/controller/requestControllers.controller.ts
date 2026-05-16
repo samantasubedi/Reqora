@@ -16,7 +16,7 @@ export const getAllRequest = async (req: Request, res: Response) => {
     if (!response) {
       throw new Error("server error");
     }
-    const requestData = response.map((curr) => {
+    const requestData = response.map((curr) => {//we are doing this because we get an array not an object
       return {
         requestId: curr.id,
         status: curr.status,

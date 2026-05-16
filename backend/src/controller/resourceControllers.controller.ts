@@ -5,7 +5,23 @@ export const getAllResources = async (req: Request, res: Response) => {
   try {
     const resources = await prisma.resource.findMany({
       where: { companyId },
+      include:{}
     });
+    if (!resources) {
+      throw new Error("server error");
+    }
+    const allResources = resources.map((curr) => ({
+      id: curr.id,
+      name: curr.name,
+      location: curr.location,
+      department: curr.department,
+      availability: curr.availability,
+      status: curr.status,
+      totalQuantity: curr.totalQuantity,
+      availableQuantity: curr.availableQuantity,
+      createdAt: curr.createdAt,
+      updatedAt: curr.updatedAt,
+    }));
     res.json({
       success: true,
       message: "got all resources",
@@ -13,7 +29,7 @@ export const getAllResources = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: "server error , couldnt retirve the resources",
     });
@@ -30,7 +46,7 @@ export const addResource = async (req: Request, res: Response) => {
     location,
     description,
   } = req.body; // we are renaming resourceName from frontend as name and so on for other fields to match the naming for db
-  if (!name || !location || !department || !totalQuantity||!type||!status) {
+  if (!name || !location || !department || !totalQuantity || !type || !status) {
     res.json({ message: "please provide all fields" });
   }
 
