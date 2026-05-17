@@ -20,6 +20,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import LogoutDialog from "./LogoutDialog";
+import { useQuery } from "@tanstack/react-query";
 export interface statCardInterface {
   title: string;
   number: number;
@@ -49,6 +50,15 @@ export const handleLogout = async (router: AppRouterInstance) => {
 };
 export const AdminDashboard = () => {
   const router = useRouter();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const fetchApi = async () => {
+    await axios.get(`${backendUrl}/resources`, { withCredentials: true });
+  };
+  const query = useQuery({
+    queryFn: fetchApi,
+    queryKey: ["resourceData"],
+  });
+
   const AdminStat: statCardInterface[] = [
     {
       title: "Total Resources",

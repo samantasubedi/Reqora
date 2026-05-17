@@ -3,11 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icon } from "@iconify/react";
-import {
-  QueryClientProvider,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios, { isAxiosError } from "axios";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -42,15 +38,16 @@ const page = () => {
   if (query.isLoading) {
     return (
       <div className="flex justify-center p-5">
-      <Skeleton className="w-[60%] p-10 bg-gray-300">
-        <div className="flex gap-10 ">
-          <Skeleton className="w-13 h-13 rounded-full bg-gray-100"></Skeleton>
-          <div className="flex flex-col gap-3">
-            <Skeleton className="w-40 h-5  bg-gray-100"></Skeleton>
-            <Skeleton className="w-10 h-5  bg-gray-100"></Skeleton>
+        <Skeleton className="w-[60%] p-10 bg-gray-300">
+          <div className="flex gap-10 ">
+            <Skeleton className="w-13 h-13 rounded-full bg-gray-100"></Skeleton>
+            <div className="flex flex-col gap-3">
+              <Skeleton className="w-40 h-5  bg-gray-100"></Skeleton>
+              <Skeleton className="w-10 h-5  bg-gray-100"></Skeleton>
+            </div>
           </div>
-        </div>
-      </Skeleton></div>
+        </Skeleton>
+      </div>
     );
   }
   if (query.isError) {
