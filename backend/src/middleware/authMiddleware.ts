@@ -27,7 +27,6 @@ export const authMiddlware = (
         const decodedData = jwt.verify(accessToken, accessSecret);
 
         res.locals.user = decodedData;
-        console.log("this is decoded data", decodedData);
 
         next();
       }
