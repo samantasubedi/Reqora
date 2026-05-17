@@ -9,7 +9,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EllipsisVertical } from "lucide-react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 export const ResourceTable = () => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const fetchApi = async () => {
+    await axios.get(`${backendUrl}/resources`, { withCredentials: true });
+  };
+  const query = useQuery({
+    queryFn: fetchApi,
+    queryKey: ["resourceData"],
+  });
+
   const TableData = [
     {
       ID: "RES001",
