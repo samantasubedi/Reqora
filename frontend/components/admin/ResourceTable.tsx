@@ -22,7 +22,16 @@ type resourceType = {
   availableQuantity: number;
   createdAt: string;
   updatedAt: string;
-}[];
+};
+type tableResourceType = {
+  id: string;
+  name: string;
+  status: string;
+  department: string;
+  location: string;
+  availability: number;
+};
+
 export const ResourceTable = () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const fetchApi = async () => {
@@ -35,104 +44,110 @@ export const ResourceTable = () => {
     queryFn: fetchApi,
     queryKey: ["resourceData"],
   });
+  let resourceData;
   if (query.data) {
-    const resourceData:resourceType = query.data.allResources.map((curr:resourceType) => ({
-      Id: curr.id,
+    resourceData = query.data.allResources.map((curr: resourceType) => ({
+      id: curr.id,
+      name: curr.name,
+      status: curr.status,
+      department: curr.department,
+      location: curr.location,
+      availability: (curr.availableQuantity / curr.totalQuantity) * 100,
     }));
   }
 
-  const TableData = [
-    {
-      ID: "RES001",
-      Name: "Monitor",
-      Type: "Hardware",
-      Status: "In Use",
-      Department: "IT",
-      Location: "Building B, Floor 6",
-      Availability: "60%",
-    },
-    {
-      ID: "RES002",
-      Name: "Laptop",
-      Type: "Hardware",
-      Status: "Available",
-      Department: "Finance",
-      Location: "Building A, Floor 3",
-      Availability: "85%",
-    },
-    {
-      ID: "RES003",
-      Name: "Printer",
-      Type: "Hardware",
-      Status: "Under Maintenance",
-      Department: "HR",
-      Location: "Building C, Floor 2",
-      Availability: "20%",
-    },
-    {
-      ID: "RES004",
-      Name: "Projector",
-      Type: "Hardware",
-      Status: "In Use",
-      Department: "Marketing",
-      Location: "Building B, Floor 1",
-      Availability: "50%",
-    },
-    {
-      ID: "RES005",
-      Name: "Office 365 License",
-      Type: "Software",
-      Status: "Available",
-      Department: "IT",
-      Location: "Cloud",
-      Availability: "95%",
-    },
-    {
-      ID: "RES006",
-      Name: "Conference Room 1",
-      Type: "Facility",
-      Status: "Booked",
-      Department: "Admin",
-      Location: "Building A, Floor 5",
-      Availability: "30%",
-    },
-    {
-      ID: "RES007",
-      Name: "Tablet",
-      Type: "Hardware",
-      Status: "Available",
-      Department: "Sales",
-      Location: "Building D, Floor 4",
-      Availability: "75%",
-    },
-    {
-      ID: "RES008",
-      Name: "Scanner",
-      Type: "Hardware",
-      Status: "In Use",
-      Department: "Operations",
-      Location: "Building C, Floor 1",
-      Availability: "40%",
-    },
-    {
-      ID: "RES009",
-      Name: "Adobe Creative Cloud",
-      Type: "Software",
-      Status: "In Use",
-      Department: "Design",
-      Location: "Cloud",
-      Availability: "70%",
-    },
-    {
-      ID: "RES010",
-      Name: "Server Rack",
-      Type: "Hardware",
-      Status: "Under Maintenance",
-      Department: "IT",
-      Location: "Data Center - Building B",
-      Availability: "10%",
-    },
-  ];
+  // const TableData = [
+  //   {
+  //     ID: "RES001",
+  //     Name: "Monitor",
+  //     Type: "Hardware",
+  //     Status: "In Use",
+  //     Department: "IT",
+  //     Location: "Building B, Floor 6",
+  //     Availability: "60%",
+  //   },
+  //   {
+  //     ID: "RES002",
+  //     Name: "Laptop",
+  //     Type: "Hardware",
+  //     Status: "Available",
+  //     Department: "Finance",
+  //     Location: "Building A, Floor 3",
+  //     Availability: "85%",
+  //   },
+  //   {
+  //     ID: "RES003",
+  //     Name: "Printer",
+  //     Type: "Hardware",
+  //     Status: "Under Maintenance",
+  //     Department: "HR",
+  //     Location: "Building C, Floor 2",
+  //     Availability: "20%",
+  //   },
+  //   {
+  //     ID: "RES004",
+  //     Name: "Projector",
+  //     Type: "Hardware",
+  //     Status: "In Use",
+  //     Department: "Marketing",
+  //     Location: "Building B, Floor 1",
+  //     Availability: "50%",
+  //   },
+  //   {
+  //     ID: "RES005",
+  //     Name: "Office 365 License",
+  //     Type: "Software",
+  //     Status: "Available",
+  //     Department: "IT",
+  //     Location: "Cloud",
+  //     Availability: "95%",
+  //   },
+  //   {
+  //     ID: "RES006",
+  //     Name: "Conference Room 1",
+  //     Type: "Facility",
+  //     Status: "Booked",
+  //     Department: "Admin",
+  //     Location: "Building A, Floor 5",
+  //     Availability: "30%",
+  //   },
+  //   {
+  //     ID: "RES007",
+  //     Name: "Tablet",
+  //     Type: "Hardware",
+  //     Status: "Available",
+  //     Department: "Sales",
+  //     Location: "Building D, Floor 4",
+  //     Availability: "75%",
+  //   },
+  //   {
+  //     ID: "RES008",
+  //     Name: "Scanner",
+  //     Type: "Hardware",
+  //     Status: "In Use",
+  //     Department: "Operations",
+  //     Location: "Building C, Floor 1",
+  //     Availability: "40%",
+  //   },
+  //   {
+  //     ID: "RES009",
+  //     Name: "Adobe Creative Cloud",
+  //     Type: "Software",
+  //     Status: "In Use",
+  //     Department: "Design",
+  //     Location: "Cloud",
+  //     Availability: "70%",
+  //   },
+  //   {
+  //     ID: "RES010",
+  //     Name: "Server Rack",
+  //     Type: "Hardware",
+  //     Status: "Under Maintenance",
+  //     Department: "IT",
+  //     Location: "Data Center - Building B",
+  //     Availability: "10%",
+  //   },
+  // ];
   return (
     <div className="mt-5 px-3">
       <Table className="bg-blue-200/40">
@@ -149,22 +164,22 @@ export const ResourceTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {TableData.map((curr) => {
+          {resourceData.map((curr: tableResourceType) => {
             return (
-              <TableRow key={curr.ID}>
-                <TableCell>{curr.ID}</TableCell>
-                <TableCell>{curr.Name}</TableCell>
-                <TableCell>{curr.Type}</TableCell>
+              <TableRow key={curr.id}>
+                <TableCell>{curr.id}</TableCell>
+                <TableCell>{curr.name}</TableCell>
+                <TableCell></TableCell>
                 <TableCell>
                   <span
-                    className={`rounded-xl p-1 ${curr.Status == "Available" ? "bg-green-200" : curr.Status == "Under Maintenance" ? "bg-red-200" : curr.Status == "In Use" ? "bg-yellow-200" : ""}`}
+                    className={`rounded-xl p-1 ${curr.status == "Available" ? "bg-green-200" : curr.status == "Under Maintenance" ? "bg-red-200" : curr.status == "In Use" ? "bg-yellow-200" : ""}`}
                   >
-                    {curr.Status}
+                    {curr.status}
                   </span>
                 </TableCell>
-                <TableCell>{curr.Department}</TableCell>
-                <TableCell>{curr.Location}</TableCell>
-                <TableCell>{curr.Availability}</TableCell>
+                <TableCell>{curr.department}</TableCell>
+                <TableCell>{curr.location}</TableCell>
+                <TableCell>{curr.availability}</TableCell>
                 <TableCell>{<EllipsisVertical />}</TableCell>
               </TableRow>
             );
