@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -9,8 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EllipsisVertical } from "lucide-react";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 type resourceType = {
   id: string;
   name: string;
@@ -56,7 +57,15 @@ export const ResourceTable = () => {
     }));
   }
   console.log("this is data", resourceData);
-
+  useEffect(() => {
+    if (query.isError) {
+      if (isAxiosError(query.error)) {
+        toast.error(query.data.message);
+      } else {
+        toast.error(query.error.message);
+      }
+    }
+  }, [query.isError]);
 
   return (
     <div className="mt-5 px-3">
@@ -89,7 +98,7 @@ export const ResourceTable = () => {
                 </TableCell>
                 <TableCell>{curr.department}</TableCell>
                 <TableCell>{curr.location}</TableCell>
-                <TableCell>{curr.availability}</TableCell>
+                <TableCell>{curr.availability}%</TableCell>
                 <TableCell>{<EllipsisVertical />}</TableCell>
               </TableRow>
             );
