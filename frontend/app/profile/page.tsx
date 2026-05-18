@@ -9,11 +9,7 @@ import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 
 const page = () => {
-  // const username = "samanta";
-  // const email = "samantasubedi01@gmail.com";
-  // const role = "admin";
-  // const companyName = "comapny1";
-  // const queryClient = useQueryClient();
+
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const fetchProfileInfo = async () => {
     const response = await axios.get(`${backendUrl}/profile`, {

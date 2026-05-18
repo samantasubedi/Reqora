@@ -11,15 +11,35 @@ import {
 import { EllipsisVertical } from "lucide-react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+type resourceType = {
+  id: string;
+  name: string;
+  location: string;
+  department: string;
+  availability: string;
+  status: string;
+  totalQuantity: number;
+  availableQuantity: number;
+  createdAt: string;
+  updatedAt: string;
+}[];
 export const ResourceTable = () => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const fetchApi = async () => {
-    await axios.get(`${backendUrl}/resources`, { withCredentials: true });
+    const response = await axios.get(`${backendUrl}/resources`, {
+      withCredentials: true,
+    });
+    return response.data;
   };
   const query = useQuery({
     queryFn: fetchApi,
     queryKey: ["resourceData"],
   });
+  if (query.data) {
+    const resourceData:resourceType = query.data.allResources.map((curr:resourceType) => ({
+      Id: curr.id,
+    }));
+  }
 
   const TableData = [
     {
@@ -115,7 +135,7 @@ export const ResourceTable = () => {
   ];
   return (
     <div className="mt-5 px-3">
-      <Table  className="bg-blue-200/40">
+      <Table className="bg-blue-200/40">
         <TableHeader>
           <TableRow className="bg-slate-200">
             <TableHead>ID</TableHead>
@@ -135,7 +155,13 @@ export const ResourceTable = () => {
                 <TableCell>{curr.ID}</TableCell>
                 <TableCell>{curr.Name}</TableCell>
                 <TableCell>{curr.Type}</TableCell>
-                <TableCell><span className={`rounded-xl p-1 ${curr.Status=="Available"?"bg-green-200":curr.Status=="Under Maintenance"?"bg-red-200":curr.Status=="In Use"?"bg-yellow-200":""}`}>{curr.Status}</span></TableCell>
+                <TableCell>
+                  <span
+                    className={`rounded-xl p-1 ${curr.Status == "Available" ? "bg-green-200" : curr.Status == "Under Maintenance" ? "bg-red-200" : curr.Status == "In Use" ? "bg-yellow-200" : ""}`}
+                  >
+                    {curr.Status}
+                  </span>
+                </TableCell>
                 <TableCell>{curr.Department}</TableCell>
                 <TableCell>{curr.Location}</TableCell>
                 <TableCell>{curr.Availability}</TableCell>
