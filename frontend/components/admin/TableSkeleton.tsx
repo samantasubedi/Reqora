@@ -26,7 +26,7 @@ export function TableSkeleton() {
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 4 }).map(
+          {Array.from({ length: 10 }).map(
             (
               _,
               index, //forms an empty array of length 4

@@ -190,8 +190,11 @@ const Sidebarmenu = () => {
               <DropdownMenuContent>
                 <LogoutDialog />
                 <Button
+                  onClick={() => {
+                    router.push("/profile");
+                  }}
                   variant={"secondary"}
-                  className="min-w-full flex gap-2 justify-start"
+                  className="min-w-full flex gap-2 justify-start cursor-pointer hover:bg-gray-200"
                 >
                   <Icon icon="tabler:edit-filled" className="size-6" />
                   <span>My profile</span>{" "}

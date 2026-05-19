@@ -12,7 +12,7 @@ import { EllipsisVertical } from "lucide-react";
 import axios, { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { TableSkeleton } from "../TableSkeleton";
+import { TableSkeleton } from "./TableSkeleton";
 import { TableError } from "./TableError";
 type resourceType = {
   id: string;
