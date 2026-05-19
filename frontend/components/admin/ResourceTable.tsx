@@ -66,6 +66,9 @@ export const ResourceTable = () => {
       }
     }
   }, [query.isError]);
+  if (query.isLoading) {
+    return <div className="text-8xl">Loading</div>;
+  }
 
   return (
     <div className="mt-5 px-3">
