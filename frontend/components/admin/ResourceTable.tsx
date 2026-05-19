@@ -12,6 +12,8 @@ import { EllipsisVertical } from "lucide-react";
 import axios, { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { TableSkeleton } from "../TableSkeleton";
+import { TableError } from "./TableError";
 type resourceType = {
   id: string;
   name: string;
@@ -60,14 +62,17 @@ export const ResourceTable = () => {
   useEffect(() => {
     if (query.isError) {
       if (isAxiosError(query.error)) {
-        toast.error(query.data.message);
+        toast.error(query.error.response?.data.message);
       } else {
         toast.error(query.error.message);
       }
     }
   }, [query.isError]);
   if (query.isLoading) {
-    return <div className="text-8xl">Loading</div>;
+    return <TableSkeleton />;
+  }
+  if (query.isError) {
+    return <TableError onRetry={() => {}} />;
   }
 
   return (
