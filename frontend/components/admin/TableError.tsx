@@ -1,4 +1,6 @@
 import { AlertCircle, RotateCcw } from "lucide-react";
+import { Icon } from "@iconify/react";
+import { Button } from "../ui/button";
 
 interface TableErrorProps {
   onRetry: () => void;
@@ -7,7 +9,7 @@ interface TableErrorProps {
 export function TableError({ onRetry }: TableErrorProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-6 rounded-lg bg-red-50 px-8 py-12 text-center">
-      <AlertCircle className="h-12 w-12 text-red-500" />
+      <Icon icon="cuida:alert-outline" className="text-7xl text-red-500" />
 
       <div>
         <h2 className="mb-2 text-lg font-medium text-slate-900">
@@ -18,13 +20,16 @@ export function TableError({ onRetry }: TableErrorProps) {
         </p>
       </div>
 
-      <button
+      <Button
         onClick={onRetry}
-        className="flex items-center gap-2 rounded-md bg-white px-5 py-2 text-sm font-medium text-slate-900 border border-slate-300 hover:bg-slate-50 transition-colors"
+        className="bg-white text-blue-500 hover:bg-blue-100 cursor-pointer font-bold text-md"
       >
-        <RotateCcw className="h-4 w-4" />
+        <Icon
+          icon="stash:arrow-retry"
+          className="text-blue size-6!  font-extrabold!"
+        />
         Retry
-      </button>
+      </Button>
     </div>
   );
 }

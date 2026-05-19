@@ -72,7 +72,13 @@ export const ResourceTable = () => {
     return <TableSkeleton />;
   }
   if (query.isError) {
-    return <TableError onRetry={() => {}} />;
+    return (
+      <TableError
+        onRetry={() => {
+          query.refetch();
+        }}
+      />
+    );
   }
 
   return (
