@@ -65,6 +65,7 @@ export const addResource = async (req: Request, res: Response) => {
         name,
         location,
         department,
+        type,
         availability: true,
         status,
         totalQuantity,

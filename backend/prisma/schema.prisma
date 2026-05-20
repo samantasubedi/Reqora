@@ -61,6 +61,7 @@ model resource {
   name              String
   location          String
   department        String
+  type              String
   availability      Boolean
   status            ResourceStatus
   totalQuantity     Int
@@ -92,7 +93,7 @@ model joinToken {
   companyId String
   role      Role
   expiresAt DateTime
-  used      Boolean @default(false)
+  used      Boolean  @default(false)
 }
 
 model joinCode {
@@ -100,5 +101,5 @@ model joinCode {
   companyId String
   role      Role
   expiresAt DateTime
-  used      Boolean @default(false)
+  used      Boolean  @default(false)
 }
