@@ -14,6 +14,7 @@ export const getAllResources = async (req: Request, res: Response) => {
       name: curr.name,
       location: curr.location,
       department: curr.department,
+      type: curr.type,
       availability: curr.availability,
       status: curr.status,
       totalQuantity: curr.totalQuantity,

@@ -19,6 +19,7 @@ type resourceType = {
   name: string;
   location: string;
   department: string;
+  type: string;
   availability: string;
   status: string;
   totalQuantity: number;
@@ -30,6 +31,7 @@ type tableResourceType = {
   id: string;
   name: string;
   status: string;
+  type: string;
   department: string;
   location: string;
   availability: number;
@@ -52,6 +54,7 @@ export const ResourceTable = () => {
     resourceData = query.data.allResources.map((curr: resourceType) => ({
       id: curr.id,
       name: curr.name,
+      type: curr.type,
       status: curr.status,
       department: curr.department,
       location: curr.location,
@@ -97,26 +100,30 @@ export const ResourceTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {resourceData.map((curr: tableResourceType) => {
-            return (
-              <TableRow key={curr.id}>
-                <TableCell>{curr.id}</TableCell>
-                <TableCell>{curr.name}</TableCell>
-                <TableCell></TableCell>
-                <TableCell>
-                  <span
-                    className={`rounded-xl p-1 ${curr.status == "Available" ? "bg-green-200" : curr.status == "Under Maintenance" ? "bg-red-200" : curr.status == "In Use" ? "bg-yellow-200" : ""}`}
-                  >
-                    {curr.status}
-                  </span>
-                </TableCell>
-                <TableCell>{curr.department}</TableCell>
-                <TableCell>{curr.location}</TableCell>
-                <TableCell>{curr.availability}%</TableCell>
-                <TableCell>{<EllipsisVertical />}</TableCell>
-              </TableRow>
-            );
-          })}
+          {resourceData ? (
+            resourceData.map((curr: tableResourceType) => {
+              return (
+                <TableRow key={curr.id}>
+                  <TableCell>{curr.id}</TableCell>
+                  <TableCell>{curr.name}</TableCell>
+                  <TableCell>{curr.type}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`rounded-xl p-1 ${curr.status == "Available" ? "bg-green-200" : curr.status == "Under Maintenance" ? "bg-red-200" : curr.status == "In Use" ? "bg-yellow-200" : ""}`}
+                    >
+                      {curr.status}
+                    </span>
+                  </TableCell>
+                  <TableCell>{curr.department}</TableCell>
+                  <TableCell>{curr.location}</TableCell>
+                  <TableCell>{curr.availability}%</TableCell>
+                  <TableCell>{<EllipsisVertical />}</TableCell>
+                </TableRow>
+              );
+            })
+          ) : (
+            <div> no data found</div>
+          )}
         </TableBody>
       </Table>
     </div>
