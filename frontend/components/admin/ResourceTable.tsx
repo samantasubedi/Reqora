@@ -62,28 +62,9 @@ export const ResourceTable = () => {
       availability: (curr.availableQuantity / curr.totalQuantity) * 100,
     }));
   }
-  console.log("this is data", resourceData);
-  useEffect(() => {
-    if (query.isError) {
-      if (isAxiosError(query.error)) {
-        toast.error(query.error.response?.data.message);
-      } else {
-        toast.error(query.error.message);
-      }
-    }
-  }, [query.isError]);
-  if (query.isLoading) {
-    return <TableSkeleton />;
-  }
-  if (query.isError) {
-    return (
-      <TableError
-        onRetry={() => {
-          query.refetch();
-        }}
-      />
-    );
-  }
+
+
+
 
   return (
     <div className="mt-5 px-3">

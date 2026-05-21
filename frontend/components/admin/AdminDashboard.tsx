@@ -4,7 +4,7 @@ import StatCard from "./StatCard";
 import { Book, Package } from "lucide-react";
 import { Button } from "../ui/button";
 import { ResourceTable } from "./ResourceTable";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -22,6 +22,9 @@ import {
 import LogoutDialog from "./LogoutDialog";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { TableSkeleton } from "./TableSkeleton";
+import { TableError } from "./TableError";
+import TableEmpty from "./TableEmpty";
 export interface statCardInterface {
   title: string;
   number: number;
@@ -49,10 +52,64 @@ export const handleLogout = async (router: AppRouterInstance) => {
     console.log("request failed", err);
   }
 };
+type resourceType = {
+  id: string;
+  name: string;
+  location: string;
+  department: string;
+  type: string;
+  availability: string;
+  status: string;
+  totalQuantity: number;
+  availableQuantity: number;
+  createdAt: string;
+  updatedAt: string;
+};
+type tableResourceType = {
+  id: string;
+  name: string;
+  status: string;
+  type: string;
+  department: string;
+  location: string;
+  availability: number;
+};
+
 export const AdminDashboard = () => {
   const router = useRouter();
-
-
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const fetchApi = async () => {
+    const response = await axios.get(`${backendUrl}/resources`, {
+      withCredentials: true,
+    });
+    return response.data;
+  };
+  const query = useQuery({
+    queryFn: fetchApi,
+    queryKey: ["resourceData"],
+  });
+  let resourceData;
+  if (query.data) {
+    resourceData = query.data.allResources.map((curr: resourceType) => ({
+      id: curr.id,
+      name: curr.name,
+      type: curr.type,
+      status: curr.status,
+      department: curr.department,
+      location: curr.location,
+      availability: (curr.availableQuantity / curr.totalQuantity) * 100,
+    }));
+  }
+  console.log("this is data", resourceData);
+  useEffect(() => {
+    if (query.isError) {
+      if (isAxiosError(query.error)) {
+        toast.error(query.error.response?.data.message);
+      } else {
+        toast.error(query.error.message);
+      }
+    }
+  }, [query.isError]);
 
   const AdminStat: statCardInterface[] = [
     {
@@ -87,6 +144,15 @@ export const AdminDashboard = () => {
       textColor: "text-red-800",
     },
   ];
+  useEffect(() => {
+    if (query.isError) {
+      if (isAxiosError(query.error)) {
+        toast.error(query.error.response?.data.message);
+      } else {
+        toast.error(query.error.message);
+      }
+    }
+  }, [query.isError]);
 
   return (
     <>
@@ -116,7 +182,19 @@ export const AdminDashboard = () => {
             );
           })}
         </div>
-        <ResourceTable />
+        {query.isLoading ? (
+          <TableSkeleton />
+        ) : query.isError ? (
+          <TableError
+            onRetry={() => {
+              query.refetch();
+            }}
+          />
+        ) : resourceData.length ? (
+          <ResourceTable />
+        ) : (
+          <TableEmpty />
+        )}
       </div>
     </>
   );
