@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { TableSkeleton } from "./TableSkeleton";
 import { TableError } from "./TableError";
+import TableEmpty from "./TableEmpty";
 type resourceType = {
   id: string;
   name: string;
@@ -86,22 +87,22 @@ export const ResourceTable = () => {
 
   return (
     <div className="mt-5 px-3">
-      <Table className="bg-blue-200/40">
-        <TableHeader>
-          <TableRow className="bg-slate-200">
-            <TableHead>ID</TableHead>
-            <TableHead>Resource Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Department</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead> Availability</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {resourceData ? (
-            resourceData.map((curr: tableResourceType) => {
+      {resourceData.length ? (
+        <Table className="bg-blue-200/40">
+          <TableHeader>
+            <TableRow className="bg-slate-200">
+              <TableHead>ID</TableHead>
+              <TableHead>Resource Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead> Availability</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {resourceData.map((curr: tableResourceType) => {
               return (
                 <TableRow key={curr.id}>
                   <TableCell>{curr.id}</TableCell>
@@ -120,12 +121,12 @@ export const ResourceTable = () => {
                   <TableCell>{<EllipsisVertical />}</TableCell>
                 </TableRow>
               );
-            })
-          ) : (
-            <div> no data found</div>
-          )}
-        </TableBody>
-      </Table>
+            })}
+          </TableBody>
+        </Table>
+      ) : (
+        <TableEmpty />
+      )}
     </div>
   );
 };
