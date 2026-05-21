@@ -65,7 +65,7 @@ type resourceType = {
   createdAt: string;
   updatedAt: string;
 };
-type tableResourceType = {
+export type tableResourceType = {
   id: string;
   name: string;
   status: string;
@@ -100,7 +100,7 @@ export const AdminDashboard = () => {
       availability: (curr.availableQuantity / curr.totalQuantity) * 100,
     }));
   }
-  console.log("this is data", resourceData);
+
   useEffect(() => {
     if (query.isError) {
       if (isAxiosError(query.error)) {
@@ -144,15 +144,6 @@ export const AdminDashboard = () => {
       textColor: "text-red-800",
     },
   ];
-  useEffect(() => {
-    if (query.isError) {
-      if (isAxiosError(query.error)) {
-        toast.error(query.error.response?.data.message);
-      } else {
-        toast.error(query.error.message);
-      }
-    }
-  }, [query.isError]);
 
   return (
     <>
@@ -191,7 +182,7 @@ export const AdminDashboard = () => {
             }}
           />
         ) : resourceData.length ? (
-          <ResourceTable />
+          <ResourceTable resourceData={resourceData} />
         ) : (
           <TableEmpty />
         )}
