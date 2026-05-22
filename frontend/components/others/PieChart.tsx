@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Pie, PieChart } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -10,62 +10,54 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
-
-
+} from "@/components/ui/chart";
 
 const chartData = [
-  { status: "Available", Resources: 6, fill: "var(--color-chrome)" },
-  { status: "In Use", Resources:3, fill: "var(--color-safari)" },
-  { status: "underMaintenance", Resources:2, fill: "var(--color-firefox)" },
-
-]
+  { status: "Available", Resources: 6, fill: "var(--color-Available)" },
+  { status: "In Use", Resources: 3, fill: "var(--color-InUse)" },
+  {
+    status: "Under Maintenance",
+    Resources: 2,
+    fill: "var(--color-UnderMaintenance)",
+  },
+];
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  Resources: {
+    label: "Resources",
   },
-  chrome: {
-    label: "Chrome",
+  Available: {
+    label: "Available",
     color: "var(--chart-1)",
   },
-  safari: {
-    label: "Safari",
+  InUse: {
+    label: "In Use",
     color: "var(--chart-2)",
   },
-  firefox: {
-    label: "Firefox",
+  UnderMaintenance: {
+    label: "Under Maintenance",
     color: "var(--chart-3)",
   },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function ChartPieLabel() {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Resource distribution</CardTitle>
-       
+        <CardTitle className="text-xl text-teal-800">Resource distribution</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1  pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
+          className="mx-auto aspect-square max-h-[350px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
         >
-          <PieChart>
+          <PieChart >
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Pie data={chartData} dataKey="Resources" label nameKey="status" />
           </PieChart>
@@ -73,12 +65,10 @@ export function ChartPieLabel() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        Showing total resources in the company
         </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total resources in the company
-        </div>
+        
       </CardFooter>
     </Card>
-  )
+  );
 }
