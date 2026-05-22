@@ -8,18 +8,7 @@ import axios, { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import LogoutDialog from "./LogoutDialog";
+
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { TableSkeleton } from "./TableSkeleton";
@@ -33,25 +22,6 @@ export interface statCardInterface {
   bgColor: string;
   textColor: string;
 }
-
-export const handleLogout = async (router: AppRouterInstance) => {
-  try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-    const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
-      withCredentials: true,
-    });
-    if (
-      logoutResponse.data.success === true &&
-      logoutResponse.data.code === "LOGOUT_SUCCESSFULL"
-    ) {
-      toast.success(logoutResponse.data.message);
-      router.push("/");
-    }
-    console.log(logoutResponse.data);
-  } catch (err) {
-    console.log("request failed", err);
-  }
-};
 type resourceType = {
   id: string;
   name: string;
@@ -75,6 +45,25 @@ export type tableResourceType = {
   availability: number;
 };
 
+export const handleLogout = async (router: AppRouterInstance) => {
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+    const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
+      withCredentials: true,
+    });
+    if (
+      logoutResponse.data.success === true &&
+      logoutResponse.data.code === "LOGOUT_SUCCESSFULL"
+    ) {
+      toast.success(logoutResponse.data.message);
+      router.push("/");
+    }
+    console.log(logoutResponse.data);
+  } catch (err) {
+    console.log("request failed", err);
+  }
+};
+
 export const AdminDashboard = () => {
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -88,7 +77,7 @@ export const AdminDashboard = () => {
     queryFn: fetchApi,
     queryKey: ["resourceData"],
   });
-  let resourceData;
+  let resourceData, availableData, inUseData, underMaintenanceData;
   if (query.data) {
     resourceData = query.data.allResources.map((curr: resourceType) => ({
       id: curr.id,
@@ -99,6 +88,15 @@ export const AdminDashboard = () => {
       location: curr.location,
       availability: (curr.availableQuantity / curr.totalQuantity) * 100,
     }));
+    availableData = query.data.allResources.filter(
+      (curr: resourceType) => curr.status == "available",
+    );
+    inUseData = query.data.allResources.filter(
+      (curr: resourceType) => curr.status == "inUse",
+    );
+    underMaintenanceData = query.data.allResources.filter(
+      (curr: resourceType) => curr.status == "underMaintenance",
+    );
   }
 
   useEffect(() => {
@@ -114,14 +112,14 @@ export const AdminDashboard = () => {
   const AdminStat: statCardInterface[] = [
     {
       title: "Total Resources",
-      number: 50,
+      number: resourceData?.length,
       IconName: Package,
       bgColor: "bg-blue-100",
       textColor: "text-blue-800",
     },
     {
       title: "Available",
-      number: 39,
+      number: availableData?.length,
       IconName: Check,
       subtext: "70% of total",
       bgColor: "bg-green-100",
@@ -129,7 +127,7 @@ export const AdminDashboard = () => {
     },
     {
       title: "In Use",
-      number: 20,
+      number: inUseData?.length,
       IconName: TrendingUp,
       subtext: "40% of total",
       bgColor: "bg-amber-100",
@@ -137,7 +135,7 @@ export const AdminDashboard = () => {
     },
     {
       title: "Under Maintenance",
-      number: 5,
+      number: underMaintenanceData?.length,
       IconName: CircleAlert,
       subtext: "10% of total",
       bgColor: "bg-red-100",
