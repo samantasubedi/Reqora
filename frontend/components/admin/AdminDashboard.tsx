@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { TableSkeleton } from "./TableSkeleton";
 import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
+import { ChartPieLabel } from "../others/PieChart";
 export interface statCardInterface {
   title: string;
   number: number;
@@ -174,6 +175,10 @@ export const AdminDashboard = () => {
             );
           })}
         </div>
+<div>
+  <ChartPieLabel/>
+</div>
+
         {query.isLoading ? (
           <TableSkeleton />
         ) : query.isError ? (
