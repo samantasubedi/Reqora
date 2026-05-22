@@ -258,7 +258,7 @@ const page = () => {
             <div className="pt-2">
               <Button
                 type="submit"
-                className="w-full h-11 rounded-lg bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-200"
+                className="w-full h-11 cursor-pointer rounded-lg bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Submit Resource
               </Button>

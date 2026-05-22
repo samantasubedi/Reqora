@@ -31,7 +31,7 @@ const Sidebarmenu = () => {
   const router = useRouter();
   return (
     <Sidebar>
-      <SidebarHeader className="bg-teal-900/80 text-white">
+      <SidebarHeader className="bg-teal-600 text-white">
         <button
           onClick={() => {
             router.push("/");
@@ -46,7 +46,7 @@ const Sidebarmenu = () => {
           ></Image>
         </button>
       </SidebarHeader>
-      <SidebarContent className="bg-teal-900/80 text-white">
+      <SidebarContent className="bg-teal-600 text-white">
         <SidebarGroup>
           <SidebarGroupLabel className=" text-white font-bold">
             Main
