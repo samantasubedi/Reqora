@@ -18,16 +18,6 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 
-const chartData = [
-  { status: "Available", Resources: 6, fill: "var(--color-Available)" },
-  { status: "In Use", Resources: 3, fill: "var(--color-InUse)" },
-  {
-    status: "Under Maintenance",
-    Resources: 2,
-    fill: "var(--color-UnderMaintenance)",
-  },
-];
-
 const chartConfig = {
   Resources: {
     label: "Resources",
@@ -45,19 +35,47 @@ const chartConfig = {
     color: "var(--chart-3)",
   },
 } satisfies ChartConfig;
+interface propType {
+  availableResourceCount: Number;
+  inUseResourceCount: Number;
+  underMaintainenceResourceCount: Number;
+}
 
-export function ChartPieLabel() {
+export function ChartPieLabel({
+  availableResourceCount,
+  inUseResourceCount,
+  underMaintainenceResourceCount,
+}: propType) {
+  const chartData = [
+    {
+      status: "Available",
+      Resources: availableResourceCount,
+      fill: "var(--color-Available)",
+    },
+    {
+      status: "In Use",
+      Resources: inUseResourceCount,
+      fill: "var(--color-InUse)",
+    },
+    {
+      status: "Under Maintenance",
+      Resources: underMaintainenceResourceCount,
+      fill: "var(--color-UnderMaintenance)",
+    },
+  ];
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle className="text-xl text-teal-800">Resource distribution</CardTitle>
+        <CardTitle className="text-xl text-teal-800">
+          Resource distribution
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex-1  pb-0">
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-[350px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
         >
-          <PieChart >
+          <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Pie data={chartData} dataKey="Resources" label nameKey="status" />
           </PieChart>
@@ -65,9 +83,8 @@ export function ChartPieLabel() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-        Showing total resources in the company
+          Showing total resources in the company
         </div>
-        
       </CardFooter>
     </Card>
   );

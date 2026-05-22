@@ -175,9 +175,13 @@ export const AdminDashboard = () => {
             );
           })}
         </div>
-<div>
-  <ChartPieLabel/>
-</div>
+        <div>
+          <ChartPieLabel
+            availableResourceCount={availableResources?.length}
+            inUseResourceCount={inUseResources?.length}
+            underMaintainenceResourceCount={underMaintenanceResources?.length}
+          />
+        </div>
 
         {query.isLoading ? (
           <TableSkeleton />
