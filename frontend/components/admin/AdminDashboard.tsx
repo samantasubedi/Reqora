@@ -77,9 +77,12 @@ export const AdminDashboard = () => {
     queryFn: fetchApi,
     queryKey: ["resourceData"],
   });
-  let resourceData, availableData, inUseData, underMaintenanceData;
+  let allResources,
+    availableResources,
+    inUseResources,
+    underMaintenanceResources;
   if (query.data) {
-    resourceData = query.data.allResources.map((curr: resourceType) => ({
+    allResources = query.data.allResources.map((curr: resourceType) => ({
       id: curr.id,
       name: curr.name,
       type: curr.type,
@@ -88,13 +91,13 @@ export const AdminDashboard = () => {
       location: curr.location,
       availability: (curr.availableQuantity / curr.totalQuantity) * 100,
     }));
-    availableData = query.data.allResources.filter(
+    availableResources = query.data.allResources.filter(
       (curr: resourceType) => curr.status == "available",
     );
-    inUseData = query.data.allResources.filter(
+    inUseResources = query.data.allResources.filter(
       (curr: resourceType) => curr.status == "inUse",
     );
-    underMaintenanceData = query.data.allResources.filter(
+    underMaintenanceResources = query.data.allResources.filter(
       (curr: resourceType) => curr.status == "underMaintenance",
     );
   }
@@ -112,32 +115,32 @@ export const AdminDashboard = () => {
   const AdminStat: statCardInterface[] = [
     {
       title: "Total Resources",
-      number: resourceData?.length,
+      number: allResources?.length,
       IconName: Package,
       bgColor: "bg-blue-100",
       textColor: "text-blue-800",
     },
     {
       title: "Available",
-      number: availableData?.length,
+      number: availableResources?.length,
       IconName: Check,
-      subtext: "70% of total",
+      subtext: `${(availableResources?.length / allResources?.length) * 100}% of total`,
       bgColor: "bg-green-100",
       textColor: "text-green-800",
     },
     {
       title: "In Use",
-      number: inUseData?.length,
+      number: inUseResources?.length,
       IconName: TrendingUp,
-      subtext: "40% of total",
+      subtext: `${(inUseResources?.length / allResources?.length) * 100}% of total`,
       bgColor: "bg-amber-100",
       textColor: "text-amber-800",
     },
     {
       title: "Under Maintenance",
-      number: underMaintenanceData?.length,
+      number: underMaintenanceResources?.length,
       IconName: CircleAlert,
-      subtext: "10% of total",
+      subtext: `${(underMaintenanceResources?.length / allResources?.length) * 100}% of total`,
       bgColor: "bg-red-100",
       textColor: "text-red-800",
     },
@@ -179,8 +182,8 @@ export const AdminDashboard = () => {
               query.refetch();
             }}
           />
-        ) : resourceData.length ? (
-          <ResourceTable resourceData={resourceData} />
+        ) : allResources.length ? (
+          <ResourceTable resourceData={allResources} />
         ) : (
           <TableEmpty />
         )}
