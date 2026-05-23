@@ -15,6 +15,7 @@ import { TableSkeleton } from "./TableSkeleton";
 import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
 import { ChartPieLabel } from "../others/PieChart";
+import { ChartBarLabel } from "../others/BarChart";
 export interface statCardInterface {
   title: string;
   number: number;
@@ -175,12 +176,17 @@ export const AdminDashboard = () => {
             );
           })}
         </div>
-        <div>
-          <ChartPieLabel
-            availableResourceCount={availableResources?.length}
-            inUseResourceCount={inUseResources?.length}
-            underMaintainenceResourceCount={underMaintenanceResources?.length}
-          />
+        <div className="flex justify-evenly items-center">
+          <div className="w-[40%]">
+            <ChartPieLabel
+              availableResourceCount={availableResources?.length}
+              inUseResourceCount={inUseResources?.length}
+              underMaintainenceResourceCount={underMaintenanceResources?.length}
+            />
+          </div>
+          <div className="w-[40%]">
+            <ChartBarLabel />
+          </div>
         </div>
 
         {query.isLoading ? (
