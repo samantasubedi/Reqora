@@ -175,3 +175,19 @@ export const deleteResource = async (req: Request, res: Response) => {
     });
   }
 };
+export const releaseResource=async(req:Request,res:Response)=>{
+  const{resourceId}=req.body
+  const{email,companyId}=res.locals.user
+  try{
+
+  }
+  catch(err){
+
+  }
+  await prisma.user.findUnique({where:email,
+    select:{
+     
+    }
+  })
+  
+}

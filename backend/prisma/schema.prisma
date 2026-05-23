@@ -40,7 +40,6 @@ model user {
   enrolled  Boolean  @default(false)
   companyId String?
   company   company? @relation(fields: [companyId], references: [id])
-
   createdRequests  request[] @relation("requestedByUser")
   reviewedRequests request[] @relation("reviewedByUser")
 }

@@ -5,11 +5,13 @@ import {
   getSpecificResource,
   editResource,
   deleteResource,
+  releaseResource,
 } from "../controller/resourceControllers.controller";
 import { roleMiddleware } from "../middleware/roleMIddleware";
 const router = Router();
 router.get("/resources", getAllResources);
 router.get("/resources/:id", getSpecificResource);
+router.post("/resources/release", releaseResource);
 router.post("/resources", roleMiddleware(["admin"]), addResource);
 router.patch("/resources", roleMiddleware(["admin"]), editResource);
 router.delete("/resources", roleMiddleware(["admin"]), deleteResource);
