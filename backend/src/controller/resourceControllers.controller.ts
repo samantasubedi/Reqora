@@ -1,14 +1,18 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
+import { RequestStatus, ResourceStatus } from "../generated/prisma/enums";
 export const getAllResources = async (req: Request, res: Response) => {
-  const companyId = res.locals.user.companyId;
   try {
+    const companyId = res.locals.user.companyId;
+    const status = (req.query.status as ResourceStatus) || undefined;
     const resources = await prisma.resource.findMany({
-      where: { companyId },
+      where: { companyId, status },
     });
+
     if (!resources) {
       throw new Error("server error");
     }
+
     const allResources = resources.map((curr) => ({
       id: curr.id,
       name: curr.name,
@@ -22,10 +26,17 @@ export const getAllResources = async (req: Request, res: Response) => {
       createdAt: curr.createdAt,
       updatedAt: curr.updatedAt,
     }));
+
+    const counts = await prisma.resource.groupBy({
+      by: ["status"],
+      _count: true,
+    });
+
     res.json({
       success: true,
       message: "got all resources",
       allResources,
+      counts: [...counts, { _count: allResources.length, status: "all" }],
     });
   } catch (err) {
     console.log(err);
@@ -175,19 +186,10 @@ export const deleteResource = async (req: Request, res: Response) => {
     });
   }
 };
-export const releaseResource=async(req:Request,res:Response)=>{
-  const{resourceId}=req.body
-  const{email,companyId}=res.locals.user
-  try{
-
-  }
-  catch(err){
-
-  }
-  await prisma.user.findUnique({where:email,
-    select:{
-     
-    }
-  })
-  
-}
+export const releaseResource = async (req: Request, res: Response) => {
+  const { resourceId } = req.body;
+  const { email, companyId } = res.locals.user;
+  try {
+  } catch (err) {}
+  await prisma.user.findUnique({ where: email, select: {} });
+};

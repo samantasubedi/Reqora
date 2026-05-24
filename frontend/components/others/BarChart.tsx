@@ -44,7 +44,7 @@ export function ChartBarLabel() {
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="max-h-[250px]">
           <BarChart
             accessibilityLayer
             data={chartData}

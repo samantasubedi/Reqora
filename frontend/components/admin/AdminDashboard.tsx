@@ -16,8 +16,14 @@ import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
 import { ChartPieLabel } from "../others/PieChart";
 import { ChartBarLabel } from "../others/BarChart";
+enum ResourceStatus {
+  available,
+  inUse,
+  underMaintainence,
+}
 export interface statCardInterface {
   title: string;
+  statusKey: "all" | "available" | "inUse" | "underMaintainence";
   number: number;
   IconName?: LucideIcon;
   subtext?: string;
@@ -31,7 +37,7 @@ type resourceType = {
   department: string;
   type: string;
   availability: string;
-  status: string;
+  status: ResourceStatus;
   totalQuantity: number;
   availableQuantity: number;
   createdAt: string;
@@ -79,30 +85,6 @@ export const AdminDashboard = () => {
     queryFn: fetchApi,
     queryKey: ["resourceData"],
   });
-  let allResources,
-    availableResources,
-    inUseResources,
-    underMaintenanceResources;
-  if (query.data) {
-    allResources = query.data.allResources.map((curr: resourceType) => ({
-      id: curr.id,
-      name: curr.name,
-      type: curr.type,
-      status: curr.status,
-      department: curr.department,
-      location: curr.location,
-      availability: (curr.availableQuantity / curr.totalQuantity) * 100,
-    }));
-    availableResources = query.data.allResources.filter(
-      (curr: resourceType) => curr.status == "available",
-    );
-    inUseResources = query.data.allResources.filter(
-      (curr: resourceType) => curr.status == "inUse",
-    );
-    underMaintenanceResources = query.data.allResources.filter(
-      (curr: resourceType) => curr.status == "underMaintenance",
-    );
-  }
 
   useEffect(() => {
     if (query.isError) {
@@ -117,32 +99,36 @@ export const AdminDashboard = () => {
   const AdminStat: statCardInterface[] = [
     {
       title: "Total Resources",
-      number: allResources?.length,
+      statusKey: "all",
+      number: 0,
       IconName: Package,
       bgColor: "bg-blue-100",
       textColor: "text-blue-800",
     },
     {
       title: "Available",
-      number: availableResources?.length,
+      statusKey: "available",
+      number: 0,
       IconName: Check,
-      subtext: `${(availableResources?.length / allResources?.length) * 100}% of total`,
+      subtext: ``,
       bgColor: "bg-green-100",
       textColor: "text-green-800",
     },
     {
       title: "In Use",
-      number: inUseResources?.length,
+      statusKey: "inUse",
+      number: 0,
       IconName: TrendingUp,
-      subtext: `${(inUseResources?.length / allResources?.length) * 100}% of total`,
+      subtext: ``,
       bgColor: "bg-amber-100",
       textColor: "text-amber-800",
     },
     {
       title: "Under Maintenance",
-      number: underMaintenanceResources?.length,
+      statusKey: "underMaintainence",
+      number: 0,
       IconName: CircleAlert,
-      subtext: `${(underMaintenanceResources?.length / allResources?.length) * 100}% of total`,
+      subtext: ``,
       bgColor: "bg-red-100",
       textColor: "text-red-800",
     },
@@ -162,28 +148,54 @@ export const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex justify-between m-3">
-          {AdminStat.map((curr) => {
-            return (
-              <StatCard
-                key={curr.title}
-                title={curr.title}
-                number={curr.number}
-                IconName={curr.IconName}
-                subtext={curr.subtext}
-                bgColor={curr.bgColor}
-                textColor={curr.textColor}
-              ></StatCard>
-            );
-          })}
+          {query.isSuccess &&
+            AdminStat.map((curr, index) => {
+              const currentStatus = query.data.counts.find((i: any) => {
+                return i.status === curr.statusKey;
+              });
+              const allCount = query.data.counts.find((i: any) => {
+                return i.status === "all";
+              })?._count;
+
+              const subText = `${(currentStatus?._count / allCount) * 100}% of total`;
+
+              return (
+                <StatCard
+                  key={index}
+                  statusKey={curr.statusKey}
+                  title={curr.title}
+                  number={currentStatus._count}
+                  IconName={curr.IconName}
+                  subtext={subText}
+                  bgColor={curr.bgColor}
+                  textColor={curr.textColor}
+                ></StatCard>
+              );
+            })}
         </div>
         <div className="flex justify-evenly items-center">
-          <div className="w-[40%]">
-            <ChartPieLabel
-              availableResourceCount={availableResources?.length}
-              inUseResourceCount={inUseResources?.length}
-              underMaintainenceResourceCount={underMaintenanceResources?.length}
-            />
-          </div>
+          {query.isSuccess && (
+            <div className="w-[40%]">
+              <ChartPieLabel
+                data={query.data.counts
+                  .filter((curr: any) => {
+                    return curr.status != "all";
+                  })
+                  .map((i: any) => {
+                    return {
+                      status: i.status,
+                      Resources: i._count,
+                      fill:
+                        i.status == "available"
+                          ? "var(--color-Available)"
+                          : i.status == "inUse"
+                            ? "var(--color-InUse)"
+                            : "var(--color-UnderMaintenance)",
+                    };
+                  })}
+              />
+            </div>
+          )}
           <div className="w-[40%]">
             <ChartBarLabel />
           </div>
@@ -197,8 +209,8 @@ export const AdminDashboard = () => {
               query.refetch();
             }}
           />
-        ) : allResources.length ? (
-          <ResourceTable resourceData={allResources} />
+        ) : query.data.allResources.length ? (
+          <ResourceTable resourceData={query.data.allResources} />
         ) : (
           <TableEmpty />
         )}
