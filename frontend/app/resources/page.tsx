@@ -1,8 +1,11 @@
+"use client";
 import { ResourceTable } from "@/components/admin/ResourceTable";
+import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import React from "react";
+import axios, { isAxiosError } from "axios";
+import React, { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const page = () => {
   const fetchApi = async () => {
@@ -16,7 +19,15 @@ const page = () => {
     queryFn: fetchApi,
     queryKey: ["resourceData"],
   });
-  
+  useEffect(() => {
+    if (query.isError) {
+      if (isAxiosError(query.error)) {
+        toast.error(query.error.response?.data.message);
+      } else {
+        toast.error(query.error.message);
+      }
+    }
+  }, [query.isError]);
 
   return (
     <div>
@@ -24,7 +35,11 @@ const page = () => {
         {" "}
         <Input placeholder="Search for resources"></Input>
       </div>
-      <ResourceTable />
+      {query.isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <ResourceTable resourceData={query.data.allResources} />
+      )}
     </div>
   );
 };
