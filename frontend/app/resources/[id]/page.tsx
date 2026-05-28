@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 type propType = {
   params: Promise<{
@@ -19,6 +21,15 @@ const ResourceDetails = async ({ params }: propType) => {
     queryKey: ["resourceDetail"],
     queryFn: fetchApi,
   });
+  useEffect(()=>{
+    if(query.error){
+      if(isAxiosError(query.error))
+    {  toast.error(query.error.response?.data.message)}
+      else{
+        toast.error(query.error.message)
+      }
+    }
+  },[query.error])
 
   return <div>this is resource details page</div>;
 };

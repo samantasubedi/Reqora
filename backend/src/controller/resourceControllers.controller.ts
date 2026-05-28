@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
-import { RequestStatus, ResourceStatus } from "../generated/prisma/enums";
+import { ResourceStatus } from "../generated/prisma/enums";
 export const getAllResources = async (req: Request, res: Response) => {
   try {
     const companyId = res.locals.user.companyId;
