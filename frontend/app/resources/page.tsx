@@ -1,6 +1,7 @@
 "use client";
 import { ResourceTable } from "@/components/admin/ResourceTable";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
+import ResourceDetailsSkeleton from "@/components/others/ResourceDetailsLoader";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import axios, { isAxiosError } from "axios";
@@ -28,6 +29,9 @@ const page = () => {
       }
     }
   }, [query.isError]);
+  if(query.isLoading){
+    return <ResourceDetailsSkeleton/>
+  }
 
   return (
     <div>
