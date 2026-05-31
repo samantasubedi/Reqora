@@ -11,7 +11,7 @@ import { Button } from "../ui/button";
 
 export const ActiveGear = () => {
   return (
-    <Card className="col-span-3">
+    <Card className="">
       <CardHeader>
         <CardTitle className="text-2xl">My Active Gear</CardTitle>
         <CardDescription>

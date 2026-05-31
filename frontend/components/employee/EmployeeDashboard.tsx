@@ -34,6 +34,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ActiveGear } from "./ActiveGear";
 import { RecentRequests } from "./RecentRequests";
+import { ResourceCard } from "./ResourceCard";
 
 export default function EmployeeDashboard() {
   const router = useRouter();
@@ -88,10 +89,10 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
     
-      </div>
-      <div className="flex  gap-5">
+        <ResourceCard />
+   
+      <div className="grid grid-cols-2 gap-20">
         <RecentRequests />
         <ActiveGear />
       </div>

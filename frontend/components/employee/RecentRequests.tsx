@@ -22,7 +22,7 @@ import { Badge } from "../ui/badge";
 export const RecentRequests = () => {
   return (
     <div>
-      <Card className="col-span-4">
+      <Card className="">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>

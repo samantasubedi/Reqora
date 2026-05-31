@@ -4,9 +4,9 @@ import { CheckCircle2, Clock, Package } from "lucide-react";
 
 export const ResourceCard = () => {
   return (
-    <div>
-      {" "}
-      <Card className="hover:bg-purple-100 bg-purple-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out">
+    <div className="grid grid-cols-3 gap-10 ">
+     
+      <Card className="hover:bg-purple-100 bg-purple-50 hover:translate-1 cursor-pointer transition-all duration-400 ease-in-out ">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-xl font-medium">My Resources</CardTitle>
           <Package className="h-8 w-8 text-muted-foreground" />
