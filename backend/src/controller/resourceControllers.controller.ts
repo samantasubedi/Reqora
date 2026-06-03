@@ -104,10 +104,32 @@ export const addResource = async (req: Request, res: Response) => {
   }
 };
 
-export const getSpecificResource = (req: Request, res: Response) => {
+export const getSpecificResource = async (req: Request, res: Response) => {
   const id = req.body.id;
-  
-  res.send(`gets details for a sepecific user with id ${id}`);
+  const companyId = res.locals.user.companyId;
+  if (!id) {
+    return res.status(400).json({
+      success: false,
+      code: "ID_NOT_FOUND",
+      message: "please provide an id",
+    });
+  }
+  const resourceDetail = await prisma.resource.findUnique({
+    where: { id, companyId },
+  });
+  if (!resourceDetail) {
+    return res.status(404).json({
+      success: false,
+      code: "INVALID_ID",
+      message: "invalid id ",
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    code: "SUCCESSFULL",
+    message: "resource detail retrived successfully",
+    resourceDetail
+  });
 };
 
 export const editResource = async (req: Request, res: Response) => {
