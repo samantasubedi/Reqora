@@ -105,7 +105,8 @@ export const addResource = async (req: Request, res: Response) => {
 };
 
 export const getSpecificResource = (req: Request, res: Response) => {
-  const id = req.params.id;
+  const id = req.body.id;
+  
   res.send(`gets details for a sepecific user with id ${id}`);
 };
 
