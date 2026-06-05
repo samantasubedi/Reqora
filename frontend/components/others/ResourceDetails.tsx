@@ -1,23 +1,25 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Building2, Calendar, MapPin, Package } from "lucide-react";
-
-const ResourceDetails = () => {
-  const resource = {
-    id: "RES-001",
-    name: "MacBook Pro M3",
-    type: "Laptop",
-    department: "IT",
-    location: "Floor 3",
-    status: "Available",
-    totalQuantity: 20,
-    availableQuantity: 8,
-    createdAt: "2026-01-12",
-    updatedAt: "2026-02-14",
-    description:
-      "High-performance laptops used by software engineers for development and testing.",
-  };
-
+enum ResourceStatus {
+  "",
+}
+type resourceType = {
+  id: String;
+  name: String;
+  location: String;
+  department: String;
+  type: String;
+  availability: Boolean;
+  status: ResourceStatus;
+  totalQuantity: number;
+  availableQuantity: number;
+  createdAt: string;
+  updatedAt: string;
+  companyId: string;
+  description: string;
+};
+const ResourceDetails = (resource: resourceType) => {
   return (
     <div>
       <Card>
