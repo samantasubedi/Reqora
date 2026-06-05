@@ -103,9 +103,14 @@ export const addResource = async (req: Request, res: Response) => {
     });
   }
 };
-
-export const getSpecificResource = async (req: Request, res: Response) => {
-  const id = req.body.id;
+type params = {
+  id: string;
+};
+export const getSpecificResource = async (
+  req: Request<params>,
+  res: Response,
+) => {
+  const id = req.params.id;
   const companyId = res.locals.user.companyId;
   if (!id) {
     return res.status(400).json({
@@ -128,7 +133,7 @@ export const getSpecificResource = async (req: Request, res: Response) => {
     success: true,
     code: "SUCCESSFULL",
     message: "resource detail retrived successfully",
-    resourceDetail
+    resourceDetail,
   });
 };
 

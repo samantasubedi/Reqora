@@ -10,7 +10,7 @@ import {
 import { roleMiddleware } from "../middleware/roleMIddleware";
 const router = Router();
 router.get("/resources", getAllResources);
-router.get("/resources/:id", getSpecificResource);
+router.get("/resource/:id", getSpecificResource);
 router.post("/resources/release", releaseResource);
 router.post("/resources", roleMiddleware(["admin"]), addResource);
 router.patch("/resources", roleMiddleware(["admin"]), editResource);
