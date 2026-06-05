@@ -18,24 +18,14 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Progress } from "@/components/ui/progress";
 
 const ResourceDetails = () => {
-    const resource = {
+  const resource = {
     id: "RES-001",
     name: "MacBook Pro M3",
     type: "Laptop",
@@ -50,8 +40,7 @@ const ResourceDetails = () => {
       "High-performance laptops used by software engineers for development and testing.",
   };
 
-  const inUse =
-    resource.totalQuantity - resource.availableQuantity;
+  const inUse = resource.totalQuantity - resource.availableQuantity;
 
   const percentage =
     (resource.availableQuantity / resource.totalQuantity) * 100;
@@ -78,103 +67,87 @@ const ResourceDetails = () => {
       }
     }
   }, [query.error]);
+  let resourceDetail;
   if (query.isSuccess) {
-    return <div>{query.data.resourceDetail.name}</div>;
+    resourceDetail = query.data.resourceDetail;
+    console.log("this is resourceDetail", resourceDetail);
   }
   if (query.isLoading) {
     return <div>Loading....</div>;
   }
   if (query.isSuccess) {
-    return <div className="mx-auto max-w-7xl space-y-6 p-6">
-
-     
-
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" className="gap-2">
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Button>
-
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Edit className="h-4 w-4" />
-            Edit
+    return (
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <Button variant="ghost" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back
           </Button>
 
-          <Button variant="destructive">
-            <Trash2 className="h-4 w-4" />
-            Delete
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline">
+              <Edit className="h-4 w-4" />
+              Edit
+            </Button>
+
+            <Button variant="destructive">
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
+          </div>
         </div>
-      </div>
 
-      
+        <Card>
+          <CardContent className="flex flex-col gap-6 p-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl border p-4">
+                  <Package className="h-8 w-8" />
+                </div>
 
-      <Card>
-        <CardContent className="flex flex-col gap-6 p-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-4">
-              <div className="rounded-xl border p-4">
-                <Package className="h-8 w-8" />
+                <div>
+                  <h1 className="text-3xl font-bold">{resourceDetail.name}</h1>
+
+                  <p className="text-muted-foreground">{resourceDetail.type}</p>
+                </div>
               </div>
 
-              <div>
-                <h1 className="text-3xl font-bold">
-                  {resource.name}
-                </h1>
-
-                <p className="text-muted-foreground">
-                  {resource.type}
-                </p>
-              </div>
+              <Badge>{resourceDetail.status}</Badge>
             </div>
 
-            <Badge>{resource.status}</Badge>
-          </div>
+            <div className="grid grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <p className="text-muted-foreground text-sm">Total</p>
 
-          <div className="grid grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-muted-foreground text-sm">
-                  Total
-                </p>
+                  <h3 className="text-2xl font-bold">
+                    {resourceDetail.totalQuantity}
+                  </h3>
+                </CardContent>
+              </Card>
 
-                <h3 className="text-2xl font-bold">
-                  {resource.totalQuantity}
-                </h3>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <p className="text-muted-foreground text-sm">Available</p>
 
-            <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-muted-foreground text-sm">
-                  Available
-                </p>
+                  <h3 className="text-2xl font-bold">
+                    {resource.availableQuantity}
+                  </h3>
+                </CardContent>
+              </Card>
 
-                <h3 className="text-2xl font-bold">
-                  {resource.availableQuantity}
-                </h3>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <p className="text-muted-foreground text-sm">In Use</p>
 
-            <Card>
-              <CardContent className="p-4 text-center">
-                <p className="text-muted-foreground text-sm">
-                  In Use
-                </p>
+                  <h3 className="text-2xl font-bold">{inUse}</h3>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-                <h3 className="text-2xl font-bold">
-                  {inUse}
-                </h3>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
-
-      
-
-      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3">
 
   
 
@@ -386,9 +359,6 @@ const ResourceDetails = () => {
           </Tabs>
 
         </div>
-
-      
-
         <div className="space-y-6">
 
           <Card>
@@ -478,9 +448,13 @@ const ResourceDetails = () => {
             </CardContent>
           </Card>
 
+        </div> 
+
+      
+
         </div>
       </div>
-    </div>
+    );
   }
 };
 
