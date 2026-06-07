@@ -2,7 +2,9 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Building2, Calendar, MapPin, Package } from "lucide-react";
 enum ResourceStatus {
-  "",
+  available,
+  inUse,
+  underMaintenance,
 }
 type resourceType = {
   id: String;

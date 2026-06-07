@@ -23,6 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Progress } from "@/components/ui/progress";
+import { ResourceTabs } from "@/components/others/ResourceTabs";
 
 const ResourceDetails = () => {
   const resource = {
@@ -148,176 +149,125 @@ const ResourceDetails = () => {
         </Card>
 
         <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Resource Information</CardTitle>
+              </CardHeader>
 
-  
+              <CardContent className="grid gap-6 md:grid-cols-2">
+                <div className="flex gap-3">
+                  <Package className="mt-1 h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Resource ID</p>
+                    <p>{resource.id}</p>
+                  </div>
+                </div>
 
-        <div className="space-y-6 lg:col-span-2">
+                <div className="flex gap-3">
+                  <Building2 className="mt-1 h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Department</p>
+                    <p>{resource.department}</p>
+                  </div>
+                </div>
 
-        
+                <div className="flex gap-3">
+                  <MapPin className="mt-1 h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Location</p>
+                    <p>{resource.location}</p>
+                  </div>
+                </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Resource Information
-              </CardTitle>
-            </CardHeader>
+                <div className="flex gap-3">
+                  <Calendar className="mt-1 h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Created At</p>
+                    <p>{resource.createdAt}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-            <CardContent className="grid gap-6 md:grid-cols-2">
+            <ResourceTabs />
 
-              <div className="flex gap-3">
-                <Package className="mt-1 h-4 w-4 text-muted-foreground" />
+            <Card>
+              <CardHeader>
+                <CardTitle>Description</CardTitle>
+              </CardHeader>
+
+              <CardContent>
+                <p className="leading-7 text-muted-foreground">
+                  {resource.description}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Availability</CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-5">
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    Resource ID
-                  </p>
-                  <p>{resource.id}</p>
-                </div>
-              </div>
+                  <div className="mb-2 flex justify-between text-sm">
+                    <span>Available</span>
+                    <span>
+                      {resource.availableQuantity}/{resource.totalQuantity}
+                    </span>
+                  </div>
 
-              <div className="flex gap-3">
-                <Building2 className="mt-1 h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Department
-                  </p>
-                  <p>{resource.department}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <MapPin className="mt-1 h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Location
-                  </p>
-                  <p>{resource.location}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Calendar className="mt-1 h-4 w-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Created At
-                  </p>
-                  <p>{resource.createdAt}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Description</CardTitle>
-            </CardHeader>
-
-            <CardContent>
-              <p className="leading-7 text-muted-foreground">
-                {resource.description}
-              </p>
-            </CardContent>
-          </Card>
-
-       
-
-       
-
-        </div>
-        <div className="space-y-6">
-
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Availability
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-5">
-
-              <div>
-                <div className="mb-2 flex justify-between text-sm">
-                  <span>Available</span>
-                  <span>
-                    {resource.availableQuantity}/
-                    {resource.totalQuantity}
-                  </span>
+                  <Progress value={percentage} />
                 </div>
 
-                <Progress value={percentage} />
-              </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Card>
+                    <CardContent className="p-4 text-center">
+                      <p className="text-xs text-muted-foreground">Available</p>
 
-              <div className="grid grid-cols-2 gap-3">
+                      <p className="text-xl font-bold">
+                        {resource.availableQuantity}
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <p className="text-xs text-muted-foreground">
-                      Available
-                    </p>
+                  <Card>
+                    <CardContent className="p-4 text-center">
+                      <p className="text-xs text-muted-foreground">In Use</p>
 
-                    <p className="text-xl font-bold">
-                      {resource.availableQuantity}
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <p className="text-xs text-muted-foreground">
-                      In Use
-                    </p>
-
-                    <p className="text-xl font-bold">
-                      {inUse}
-                    </p>
-                  </CardContent>
-                </Card>
-
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-
-              <div className="flex gap-3">
-                <Clock className="h-4 w-4 mt-1" />
-                <div>
-                  <p className="text-sm">
-                    Status changed to Available
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    3 hours ago
-                  </p>
+                      <p className="text-xl font-bold">{inUse}</p>
+                    </CardContent>
+                  </Card>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="flex gap-3">
-                <Clock className="h-4 w-4 mt-1" />
-                <div>
-                  <p className="text-sm">
-                    Quantity updated
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Yesterday
-                  </p>
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                <div className="flex gap-3">
+                  <Clock className="h-4 w-4 mt-1" />
+                  <div>
+                    <p className="text-sm">Status changed to Available</p>
+                    <p className="text-xs text-muted-foreground">3 hours ago</p>
+                  </div>
                 </div>
-              </div>
 
-            </CardContent>
-          </Card>
-
-        </div> 
-
-      
-
+                <div className="flex gap-3">
+                  <Clock className="h-4 w-4 mt-1" />
+                  <div>
+                    <p className="text-sm">Quantity updated</p>
+                    <p className="text-xs text-muted-foreground">Yesterday</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );

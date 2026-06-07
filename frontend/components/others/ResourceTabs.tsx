@@ -1,10 +1,10 @@
 import React from 'react'
-import { TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+import { TabsContent, TabsList, TabsTrigger,Tabs } from '../ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
 import { User } from 'lucide-react'
 
-export const Tabs = () => {
+export const ResourceTabs = () => {
 
   return (
     <div>
