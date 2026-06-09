@@ -1,3 +1,4 @@
+import EmployeeCount from "@/components/employee/EmployeeCount";
 import React from "react";
 
 const page = () => {
@@ -38,7 +39,6 @@ const page = () => {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
@@ -52,30 +52,8 @@ const page = () => {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <div className="rounded-xl border bg-card p-5">
-          <p className="text-sm text-muted-foreground">Total Users</p>
-          <h2 className="mt-2 text-3xl font-bold">48</h2>
-        </div>
+      <EmployeeCount />
 
-        <div className="rounded-xl border bg-card p-5">
-          <p className="text-sm text-muted-foreground">Employees</p>
-          <h2 className="mt-2 text-3xl font-bold">39</h2>
-        </div>
-
-        <div className="rounded-xl border bg-card p-5">
-          <p className="text-sm text-muted-foreground">Managers</p>
-          <h2 className="mt-2 text-3xl font-bold">8</h2>
-        </div>
-
-        <div className="rounded-xl border bg-card p-5">
-          <p className="text-sm text-muted-foreground">Pending Invites</p>
-          <h2 className="mt-2 text-3xl font-bold">1</h2>
-        </div>
-      </div>
-
-      {/* Filters */}
       <div className="flex flex-col gap-3 rounded-xl border bg-card p-4 md:flex-row">
         <input
           placeholder="Search employees..."
@@ -97,7 +75,6 @@ const page = () => {
         </select>
       </div>
 
-      {/* Employee Table */}
       <div className="overflow-hidden rounded-xl border bg-card">
         <table className="w-full">
           <thead className="border-b bg-muted/40">
