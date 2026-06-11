@@ -124,7 +124,11 @@ const Sidebarmenu = () => {
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      router.push("/admin/employees");
+                    }}
+                  >
                     <Icon icon="material-symbols:view-day-rounded" /> View
                     Employees
                   </DropdownMenuItem>

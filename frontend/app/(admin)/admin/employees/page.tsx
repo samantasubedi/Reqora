@@ -1,9 +1,8 @@
 import EmployeeCount from "@/components/employee/EmployeeCount";
+import { EmployeeTable } from "@/components/employee/EmployeeTable";
 import React from "react";
 
 const page = () => {
-  
-
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -21,9 +20,7 @@ const page = () => {
 
       <EmployeeCount />
 
-     
-
-     
+      <EmployeeTable />
     </div>
   );
 };
