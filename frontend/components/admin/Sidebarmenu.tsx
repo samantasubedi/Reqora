@@ -99,12 +99,10 @@ const Sidebarmenu = () => {
                       router.push("/admin/resources/add");
                     }}
                   >
-                    {" "}
                     <Icon icon="hugeicons:resources-add" />
                     Add Resources
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    {" "}
                     <Icon icon="hugeicons:resources-remove" />
                     Remove Resources
                   </DropdownMenuItem>

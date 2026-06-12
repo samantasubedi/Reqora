@@ -9,6 +9,7 @@ import Navbar from "@/components/others/Navbar";
 import { GradientBackground } from "@/components/animate-ui/components/backgrounds/gradient";
 import { LiquidButton } from "@/components/animate-ui/components/buttons/liquid";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import Footer from "@/components/others/Footer";
 
 export default function Home() {
   const router = useRouter();
@@ -74,6 +75,7 @@ export default function Home() {
           </LiquidButton>
         </div>
       </GradientBackground>
+        <Footer />
     </>
   );
 }
