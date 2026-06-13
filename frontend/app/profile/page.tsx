@@ -54,28 +54,88 @@ const page = () => {
     );
   }
   return (
-    <div className="flex justify-center p-5">
-      <Card className="w-[60%] p-10">
-        <CardContent className="flex justify-between">
-          <div className="flex gap-4">
-            <div>
-              <Icon
-                icon="material-symbols:person-rounded"
-                className="text-7xl p-2 rounded-full bg-gray-200"
-              />
-            </div>
-            <div>
-              <p className="font-bold text-2xl">{query.data?.username}</p>
-              <p className="text-gray-600">{query.data?.email}</p>
-              <p className="text-blue-600 px-2 rounded-2xl bg-blue-200 w-fit font-semibold">
+ <div className="flex justify-center p-6">
+  <Card className="w-full max-w-4xl overflow-hidden shadow-lg">
+
+
+
+    <CardContent className="relative p-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+  
+        <div className="flex items-center gap-5">
+       
+          <div className="-mt-16 border-4 border-white rounded-full bg-gray-100 shadow-md">
+            <Icon
+              icon="material-symbols:person-rounded"
+              className="text-8xl p-3 text-gray-600"
+            />
+          </div>
+
+
+          <div>
+            <h2 className="text-3xl font-bold">
+              {query.data?.username}
+            </h2>
+
+            <p className="text-gray-500 mt-1">
+              {query.data?.email}
+            </p>
+
+            <div className="mt-3">
+              <span className="px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-700">
                 {query.data?.role}
-              </p>
+              </span>
             </div>
           </div>
-          <Button>Edit profile</Button>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+
+        <Button>
+          Edit Profile
+        </Button>
+      </div>
+
+    
+      <div className="my-6 border-t" />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <p className="text-sm text-gray-500">Username</p>
+          <p className="font-medium">{query.data?.username}</p>
+        </div>
+
+        <div>
+          <p className="text-sm text-gray-500">Email</p>
+          <p className="font-medium">{query.data?.email}</p>
+        </div>
+
+        <div>
+          <p className="text-sm text-gray-500">Role</p>
+          <p className="font-medium capitalize">
+            {query.data?.role}
+          </p>
+        </div>
+      </div>
+
+    
+      <div className="grid grid-cols-3 gap-4 mt-8">
+        <div className="rounded-lg border p-4 text-center">
+          <p className="text-2xl font-bold">24</p>
+          <p className="text-sm text-gray-500">Resources</p>
+        </div>
+
+        <div className="rounded-lg border p-4 text-center">
+          <p className="text-2xl font-bold">12</p>
+          <p className="text-sm text-gray-500">Requests</p>
+        </div>
+
+        <div className="rounded-lg border p-4 text-center">
+          <p className="text-2xl font-bold">8</p>
+          <p className="text-sm text-gray-500">Approvals</p>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</div>
   );
 };
 
