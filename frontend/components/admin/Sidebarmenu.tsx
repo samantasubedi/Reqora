@@ -90,7 +90,11 @@ const Sidebarmenu = () => {
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      router.push("/resources");
+                    }}
+                  >
                     <Icon icon="material-symbols:grid-view-outline-rounded" />{" "}
                     View Resources
                   </DropdownMenuItem>
