@@ -9,12 +9,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EllipsisVertical } from "lucide-react";
-import { tableResourceType } from "./AdminDashboard";
+import {
+  ResourceStatus,
+  resourceType,
+  tableResourceType,
+} from "./AdminDashboard";
+import { Badge } from "../ui/badge";
 
 export const ResourceTable = ({
   resourceData,
 }: {
-  resourceData: tableResourceType[];
+  resourceData: resourceType[];
 }) => {
   return (
     <div className="mt-5 px-3">
@@ -32,22 +37,26 @@ export const ResourceTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {resourceData.map((curr: tableResourceType) => {
+          {resourceData.map((curr) => {
+            const statusDetails = getStatusDisaplay(curr.status);
             return (
               <TableRow key={curr.id}>
                 <TableCell>{curr.id}</TableCell>
                 <TableCell>{curr.name}</TableCell>
                 <TableCell>{curr.type}</TableCell>
                 <TableCell>
-                  <span
-                    className={`rounded-xl p-1 ${curr.status == "Available" ? "bg-green-200" : curr.status == "Under Maintenance" ? "bg-red-200" : curr.status == "In Use" ? "bg-yellow-200" : ""}`}
+                  <Badge
+                    variant={"outline"}
+                    className={`px-2 p-1 ${statusDetails.color}`}
                   >
-                    {curr.status}
-                  </span>
+                    {statusDetails.display}
+                  </Badge>
                 </TableCell>
                 <TableCell>{curr.department}</TableCell>
                 <TableCell>{curr.location}</TableCell>
-                <TableCell>{curr.availability}%</TableCell>
+                <TableCell>
+                  {(curr.availableQuantity / curr.totalQuantity) * 100}%
+                </TableCell>
                 <TableCell>{<EllipsisVertical />}</TableCell>
               </TableRow>
             );
@@ -56,4 +65,17 @@ export const ResourceTable = ({
       </Table>
     </div>
   );
+};
+
+export const getStatusDisaplay = (status: ResourceStatus) => {
+  switch (status) {
+    case ResourceStatus.available:
+      return { display: "Available", color: "bg-green-200" };
+    case ResourceStatus.inUse:
+      return { display: "In Use", color: "bg-yellow-200" };
+    case ResourceStatus.underMaintainence:
+      return { display: "Under Maintainence", color: "bg-red-200" };
+    default:
+      return { display: status, color: "bg-red-200" };
+  }
 };

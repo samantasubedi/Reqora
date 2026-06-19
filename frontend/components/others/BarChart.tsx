@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { FC } from "react";
 
 export const description = "A bar chart with a label";
 
@@ -28,17 +29,8 @@ export const description = "A bar chart with a label";
 //   { month: "May", desktop: 209 },
 //   { month: "June", desktop: 214 },
 // ];
-type chartDataType = [
-  { hardware: string; quantity: number },
-  { software: string; quantity: number },
-  { digitalAssest: string; quantity: number },
-  { humanResource: string; quantity: number },
-  { facility: string; quantity: number },
-  { service: string; quantity: number },
-  { consumable: string; quantity: number },
-  { data: string; quantity: number },
-  { others: string; quantity: number },
-];
+export type countByTypeType = { _count: number; type: string }[];
+export type countByStatusType = { _count: number; status: string }[];
 
 const chartConfig = {
   desktop: {
@@ -47,7 +39,8 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartBarLabel(chartData: chartDataType) {
+export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
+  console.log(chartData);
   return (
     <Card>
       <CardHeader>
@@ -58,24 +51,29 @@ export function ChartBarLabel(chartData: chartDataType) {
         <ChartContainer config={chartConfig} className="max-h-[250px]">
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={chartData.map((curr) => {
+              return {
+                name: curr.type,
+                Count: curr._count,
+              };
+            })}
             margin={{
               top: 20,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="name"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              // tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+            <Bar dataKey="Count" fill="var(--color-chart-1)" radius={8}>
               <LabelList
                 position="top"
                 offset={12}

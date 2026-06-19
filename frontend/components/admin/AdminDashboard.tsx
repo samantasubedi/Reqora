@@ -4,7 +4,7 @@ import StatCard from "./StatCard";
 import { Book, Package } from "lucide-react";
 import { Button } from "../ui/button";
 import { ResourceTable } from "./ResourceTable";
-import axios, { isAxiosError } from "axios";
+import axios, { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -15,12 +15,17 @@ import { TableSkeleton } from "./TableSkeleton";
 import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
 import { ChartPieLabel } from "../others/PieChart";
-import { ChartBarLabel } from "../others/BarChart";
-enum ResourceStatus {
-  available,
-  inUse,
-  underMaintainence,
+import {
+  ChartBarLabel,
+  countByStatusType,
+  countByTypeType,
+} from "../others/BarChart";
+export enum ResourceStatus {
+  available = "available",
+  inUse = "inUse",
+  underMaintainence = "underMaintainence",
 }
+
 export interface statCardInterface {
   title: string;
   statusKey: "all" | "available" | "inUse" | "underMaintainence";
@@ -30,13 +35,13 @@ export interface statCardInterface {
   bgColor: string;
   textColor: string;
 }
-type resourceType = {
+export type resourceType = {
   id: string;
   name: string;
   location: string;
   department: string;
   type: string;
-  availability: string;
+  availability: boolean;
   status: ResourceStatus;
   totalQuantity: number;
   availableQuantity: number;
@@ -46,11 +51,12 @@ type resourceType = {
 export type tableResourceType = {
   id: string;
   name: string;
-  status: string;
+  status: ResourceStatus;
   type: string;
   department: string;
   location: string;
-  availability: number;
+  availability: boolean;
+  availabilityPercentage?: number;
 };
 
 export const handleLogout = async (router: AppRouterInstance) => {
@@ -76,7 +82,13 @@ export const AdminDashboard = () => {
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const fetchApi = async () => {
-    const response = await axios.get(`${backendUrl}/resources`, {
+    const response: AxiosResponse<{
+      success: boolean;
+      message: string;
+      allResources: resourceType[];
+      countsByType: countByTypeType;
+      countsByStatus: countByStatusType;
+    }> = await axios.get(`${backendUrl}/resources`, {
       withCredentials: true,
     });
     return response.data;
@@ -157,11 +169,16 @@ export const AdminDashboard = () => {
               const currentStatus = query.data.countsByStatus.find((i: any) => {
                 return i.status === curr.statusKey;
               });
+
+              if (!currentStatus) return;
+
               const allCount = query.data.countsByStatus.find((i: any) => {
                 return i.status === "all";
               })?._count;
 
-              const subText = `${(currentStatus?._count / allCount) * 100}% of total`;
+              if (!allCount) return;
+
+              const subText = `${((currentStatus?._count / allCount) * 100).toFixed(2)}% of total`;
 
               return (
                 <StatCard
@@ -173,6 +190,7 @@ export const AdminDashboard = () => {
                   subtext={subText}
                   bgColor={curr.bgColor}
                   textColor={curr.textColor}
+               
                 ></StatCard>
               );
             })}
@@ -200,7 +218,11 @@ export const AdminDashboard = () => {
               />
             </div>
           )}
-          <div className="w-[40%]">{/* <ChartBarLabel /> */}</div>
+          {query.data?.countsByType && (
+            <div className="w-[40%]">
+              <ChartBarLabel chartData={query.data?.countsByType} />
+            </div>
+          )}
         </div>
 
         {query.isLoading ? (
@@ -211,7 +233,7 @@ export const AdminDashboard = () => {
               query.refetch();
             }}
           />
-        ) : query.data.allResources.length ? (
+        ) : query.data?.allResources.length ? (
           <ResourceTable resourceData={query.data.allResources} />
         ) : (
           <TableEmpty />

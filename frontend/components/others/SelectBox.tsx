@@ -1,5 +1,5 @@
-"use client"
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import {
   Combobox,
   ComboboxContent,
@@ -25,8 +25,8 @@ const SelectBox = ({
       onValueChange={(v) => {
         onChange(String(v));
       }}
-      value={value}
       items={options}
+      value={value}
     >
       <ComboboxInput
         placeholder="Select a status"
@@ -37,7 +37,7 @@ const SelectBox = ({
         <ComboboxList className="text-gray-600">
           {(item) => {
             return (
-              <ComboboxItem key={item.value} value={item.value} >
+              <ComboboxItem key={item.value} value={item.value}>
                 {item.label}
               </ComboboxItem>
             );

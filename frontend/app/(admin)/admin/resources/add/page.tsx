@@ -24,6 +24,7 @@ import {
   ComboboxItem,
 } from "@/components/ui/combobox";
 import SelectBox from "@/components/others/SelectBox";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   resourceName: z
@@ -68,11 +69,13 @@ const page = () => {
     });
     return response.data;
   };
+  const router = useRouter();
   const mutation = useMutation({
     mutationFn: postApi,
     onSuccess: (data) => {
       toast.success(data.message);
       reset();
+      router.push("/admin/dashboard");
     },
     onError: (error: T_MutaionError) => {
       if (error.response) {
