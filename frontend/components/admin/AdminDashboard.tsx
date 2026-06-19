@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TableSkeleton } from "./TableSkeleton";
 import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
@@ -95,6 +95,17 @@ export const AdminDashboard = () => {
       }
     }
   }, [query.isError]);
+  if (query.isSuccess) {
+    console.log(query.data, "this is resource");
+    const [resourceTypeCount,setResourceTypeCount]=useState({})
+    const resourceCount = () => {
+      for (let resource of query.data.allResources) {
+        if (resource.type === "hardware") {
+          
+        }
+      }
+    };
+  }
 
   const AdminStat: statCardInterface[] = [
     {
@@ -196,9 +207,7 @@ export const AdminDashboard = () => {
               />
             </div>
           )}
-          <div className="w-[40%]">
-            <ChartBarLabel />
-          </div>
+          <div className="w-[40%]">{/* <ChartBarLabel /> */}</div>
         </div>
 
         {query.isLoading ? (

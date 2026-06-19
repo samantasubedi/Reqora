@@ -106,7 +106,11 @@ const Sidebarmenu = () => {
                     <Icon icon="hugeicons:resources-add" />
                     Add Resources
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      router.push("/admin/resources/delete");
+                    }}
+                  >
                     <Icon icon="hugeicons:resources-remove" />
                     Remove Resources
                   </DropdownMenuItem>

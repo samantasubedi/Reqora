@@ -20,23 +20,34 @@ import {
 
 export const description = "A bar chart with a label";
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+// const chartData = [
+//   { month: "January", desktop: 186 },
+//   { month: "February", desktop: 305 },
+//   { month: "March", desktop: 237 },
+//   { month: "April", desktop: 73 },
+//   { month: "May", desktop: 209 },
+//   { month: "June", desktop: 214 },
+// ];
+type chartDataType = [
+  { hardware: string; quantity: number },
+  { software: string; quantity: number },
+  { digitalAssest: string; quantity: number },
+  { humanResource: string; quantity: number },
+  { facility: string; quantity: number },
+  { service: string; quantity: number },
+  { consumable: string; quantity: number },
+  { data: string; quantity: number },
+  { others: string; quantity: number },
 ];
 
 const chartConfig = {
   desktop: {
-    label: "Desktop",
+    label: "type",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
-export function ChartBarLabel() {
+export function ChartBarLabel(chartData: chartDataType) {
   return (
     <Card>
       <CardHeader>
