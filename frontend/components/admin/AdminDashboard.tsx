@@ -95,16 +95,9 @@ export const AdminDashboard = () => {
       }
     }
   }, [query.isError]);
+
   if (query.isSuccess) {
     console.log(query.data, "this is resource");
-    const [resourceTypeCount,setResourceTypeCount]=useState({})
-    const resourceCount = () => {
-      for (let resource of query.data.allResources) {
-        if (resource.type === "hardware") {
-          
-        }
-      }
-    };
   }
 
   const AdminStat: statCardInterface[] = [
@@ -161,10 +154,10 @@ export const AdminDashboard = () => {
         <div className="flex justify-between m-3">
           {query.isSuccess &&
             AdminStat.map((curr, index) => {
-              const currentStatus = query.data.counts.find((i: any) => {
+              const currentStatus = query.data.countsByStatus.find((i: any) => {
                 return i.status === curr.statusKey;
               });
-              const allCount = query.data.counts.find((i: any) => {
+              const allCount = query.data.countsByStatus.find((i: any) => {
                 return i.status === "all";
               })?._count;
 
@@ -188,7 +181,7 @@ export const AdminDashboard = () => {
           {query.isSuccess && (
             <div className="w-[40%]">
               <ChartPieLabel
-                data={query.data.counts
+                data={query.data.countsByStatus
                   .filter((curr: any) => {
                     return curr.status != "all";
                   })

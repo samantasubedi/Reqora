@@ -27,8 +27,13 @@ export const getAllResources = async (req: Request, res: Response) => {
       updatedAt: curr.updatedAt,
     }));
 
-    const counts = await prisma.resource.groupBy({
+    const countsByStatus = await prisma.resource.groupBy({
       by: ["status"],
+      _count: true,
+    });
+
+    const countsByType = await prisma.resource.groupBy({
+      by: ["type"],
       _count: true,
     });
 
@@ -36,7 +41,11 @@ export const getAllResources = async (req: Request, res: Response) => {
       success: true,
       message: "got all resources",
       allResources,
-      counts: [...counts, { _count: allResources.length, status: "all" }],
+      countsByStatus: [
+        ...countsByStatus,
+        { _count: allResources.length, status: "all" },
+      ],
+      countsByType,
     });
   } catch (err) {
     console.log(err);
