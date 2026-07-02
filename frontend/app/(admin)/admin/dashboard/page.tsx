@@ -3,9 +3,9 @@ import SidebarMenu from "@/components/admin/Sidebarmenu";
 
 export default function AdminDashboardPage() {
   return (
-    <div className="flex w-screen">
+    <div className="flex max-w-screen">
       <SidebarMenu />
-      <div className="w-full">
+      <div className="w-screen">
         <AdminDashboard />
       </div>
     </div>

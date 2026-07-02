@@ -8,19 +8,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EllipsisVertical } from "lucide-react";
+import { Delete, Edit, EllipsisVertical, View } from "lucide-react";
 import {
   ResourceStatus,
   resourceType,
   tableResourceType,
 } from "./AdminDashboard";
 import { Badge } from "../ui/badge";
+import { useRouter } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export const ResourceTable = ({
   resourceData,
 }: {
   resourceData: resourceType[];
 }) => {
+  const router = useRouter();
   return (
     <div className="mt-5 px-3">
       <Table className="bg-blue-200/40">
@@ -57,7 +65,25 @@ export const ResourceTable = ({
                 <TableCell>
                   {(curr.availableQuantity / curr.totalQuantity) * 100}%
                 </TableCell>
-                <TableCell>{<EllipsisVertical />}</TableCell>
+                <TableCell>
+            
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <EllipsisVertical />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent >
+                      <DropdownMenuItem className="cursor-pointer"
+                        onClick={() => {
+                          router.push(`/resources/${curr.id}`);
+                        }}
+                      >
+                       <View className="text-blue-500"/> view Details
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer"><Edit className="text-yellow-500"/>Edit</DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer"><Delete className="text-red-500"/>Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
             );
           })}
