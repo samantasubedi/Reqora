@@ -32,14 +32,14 @@ enum ResourceStatus {
 }
 
 model user {
-  username  String   @unique
-  id        String   @id @default(cuid())
-  email     String   @unique
-  role      Role?
-  password  String
-  enrolled  Boolean  @default(false)
-  companyId String?
-  company   company? @relation(fields: [companyId], references: [id])
+  username         String    @unique
+  id               String    @id @default(cuid())
+  email            String    @unique
+  role             Role?
+  password         String
+  enrolled         Boolean   @default(false)
+  companyId        String?
+  company          company?  @relation(fields: [companyId], references: [id])
   createdRequests  request[] @relation("requestedByUser")
   reviewedRequests request[] @relation("reviewedByUser")
 }
@@ -56,20 +56,22 @@ model company {
 }
 
 model resource {
-  id                String         @unique @default(cuid())
-  name              String
-  location          String
-  department        String
-  type              String
-  availability      Boolean
-  status            ResourceStatus
-  totalQuantity     Int
-  availableQuantity Int
-  createdAt         DateTime
-  updatedAt         DateTime
-  companyId         String
-  company           company        @relation(fields: [companyId], references: [id])
-  requests          request[]
+  id                       String         @unique @default(cuid())
+  name                     String
+  location                 String
+  department               String
+  type                     String
+  availability             Boolean
+  status                   ResourceStatus
+  totalQuantity            Int
+  inUseQuantity            Int @default(0)
+  underMaintenanceQuantity Int @default(0)
+  availableQuantity        Int 
+  createdAt                DateTime
+  updatedAt                DateTime
+  companyId                String
+  company                  company        @relation(fields: [companyId], references: [id])
+  requests                 request[]
 }
 
 model request {
