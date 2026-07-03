@@ -20,32 +20,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { Progress } from "@/components/ui/progress";
 import { ResourceTabs } from "@/components/others/ResourceTabs";
+import { useRouter } from "next/navigation";
 
 const ResourceDetails = () => {
-  const resource = {
-    id: "RES-001",
-    name: "MacBook Pro M3",
-    type: "Laptop",
-    department: "IT",
-    location: "Floor 3",
-    status: "Available",
-    totalQuantity: 20,
-    availableQuantity: 8,
-    createdAt: "2026-01-12",
-    updatedAt: "2026-02-14",
-    description:
-      "High-performance laptops used by software engineers for development and testing.",
-  };
-
-  const inUse = resource.totalQuantity - resource.availableQuantity;
-
-  const percentage =
-    (resource.availableQuantity / resource.totalQuantity) * 100;
-
+  const router = useRouter();
+  let inUseQuantity;
+  let percentage;
   const params = useParams();
   const id = params.id;
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -59,6 +41,7 @@ const ResourceDetails = () => {
     queryKey: ["resourceDetail"],
     queryFn: fetchApi,
   });
+
   useEffect(() => {
     if (query.isError) {
       if (isAxiosError(query.error)) {
@@ -71,6 +54,7 @@ const ResourceDetails = () => {
   let resourceDetail;
   if (query.isSuccess) {
     resourceDetail = query.data.resourceDetail;
+
     console.log("this is resourceDetail", resourceDetail);
   }
   if (query.isLoading) {
@@ -80,7 +64,13 @@ const ResourceDetails = () => {
     return (
       <div className="mx-auto max-w-7xl space-y-6 p-6">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" className="gap-2">
+          <Button
+            variant="ghost"
+            className="gap-2"
+            onClick={() => {
+              router.back();
+            }}
+          >
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -132,7 +122,7 @@ const ResourceDetails = () => {
                   <p className="text-muted-foreground text-sm">Available</p>
 
                   <h3 className="text-2xl font-bold">
-                    {resource.availableQuantity}
+                    {resourceDetail.availableQuantity}
                   </h3>
                 </CardContent>
               </Card>
@@ -141,7 +131,7 @@ const ResourceDetails = () => {
                 <CardContent className="p-4 text-center">
                   <p className="text-muted-foreground text-sm">In Use</p>
 
-                  <h3 className="text-2xl font-bold">{inUse}</h3>
+                  <h3 className="text-2xl font-bold">{inUseQuantity}</h3>
                 </CardContent>
               </Card>
             </div>
@@ -160,7 +150,7 @@ const ResourceDetails = () => {
                   <Package className="mt-1 h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Resource ID</p>
-                    <p>{resource.id}</p>
+                    <p>{resourceDetail.id}</p>
                   </div>
                 </div>
 
@@ -168,7 +158,7 @@ const ResourceDetails = () => {
                   <Building2 className="mt-1 h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Department</p>
-                    <p>{resource.department}</p>
+                    <p>{resourceDetail.department}</p>
                   </div>
                 </div>
 
@@ -176,7 +166,7 @@ const ResourceDetails = () => {
                   <MapPin className="mt-1 h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Location</p>
-                    <p>{resource.location}</p>
+                    <p>{resourceDetail.location}</p>
                   </div>
                 </div>
 
@@ -184,7 +174,7 @@ const ResourceDetails = () => {
                   <Calendar className="mt-1 h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Created At</p>
-                    <p>{resource.createdAt}</p>
+                    <p>{resourceDetail.createdAt}</p>
                   </div>
                 </div>
               </CardContent>
@@ -199,7 +189,7 @@ const ResourceDetails = () => {
 
               <CardContent>
                 <p className="leading-7 text-muted-foreground">
-                  {resource.description}
+                  {resourceDetail.description}
                 </p>
               </CardContent>
             </Card>
@@ -215,7 +205,8 @@ const ResourceDetails = () => {
                   <div className="mb-2 flex justify-between text-sm">
                     <span>Available</span>
                     <span>
-                      {resource.availableQuantity}/{resource.totalQuantity}
+                      {resourceDetail.availableQuantity}/
+                      {resourceDetail.totalQuantity}
                     </span>
                   </div>
 
@@ -228,7 +219,7 @@ const ResourceDetails = () => {
                       <p className="text-xs text-muted-foreground">Available</p>
 
                       <p className="text-xl font-bold">
-                        {resource.availableQuantity}
+                        {resourceDetail.availableQuantity}
                       </p>
                     </CardContent>
                   </Card>
@@ -237,7 +228,7 @@ const ResourceDetails = () => {
                     <CardContent className="p-4 text-center">
                       <p className="text-xs text-muted-foreground">In Use</p>
 
-                      <p className="text-xl font-bold">{inUse}</p>
+                      <p className="text-xl font-bold">{inUseQuantity}</p>
                     </CardContent>
                   </Card>
                 </div>
