@@ -5,15 +5,15 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const routeRoles: { [key: string]: string[] } = {
-  "/employee/dashboard": ["employee", "admin"],
-  "/admin/dashboard": ["admin"],
-  "/manager/dashboard": ["manager", "admin"],
+  "/employee": ["employee", "admin"],
+  "/admin": ["admin"],
+  "/manager": ["manager", "admin"],
 };
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-
-  const allowedRoles: string[] = routeRoles[path];
+  const pathPrefix="/"+path.split("/")[1]
+  const allowedRoles: string[] = routeRoles[pathPrefix];
   if (!allowedRoles && path !== "/") {
     // if allowedRoles is empty then it means the path is not listed in routeRoles object which means it is not a protected route so we simply give the access
     return NextResponse.next();
