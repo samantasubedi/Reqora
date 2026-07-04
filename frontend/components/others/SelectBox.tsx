@@ -12,10 +12,12 @@ import { useForm } from "react-hook-form";
 type statusOptionsType = { label: string; value: string }[];
 
 const SelectBox = ({
+  label,
   value,
   onChange,
   options,
 }: {
+  label:string,
   value: string;
   onChange: (val: string) => void;
   options: statusOptionsType;
@@ -29,11 +31,11 @@ const SelectBox = ({
       value={value}
     >
       <ComboboxInput
-        placeholder="Select a status"
+        placeholder={`select a ${label}`}
         className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
       ></ComboboxInput>
       <ComboboxContent>
-        <ComboboxEmpty>No such status</ComboboxEmpty>
+        <ComboboxEmpty>{label=="status"?"No such status":label=="type"?"No such type":label=="department"?"No such department":""}</ComboboxEmpty>
         <ComboboxList className="text-gray-600">
           {(item) => {
             return (

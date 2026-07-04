@@ -183,6 +183,7 @@ const page = () => {
                   Type
                 </label>
                 <SelectBox
+                label="type"
                   options={typeOptions}
                   value={getValues("type")}
                   onChange={(v) => {
@@ -202,6 +203,7 @@ const page = () => {
                 </label>
 
                 <SelectBox
+                label="status"
                   options={statusOptions}
                   onChange={(v) => {
                     setValue("status", v);
@@ -219,6 +221,7 @@ const page = () => {
                   Department
                 </label>
                 <SelectBox
+                label="department"
                   options={departmentOptions}
                   onChange={(v) => {
                     setValue("department", v);

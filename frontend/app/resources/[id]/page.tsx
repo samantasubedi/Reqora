@@ -54,7 +54,8 @@ const ResourceDetails = () => {
   let resourceDetail;
   if (query.isSuccess) {
     resourceDetail = query.data.resourceDetail;
-
+    percentage =
+      (resourceDetail.availableQuantity / resourceDetail.totalQuantity) * 100;
     console.log("this is resourceDetail", resourceDetail);
   }
   if (query.isLoading) {
@@ -131,7 +132,9 @@ const ResourceDetails = () => {
                 <CardContent className="p-4 text-center">
                   <p className="text-muted-foreground text-sm">In Use</p>
 
-                  <h3 className="text-2xl font-bold">{inUseQuantity}</h3>
+                  <h3 className="text-2xl font-bold">
+                    {resourceDetail.inUseQuantity}
+                  </h3>
                 </CardContent>
               </Card>
             </div>
@@ -189,7 +192,9 @@ const ResourceDetails = () => {
 
               <CardContent>
                 <p className="leading-7 text-muted-foreground">
-                  {resourceDetail.description}
+                  {resourceDetail.description
+                    ? resourceDetail.description
+                    : "No description available "}
                 </p>
               </CardContent>
             </Card>
@@ -228,14 +233,16 @@ const ResourceDetails = () => {
                     <CardContent className="p-4 text-center">
                       <p className="text-xs text-muted-foreground">In Use</p>
 
-                      <p className="text-xl font-bold">{inUseQuantity}</p>
+                      <p className="text-xl font-bold">
+                        {resourceDetail.inUseQuantity}
+                      </p>
                     </CardContent>
                   </Card>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle>Recent Activity</CardTitle>
               </CardHeader>
@@ -257,7 +264,7 @@ const ResourceDetails = () => {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
