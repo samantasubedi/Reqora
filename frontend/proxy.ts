@@ -8,16 +8,13 @@ const routeRoles: { [key: string]: string[] } = {
   "/employee": ["employee", "admin"],
   "/admin": ["admin"],
   "/manager": ["manager", "admin"],
+  "/resources": ["employee","manager","admin"],
 };
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const pathPrefix="/"+path.split("/")[1]
+  const pathPrefix = "/" + path.split("/")[1];
   const allowedRoles: string[] = routeRoles[pathPrefix];
-  if (!allowedRoles && path !== "/") {
-    // if allowedRoles is empty then it means the path is not listed in routeRoles object which means it is not a protected route so we simply give the access
-    return NextResponse.next();
-  }
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
   if (accessToken) {
@@ -68,5 +65,10 @@ export async function proxy(request: NextRequest) {
   }
 }
 export const config = {
-  matcher: ["/admin/:path*", "/employee/:path*", "/manager/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/employee/:path*",
+    "/manager/:path*",
+    "/resources",
+  ],
 };
