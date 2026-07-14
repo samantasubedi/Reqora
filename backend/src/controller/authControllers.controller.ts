@@ -46,13 +46,12 @@ export const handleRegister = async (req: Request, res: Response) => {
     }); //500 means internal server error
   }
 };
-
 export const handleLogin = async (req: Request, res: Response) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ message: "all fields are required" });
   }
-  
+
   const user = await prisma.user.findUnique({
     where: { username },
   });
@@ -97,7 +96,7 @@ export const handleLogin = async (req: Request, res: Response) => {
       maxAge: 15 * 60 * 1000, //15 minutes
     });
 
-   return res.status(200).json({
+    return res.status(200).json({
       success: true,
       code: "LOGIN_SUCCESSFULL",
       message: `You have been logged in as ${username}`,
@@ -106,7 +105,6 @@ export const handleLogin = async (req: Request, res: Response) => {
     });
   }
 };
-
 export const handleLogout = (req: Request, res: Response) => {
   try {
     res.clearCookie("accessToken", {
