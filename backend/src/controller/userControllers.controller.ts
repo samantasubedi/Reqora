@@ -12,6 +12,7 @@ export const getProfileInfo = async (req: Request, res: Response) => {
       select: {
         username: true,
         role: true,
+        description:true,
 
         company: { select: { companyName: true, email: true, address: true } },
       },
@@ -20,7 +21,7 @@ export const getProfileInfo = async (req: Request, res: Response) => {
     if (!userInfo) {
       throw new Error("user not found");
     }
-    const { username, role } = userInfo;
+    const { username, role,description } = userInfo;
     const {
       companyName,
       address,
@@ -34,6 +35,7 @@ export const getProfileInfo = async (req: Request, res: Response) => {
       companyName,
       address,
       companyEmail,
+      description
     });
   } catch (err) {
     return res.status(500).json({

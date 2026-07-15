@@ -37,6 +37,7 @@ model user {
   email            String    @unique
   role             Role?
   password         String
+  description      String?
   enrolled         Boolean   @default(false)
   companyId        String?
   company          company?  @relation(fields: [companyId], references: [id])
@@ -64,9 +65,9 @@ model resource {
   availability             Boolean
   status                   ResourceStatus
   totalQuantity            Int
-  inUseQuantity            Int @default(0)
-  underMaintenanceQuantity Int @default(0)
-  availableQuantity        Int 
+  inUseQuantity            Int            @default(0)
+  underMaintenanceQuantity Int            @default(0)
+  availableQuantity        Int
   createdAt                DateTime
   updatedAt                DateTime
   companyId                String
