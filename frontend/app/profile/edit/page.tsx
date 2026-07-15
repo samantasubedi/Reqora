@@ -53,7 +53,7 @@ const page = () => {
             <textarea
               id="description"
               rows={5}
-              placeholder="Tell us something about yourself..."
+              placeholder="Tell us something about yourself (optional)"
               className="w-full resize-none rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             />
           </div>

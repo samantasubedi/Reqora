@@ -5,16 +5,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Icon } from "@iconify/react";
 import { useQuery } from "@tanstack/react-query";
 import axios, { isAxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 
 const page = () => {
+  const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const fetchProfileInfo = async () => {
     const response = await axios.get(`${backendUrl}/profile`, {
       withCredentials: true,
     });
-console.log(response.data)
+    console.log(response.data);
     return response.data;
   };
   const query = useQuery({
@@ -78,7 +80,13 @@ console.log(response.data)
               </div>
             </div>
 
-            <Button>Edit Profile</Button>
+            <Button
+              onClick={() => {
+                router.push("profile/edit");
+              }}
+            >
+              Edit Profile
+            </Button>
           </div>
 
           <div className="my-6 border-t" />
@@ -99,7 +107,26 @@ console.log(response.data)
               <p className="font-medium capitalize">{query.data?.role}</p>
             </div>
           </div>
+          <div className="space-y-2 mt-5">
+            {query.data.description ? (
+              <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                {query.data.description}
+              </p>
+            ) : (
+              <div className="rounded-lg border border-dashed p-4 text-center">
+                <p className="mb-3 text-sm text-gray-500">
+                  You haven't added a description yet.
+                </p>
 
+                <button
+                  type="button"
+                  className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                >
+                  Add Description
+                </button>
+              </div>
+            )}
+          </div>
           <div className="grid grid-cols-3 gap-4 mt-8">
             <div className="rounded-lg border p-4 text-center">
               <p className="text-2xl font-bold">24</p>
