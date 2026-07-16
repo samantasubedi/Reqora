@@ -1,4 +1,29 @@
+import { useQuery } from "@tanstack/react-query";
+import axios, { isAxiosError } from "axios";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+
 const page = () => {
+   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const fetchApi=async()=>{
+const response=await axios.get(`${backendUrl}/profile`,{withCredentials:true})
+return response.data
+  }
+  const query=useQuery({
+    queryKey:["profile detail"],
+    queryFn:fetchApi
+  
+  })
+  useEffect(()=>{
+    if(query.isError){
+      if(isAxiosError(query.error)){
+        toast.error(query.error.response?.data.message)
+      }
+      else {
+        toast.error(query.error.message)
+      }
+    }
+  },[query.error])
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-6">
       <div className="w-full max-w-xl rounded-2xl bg-white p-8 shadow-lg">
