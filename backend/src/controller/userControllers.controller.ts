@@ -12,7 +12,7 @@ export const getProfileInfo = async (req: Request, res: Response) => {
       select: {
         username: true,
         role: true,
-        description:true,
+        description: true,
 
         company: { select: { companyName: true, email: true, address: true } },
       },
@@ -21,7 +21,7 @@ export const getProfileInfo = async (req: Request, res: Response) => {
     if (!userInfo) {
       throw new Error("user not found");
     }
-    const { username, role,description } = userInfo;
+    const { username, role, description } = userInfo;
     const {
       companyName,
       address,
@@ -35,7 +35,7 @@ export const getProfileInfo = async (req: Request, res: Response) => {
       companyName,
       address,
       companyEmail,
-      description
+      description,
     });
   } catch (err) {
     return res.status(500).json({
@@ -45,19 +45,31 @@ export const getProfileInfo = async (req: Request, res: Response) => {
     });
   }
 };
-export const getAllUsers = (req: Request, res: Response) => {
-  res.send("this gets all users for admin dashboard");
+export const getAllUsers = async(req: Request, res: Response) => {
+  const companyId = res.locals.user.companyId
+  let users
+try{
+ users= await prisma.user.findMany({where:{
+companyId
+  },
+})
+}catch(err){
+
+}
+  res.json({ message: `` ,
+  users
+  });
 };
 export const getSpecificUser = (req: Request, res: Response) => {
   const id = req.params.id;
   res.send(`this gets user data for specific user with id ${id}`);
 };
 
-// export const editUser=(req:Request, res:Response) => {
-//   res.json({
-//     message: "this edits the existing user info like name,personal details",
-//   });
-// }
+export const editUser = (req: Request, res: Response) => {
+  res.json({
+    message: "this edits the existing user info like name,personal details",
+  });
+};
 export const changeUserRole = (req: Request, res: Response) => {
   res.json({ message: "used to change the userroles by admin" });
 };
