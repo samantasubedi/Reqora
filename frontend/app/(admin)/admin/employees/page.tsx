@@ -1,3 +1,4 @@
+"use client";
 import EmployeeCount from "@/components/employee/EmployeeCount";
 import { EmployeeTable } from "@/components/employee/EmployeeTable";
 import { useQuery } from "@tanstack/react-query";
@@ -6,25 +7,24 @@ import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 
 const page = () => {
-  const backendUrl=process.env.NEXT_PUBLIC_BACKEND_API_URL
-  const fetchApi=async()=>{
-    const response=await axios.get(`${backendUrl}/users`)
-    return response.data
-  }
-  const query=useQuery({
-    queryKey:["companyUsers"],
-    queryFn:fetchApi
-  })
-  useEffect(()=>{
-    if(query.isError){
-      if (isAxiosError(query.error)){
-        toast.error("server error")
-      }
-      else{
-        toast.error(query.error.message)
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const fetchApi = async () => {
+    const response = await axios.get(`${backendUrl}/users`);
+    return response.data;
+  };
+  const query = useQuery({
+    queryKey: ["companyUsers"],
+    queryFn: fetchApi,
+  });
+  useEffect(() => {
+    if (query.isError) {
+      if (isAxiosError(query.error)) {
+        toast.error("server error");
+      } else {
+        toast.error(query.error.message);
       }
     }
-  },[])
+  }, []);
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
