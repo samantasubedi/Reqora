@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
 
 export const ResourceTable = ({
   resourceData,
@@ -29,19 +30,64 @@ export const ResourceTable = ({
   resourceData: resourceType[];
 }) => {
   const router = useRouter();
+  const defaultTableFields = [
+    "ID",
+    "Resource Name",
+    "Type",
+    "Status",
+    "Department",
+    "Location",
+    "Availabitly",
+    "Actions",
+  ];
+  const [tableFields, setTableFields] = useState([
+    "ID",
+    "Resource Name",
+    "Type",
+    "Status",
+    "Department",
+    "Location",
+    "Availabitly",
+    "Actions",
+  ]);
+  const handleTableField = (fieldName: string) => {
+    const newFields = tableFields.filter((cur) => {
+      return cur !== fieldName;
+    });
+    setTableFields(newFields);
+  };
+
   return (
     <div className="mt-5 px-3">
       <Table className="bg-blue-200/40">
         <TableHeader>
           <TableRow className="bg-slate-200">
-            <TableHead>ID</TableHead>
-            <TableHead>Resource Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Department</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead> Availability</TableHead>
-            <TableHead>Actions</TableHead>
+            {tableFields.map((cur) => (
+              <TableHead>{cur}</TableHead>
+            ))}
+            <TableHead>
+              <DropdownMenu>
+                <DropdownMenuTrigger>==</DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {tableFields.map((cur) => (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        handleTableField(cur);
+                      }}
+                    >
+                      {cur}
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setTableFields(defaultTableFields);
+                    }}
+                  >
+                    Reset
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -66,21 +112,27 @@ export const ResourceTable = ({
                   {(curr.availableQuantity / curr.totalQuantity) * 100}%
                 </TableCell>
                 <TableCell>
-            
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <EllipsisVertical />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent >
-                      <DropdownMenuItem className="cursor-pointer"
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
                         onClick={() => {
                           router.push(`/resources/${curr.id}`);
                         }}
                       >
-                       <View className="text-blue-500"/> view Details
+                        <View className="text-blue-500" /> view Details
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer"><Edit className="text-yellow-500"/>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer"><Delete className="text-red-500"/>Delete</DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Edit className="text-yellow-500" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Delete className="text-red-500" />
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

@@ -5,6 +5,7 @@ import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import QueryClientProviderWrapper from "@/components/QueryClientProviderWrapper";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,10 +32,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryClientProviderWrapper>
-          <ToastContainer />
-          <SidebarProvider className="block">{children}</SidebarProvider>
-        </QueryClientProviderWrapper>
+        {" "}
+        <ThemeProviderWrapper>
+          <QueryClientProviderWrapper>
+            <ToastContainer />
+            <SidebarProvider className="block">{children}</SidebarProvider>
+          </QueryClientProviderWrapper>
+        </ThemeProviderWrapper>
       </body>
     </html>
   );
