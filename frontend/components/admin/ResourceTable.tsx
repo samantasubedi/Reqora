@@ -30,29 +30,77 @@ export const ResourceTable = ({
   resourceData: resourceType[];
 }) => {
   const router = useRouter();
-  const defaultTableFields = [
-    "ID",
-    "Resource Name",
-    "Type",
-    "Status",
-    "Department",
-    "Location",
-    "Availabitly",
-    "Actions",
+  const defaultTableFields: {
+    label: string;
+    key: keyof resourceType;
+    render: (resource: resourceType) => React.ReactNode;
+  }[] = [
+    {
+      label: "ID",
+      key: "id",
+      render: (resource) => {
+        return resource.id;
+      },
+    },
+    {
+      label: "Resource Name",
+      key: "name",
+      render: (resource) => {
+        return resource.name;
+      },
+    },
+    {
+      label: "Type",
+      key: "type",
+      render: (resource) => {
+        return resource.type;
+      },
+    },
+    {
+      label: "Status",
+      key: "status",
+      render: (resource) => {
+        return <Badge variant={"outline"}>{resource.status}</Badge>;
+      },
+    },
+    {
+      label: "Department",
+      key: "department",
+      render: (resource) => {
+        return resource.department;
+      },
+    },
+    {
+      label: "Location",
+      key: "location",
+      render: (resource) => {
+        return resource.location;
+      },
+    },
+    {
+      label: "Availabitly",
+      key: "availability",
+      render: (resource) => {
+        return (
+          <span>
+            {(resource.availableQuantity / resource.totalQuantity) * 100}%
+          </span>
+        );
+      },
+    },
   ];
-  const [tableFields, setTableFields] = useState([
-    "ID",
-    "Resource Name",
-    "Type",
-    "Status",
-    "Department",
-    "Location",
-    "Availabitly",
-    "Actions",
-  ]);
+
+  const [tableFields, setTableFields] =
+    useState<
+      {
+        label: string;
+        key: keyof resourceType;
+        render: (resource: resourceType) => React.ReactNode;
+      }[]
+    >(defaultTableFields);
   const handleTableField = (fieldName: string) => {
     const newFields = tableFields.filter((cur) => {
-      return cur !== fieldName;
+      return cur.label !== fieldName;
     });
     setTableFields(newFields);
   };
@@ -63,7 +111,7 @@ export const ResourceTable = ({
         <TableHeader>
           <TableRow className="bg-slate-200">
             {tableFields.map((cur) => (
-              <TableHead>{cur}</TableHead>
+              <TableHead>{cur.label}</TableHead>
             ))}
             <TableHead>
               <DropdownMenu>
@@ -72,10 +120,10 @@ export const ResourceTable = ({
                   {tableFields.map((cur) => (
                     <DropdownMenuItem
                       onClick={() => {
-                        handleTableField(cur);
+                        handleTableField(cur.label);
                       }}
                     >
-                      {cur}
+                      {cur.label}
                     </DropdownMenuItem>
                   ))}
                   <DropdownMenuItem
@@ -91,26 +139,14 @@ export const ResourceTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {resourceData.map((curr) => {
-            const statusDetails = getStatusDisaplay(curr.status);
+          {resourceData.map((resource) => {
+            const statusDetails = getStatusDisaplay(resource.status);
             return (
-              <TableRow key={curr.id}>
-                <TableCell>{curr.id}</TableCell>
-                <TableCell>{curr.name}</TableCell>
-                <TableCell>{curr.type}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={"outline"}
-                    className={`px-2 p-1 ${statusDetails.color}`}
-                  >
-                    {statusDetails.display}
-                  </Badge>
-                </TableCell>
-                <TableCell>{curr.department}</TableCell>
-                <TableCell>{curr.location}</TableCell>
-                <TableCell>
-                  {(curr.availableQuantity / curr.totalQuantity) * 100}%
-                </TableCell>
+              <TableRow key={resource.id}>
+                {tableFields.map((field) => {
+                  return <TableCell>{field.render(resource)}</TableCell>;
+                })}
+
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
@@ -120,7 +156,7 @@ export const ResourceTable = ({
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={() => {
-                          router.push(`/resources/${curr.id}`);
+                          router.push(`/resources/${resource.id}`);
                         }}
                       >
                         <View className="text-blue-500" /> view Details

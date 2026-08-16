@@ -190,7 +190,6 @@ export const AdminDashboard = () => {
                   subtext={subText}
                   bgColor={curr.bgColor}
                   textColor={curr.textColor}
-               
                 ></StatCard>
               );
             })}
