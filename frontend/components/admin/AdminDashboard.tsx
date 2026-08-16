@@ -20,6 +20,7 @@ import {
   countByStatusType,
   countByTypeType,
 } from "../others/BarChart";
+import ThemeToggler from "../global/ThemeToggler";
 export enum ResourceStatus {
   available = "available",
   inUse = "inUse",
@@ -157,6 +158,7 @@ export const AdminDashboard = () => {
           <h1 className="text-4xl font-bold text-teal-900 m-2">
             Admin Dashboard
           </h1>
+          <ThemeToggler/>
         </div>
         <div className="flex justify-between px-3">
           <p className="text-green-800 font-semibold m-2">

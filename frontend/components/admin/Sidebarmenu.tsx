@@ -31,7 +31,7 @@ const Sidebarmenu = () => {
   const router = useRouter();
   return (
     <Sidebar>
-      <SidebarHeader className="bg-teal-600 text-white">
+      <SidebarHeader className="bg-sidebar">
         <button
           onClick={() => {
             router.push("/");
@@ -46,9 +46,9 @@ const Sidebarmenu = () => {
           ></Image>
         </button>
       </SidebarHeader>
-      <SidebarContent className="bg-teal-600 text-white">
+      <SidebarContent className="bg-sidebar text-text-primary">
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-white font-bold">
+          <SidebarGroupLabel className=" font-bold">
             Main
           </SidebarGroupLabel>
           <SidebarMenu>
@@ -59,7 +59,7 @@ const Sidebarmenu = () => {
                 className="flex justify-start"
               >
                 <Button
-                  className="bg-transparent text-white font-bold"
+                  className="bg-transparent font-bold"
                   variant={"secondary"}
                 >
                   <Icon
@@ -74,7 +74,7 @@ const Sidebarmenu = () => {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-white font-bold">
+          <SidebarGroupLabel className="  font-bold">
             Management
           </SidebarGroupLabel>
           <SidebarMenu>
@@ -83,7 +83,7 @@ const Sidebarmenu = () => {
                 <DropdownMenuTrigger asChild suppressHydrationWarning>
                   <SidebarMenuButton
                     suppressHydrationWarning
-                    className="flex justify-start  text-white font-bold"
+                    className="flex justify-start  font-bold"
                   >
                     <Icon icon="grommet-icons:resources" className="size-5!" />
                     Resources
@@ -115,7 +115,7 @@ const Sidebarmenu = () => {
                 <DropdownMenuTrigger asChild suppressHydrationWarning>
                   <SidebarMenuButton
                     suppressHydrationWarning
-                    className=" text-white font-bold"
+                    className="  font-bold"
                   >
                     <Icon icon="ic:baseline-people" className="size-5! " />
                     Employees
@@ -151,14 +151,14 @@ const Sidebarmenu = () => {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel className=" text-white font-bold">
+          <SidebarGroupLabel className="  font-bold">
             System
           </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 suppressHydrationWarning
-                className=" text-white font-bold"
+                className="  font-bold"
               >
                 <Icon icon="material-symbols:settings" className="size-5!" />
                 Settings
@@ -167,7 +167,7 @@ const Sidebarmenu = () => {
             <SidebarMenuItem>
               <SidebarMenuButton
                 suppressHydrationWarning
-                className=" text-white font-bold"
+                className="  font-bold"
               >
                 <Icon icon="tabler:logs" className="size-5!" />
                 <span>Logs</span>
