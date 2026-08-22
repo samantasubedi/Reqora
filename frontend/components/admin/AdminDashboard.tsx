@@ -137,7 +137,7 @@ export const AdminDashboard = () => {
       number: 0,
       IconName: TrendingUp,
       subtext: ``,
-      bgColor: "bg-amber-100",
+      bgColor: "bg-",
       textColor: "text-amber-800",
     },
     {
@@ -155,13 +155,13 @@ export const AdminDashboard = () => {
     <>
       <div className="w-full  min-h-screen">
         <div className="flex justify-between">
-          <h1 className="text-4xl font-bold text-teal-900 m-2">
+          <h1 className="text-4xl font-bold text-primary m-2">
             Admin Dashboard
           </h1>
           <ThemeToggler/>
         </div>
         <div className="flex justify-between px-3">
-          <p className="text-green-800 font-semibold m-2">
+          <p className="text-text-primary font-semibold m-2">
             Monitor and manage all organization resource
           </p>
         </div>
