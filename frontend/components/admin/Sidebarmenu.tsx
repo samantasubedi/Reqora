@@ -140,43 +140,6 @@ const Sidebarmenu = () => {
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                {/* <DropdownMenu>
-                  <DropdownMenuTrigger asChild suppressHydrationWarning>
-                    <SidebarMenuButton
-                      tooltip="Employees"
-                      suppressHydrationWarning
-                      className="  font-bold"
-                    >
-                      <Icon icon="ic:baseline-people" className="size-5! " />
-                      Employees
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        router.push("/admin/employees");
-                      }}
-                    >
-                      <Icon icon="material-symbols:view-day-rounded" /> View
-                      Employees
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        router.push("/admin/invite");
-                      }}
-                    >
-                      <Icon icon="mdi:invite" />
-                      Invite Employees
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icon icon="carbon:user-role" /> Manage Roles
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icon icon="mingcute:user-remove-fill" />
-                      Remove Employees
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu> */}
                 <Collapsible>
                   <CollapsibleTrigger asChild className="w-full">
                     <SidebarMenuButton
