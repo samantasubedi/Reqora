@@ -13,6 +13,9 @@ import {
   SidebarGroupLabel,
   SidebarMenuButton,
   useSidebar,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -27,6 +30,11 @@ import { Button } from "../ui/button";
 
 import { useRouter } from "next/navigation";
 import LogoutDialog from "./LogoutDialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
 
 const Sidebarmenu = () => {
   const router = useRouter();
@@ -85,43 +93,54 @@ const Sidebarmenu = () => {
             </SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild suppressHydrationWarning>
+                <Collapsible>
+                  <CollapsibleTrigger asChild className="w-full">
                     <SidebarMenuButton
                       tooltip="Resources"
                       suppressHydrationWarning
-                      className="flex justify-start  font-bold"
+                      className="flex justify-between font-bold w-full"
                     >
-                      <Icon
-                        icon="grommet-icons:resources"
-                        className="size-5!"
-                      />
-                      Resources
+                      <div className="flex justify-start gap-2 ">
+                        <Icon
+                          icon="grommet-icons:resources"
+                          className="size-5!"
+                        />
+                        <span>Resources</span>
+                      </div>
+                      <div className="flex justify-end">
+                        <Icon icon="akar-icons:chevron-down"></Icon>
+                      </div>
                     </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        router.push("/resources");
-                      }}
-                    >
-                      <Icon icon="material-symbols:grid-view-outline-rounded" />{" "}
-                      View Resources
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        router.push("/admin/resources/add");
-                      }}
-                    >
-                      <Icon icon="hugeicons:resources-add" />
-                      Add Resources
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          onClick={() => {
+                            router.push("/resources");
+                          }}
+                        >
+                          <Icon icon="material-symbols:grid-view-outline-rounded" />
+                          View Resources
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          onClick={() => {
+                            router.push("/resources/add");
+                          }}
+                        >
+                          <Icon icon="hugeicons:resources-add" />
+                          Add Resources
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </Collapsible>
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                <DropdownMenu>
+                {/* <DropdownMenu>
                   <DropdownMenuTrigger asChild suppressHydrationWarning>
                     <SidebarMenuButton
                       tooltip="Employees"
@@ -157,7 +176,48 @@ const Sidebarmenu = () => {
                       Remove Employees
                     </DropdownMenuItem>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
+                <Collapsible>
+                  <CollapsibleTrigger asChild className="w-full">
+                    <SidebarMenuButton
+                      tooltip="Employees"
+                      suppressHydrationWarning
+                      className="flex justify-between font-bold w-full"
+                    >
+                      <div className="flex justify-start gap-2 ">
+                        <Icon icon="ic:baseline-people" className="size-5! " />
+                        <span>Employees</span>
+                      </div>
+                      <div className="flex justify-end">
+                        <Icon icon="akar-icons:chevron-down"></Icon>
+                      </div>
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          onClick={() => {
+                            router.push("/admin/employees");
+                          }}
+                        >
+                          <Icon icon="material-symbols:view-day-rounded" />
+                          View Employees
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton
+                          onClick={() => {
+                            router.push("/admin/invite");
+                          }}
+                        >
+                          <Icon icon="mdi:invite" />
+                          Invite Employees
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </Collapsible>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
