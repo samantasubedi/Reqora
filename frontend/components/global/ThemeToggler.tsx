@@ -27,17 +27,17 @@ const ThemeToggler = () => {
         )}
       >
         <Icon
-          icon="akar-icons:sun-fill"
-          className={cn(
-            "absolute left-1.5 transition-opacity duration-300",
-            isDark ? "opacity-0" : "opacity-40 text-[#0F766E]",
-          )}
-        ></Icon>
-        <Icon
           icon="ant-design:moon-filled"
           className={cn(
             "absolute right-1.5 transition-opacity duration-300",
             isDark ? "opacity-40 text-[#2DD4A7]" : "opacity-0",
+          )}
+        ></Icon>
+        <Icon
+          icon="akar-icons:sun-fill"
+          className={cn(
+            "absolute left-1.5 transition-opacity duration-300",
+            isDark ? "opacity-0" : "opacity-40 text-[#0F766E]",
           )}
         ></Icon>
         <span

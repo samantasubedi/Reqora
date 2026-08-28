@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis } from "recharts";
 
 import {
   Card,
@@ -20,15 +20,13 @@ import {
 import { FC } from "react";
 
 export const description = "A bar chart with a label";
-
-// const chartData = [
-//   { month: "January", desktop: 186 },
-//   { month: "February", desktop: 305 },
-//   { month: "March", desktop: 237 },
-//   { month: "April", desktop: 73 },
-//   { month: "May", desktop: 209 },
-//   { month: "June", desktop: 214 },
-// ];
+const chartColors = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+];
 export type countByTypeType = { _count: number; type: string }[];
 export type countByStatusType = { _count: number; status: string }[];
 
@@ -45,7 +43,7 @@ export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
     <Card>
       <CardHeader>
         <CardTitle>Bar Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="max-h-[250px]">
@@ -73,7 +71,13 @@ export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="Count" fill="var(--color-chart-1)" radius={8}>
+            <Bar dataKey="Count" radius={8}>
+              {chartData.map((_, index) => (
+                <Cell
+                  key={index}
+                  fill={chartColors[index % chartColors.length]}
+                />
+              ))}
               <LabelList
                 position="top"
                 offset={12}
@@ -86,10 +90,7 @@ export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing resources by their type
         </div>
       </CardFooter>
     </Card>

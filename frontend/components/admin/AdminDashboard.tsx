@@ -156,6 +156,25 @@ export const AdminDashboard = () => {
     },
   ];
 
+  const pieChartData = query.isSuccess
+    ? query.data.countsByStatus
+        .filter((curr: any) => {
+          return curr.status != "all";
+        })
+        .map((i: any) => {
+          return {
+            status: i.status,
+            Resources: i._count,
+            fill:
+              i.status == "available"
+                ? "var(--color-Available)"
+                : i.status == "inUse"
+                  ? "var(--color-InUse)"
+                  : "var(--color-UnderMaintenance)",
+          };
+        })
+    : [];
+
   return (
     <>
       <div className="w-full  min-h-screen">
@@ -205,24 +224,7 @@ export const AdminDashboard = () => {
         <div className="flex justify-evenly items-center">
           {query.isSuccess && (
             <div className="w-[40%]">
-              <ChartPieLabel
-                data={query.data.countsByStatus
-                  .filter((curr: any) => {
-                    return curr.status != "all";
-                  })
-                  .map((i: any) => {
-                    return {
-                      status: i.status,
-                      Resources: i._count,
-                      fill:
-                        i.status == "available"
-                          ? "var(--color-Available)"
-                          : i.status == "inUse"
-                            ? "var(--color-InUse)"
-                            : "var(--color-UnderMaintenance)",
-                    };
-                  })}
-              />
+              <ChartPieLabel data={pieChartData} />
             </div>
           )}
           {query.data?.countsByType && (
