@@ -35,6 +35,7 @@ export interface statCardInterface {
   subtext?: string;
   bgColor: string;
   textColor: string;
+  borderColor: string;
 }
 export type resourceType = {
   id: string;
@@ -121,6 +122,7 @@ export const AdminDashboard = () => {
       IconName: Package,
       bgColor: "bg-blue-100",
       textColor: "text-blue-800",
+      borderColor: "border-blue-500",
     },
     {
       title: "Available",
@@ -130,6 +132,7 @@ export const AdminDashboard = () => {
       subtext: ``,
       bgColor: "bg-green-100",
       textColor: "text-green-800",
+      borderColor: "border-green-500",
     },
     {
       title: "In Use",
@@ -137,8 +140,9 @@ export const AdminDashboard = () => {
       number: 0,
       IconName: TrendingUp,
       subtext: ``,
-      bgColor: "bg-",
+      bgColor: "bg-amber-100",
       textColor: "text-amber-800",
+      borderColor: "border-amber-500",
     },
     {
       title: "Under Maintenance",
@@ -148,6 +152,7 @@ export const AdminDashboard = () => {
       subtext: ``,
       bgColor: "bg-red-100",
       textColor: "text-red-800",
+      borderColor: "border-red-500",
     },
   ];
 
@@ -158,7 +163,7 @@ export const AdminDashboard = () => {
           <h1 className="text-4xl font-bold text-primary m-2">
             Admin Dashboard
           </h1>
-          <ThemeToggler/>
+          <ThemeToggler />
         </div>
         <div className="flex justify-between px-3">
           <p className="text-text-primary font-semibold m-2">
@@ -192,6 +197,7 @@ export const AdminDashboard = () => {
                   subtext={subText}
                   bgColor={curr.bgColor}
                   textColor={curr.textColor}
+                  borderColor={curr.borderColor}
                 ></StatCard>
               );
             })}
