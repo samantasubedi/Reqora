@@ -18,11 +18,16 @@ import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
+import { Icon } from "@iconify/react";
+import { cn } from "@/lib/utils";
 
 export const ResourceTable = ({
   resourceData,
@@ -90,19 +95,38 @@ export const ResourceTable = ({
     },
   ];
 
-  const [tableFields, setTableFields] =
-    useState<
-      {
-        label: string;
-        key: keyof resourceType;
-        render: (resource: resourceType) => React.ReactNode;
-      }[]
-    >(defaultTableFields);
-  const handleTableField = (fieldName: string) => {
-    const newFields = tableFields.filter((cur) => {
-      return cur.label !== fieldName;
+  const [tableFields, setTableFields] = useState<
+    {
+      label: string;
+      key: keyof resourceType;
+      render: (resource: resourceType) => React.ReactNode;
+    }[]
+  >(defaultTableFields);
+
+  const handleTableField = (fieldKey: string) => {
+    let newFields;
+    const fieldExists = tableFields.some((cur) => {
+      return cur.key == fieldKey;
     });
-    setTableFields(newFields);
+    if (fieldExists) {
+      newFields = tableFields.filter((cur) => {
+        return cur.key !== fieldKey;
+       
+      });
+    } else {
+      const newUnorderedTableFieldsKeys = [
+        ...tableFields.map((cur) => {
+          return cur.key;
+        }),
+        fieldKey,
+      ];
+      newFields = defaultTableFields.filter((cur) =>
+        newUnorderedTableFieldsKeys.includes(cur.key),
+      );
+    }
+    if (newFields) {
+      setTableFields(newFields);
+    }
   };
 
   return (
@@ -115,24 +139,75 @@ export const ResourceTable = ({
             ))}
             <TableHead>
               <DropdownMenu>
-                <DropdownMenuTrigger>==</DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {tableFields.map((cur) => (
-                    <DropdownMenuItem
-                      onClick={() => {
-                        handleTableField(cur.label);
-                      }}
-                    >
-                      {cur.label}
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setTableFields(defaultTableFields);
-                    }}
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 border-border/60 hover:bg-muted/60"
                   >
-                    Reset
-                  </DropdownMenuItem>
+                    <Icon icon="eva:options-2-fill" className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-56 p-1.5">
+                  <div className="flex items-center justify-between px-2 py-1.5">
+                    <DropdownMenuLabel className="p-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Table Columns
+                    </DropdownMenuLabel>
+
+                    <button
+                      type="button"
+                      disabled={
+                        tableFields.length === defaultTableFields.length
+                      }
+                      onClick={() => setTableFields(defaultTableFields)}
+                      className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                    >
+                      <Icon
+                        icon="eva:refresh-outline"
+                        className="h-3.5 w-3.5"
+                      />
+                      Reset
+                    </button>
+                  </div>
+
+                  <DropdownMenuSeparator className="mb-1" />
+
+                  {defaultTableFields.map((cur) => {
+                    const isChecked = tableFields.some(
+                      (curField) => cur.key === curField.key,
+                    );
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={cur.key}
+                        checked={isChecked}
+                        onClick={() => handleTableField(cur.key)}
+                        onSelect={(e) => e.preventDefault()}
+                        className="relative flex items-center gap-2 rounded-md py-1.5 pl-8 pr-2 text-sm focus:bg-muted"
+                      >
+                        <span
+                          className={cn(
+                            "absolute left-2 flex h-4 w-4 items-center justify-center rounded-[4px] border transition-colors",
+                            isChecked
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-transparent",
+                          )}
+                        >
+                          {isChecked && (
+                            <Icon
+                              icon="eva:checkmark-fill"
+                              className="h-3 w-3"
+                            />
+                          )}
+                        </span>
+                        <span
+                          className={cn(!isChecked && "text-muted-foreground")}
+                        >
+                          {cur.label}
+                        </span>
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
                 </DropdownMenuContent>
               </DropdownMenu>
             </TableHead>
