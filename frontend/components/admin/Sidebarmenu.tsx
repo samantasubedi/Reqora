@@ -20,9 +20,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Icon } from "@iconify/react";
@@ -38,7 +35,15 @@ import {
 
 const Sidebarmenu = () => {
   const router = useRouter();
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
+  const handleSidebarNavigation = (pathName: string) => {
+    if (pathName == "none") {
+      setOpen(true);
+    } else {
+      router.push(pathName);
+      setOpen(true);
+    }
+  };
   return (
     <div>
       <Sidebar collapsible="icon">
@@ -71,6 +76,7 @@ const Sidebarmenu = () => {
                   asChild
                   suppressHydrationWarning
                   className="flex justify-start"
+                  onClick={() => handleSidebarNavigation("/admin/dashboard")}
                 >
                   <Button
                     className="bg-transparent font-bold"
@@ -99,6 +105,7 @@ const Sidebarmenu = () => {
                       tooltip="Resources"
                       suppressHydrationWarning
                       className="flex justify-between font-bold w-full"
+                      onClick={() => handleSidebarNavigation("none")}
                     >
                       <div className="flex justify-start gap-2 ">
                         <Icon
@@ -117,7 +124,7 @@ const Sidebarmenu = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           onClick={() => {
-                            router.push("/resources");
+                            handleSidebarNavigation("/resources");
                           }}
                         >
                           <Icon icon="material-symbols:grid-view-outline-rounded" />
@@ -127,7 +134,7 @@ const Sidebarmenu = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           onClick={() => {
-                            router.push("/resources/add");
+                            handleSidebarNavigation("/resources/add");
                           }}
                         >
                           <Icon icon="hugeicons:resources-add" />
@@ -146,6 +153,7 @@ const Sidebarmenu = () => {
                       tooltip="Employees"
                       suppressHydrationWarning
                       className="flex justify-between font-bold w-full"
+                      onClick={() => handleSidebarNavigation("none")}
                     >
                       <div className="flex justify-start gap-2 ">
                         <Icon icon="ic:baseline-people" className="size-5! " />
@@ -161,7 +169,7 @@ const Sidebarmenu = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           onClick={() => {
-                            router.push("/admin/employees");
+                            handleSidebarNavigation("/admin/employees");
                           }}
                         >
                           <Icon icon="material-symbols:view-day-rounded" />
@@ -171,7 +179,7 @@ const Sidebarmenu = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           onClick={() => {
-                            router.push("/admin/invite");
+                            handleSidebarNavigation("/admin/invite");
                           }}
                         >
                           <Icon icon="mdi:invite" />

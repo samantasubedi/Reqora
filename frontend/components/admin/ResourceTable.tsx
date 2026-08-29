@@ -131,11 +131,11 @@ export const ResourceTable = ({
 
   return (
     <div className="mt-5 px-3">
-      <Table className="bg-blue-200/40">
+      <Table>
         <TableHeader>
-          <TableRow className="bg-slate-200">
+          <TableRow>
             {tableFields.map((cur) => (
-              <TableHead>{cur.label}</TableHead>
+              <TableHead key={cur.key}>{cur.label}</TableHead>
             ))}
             <TableHead>
               <DropdownMenu>
@@ -161,11 +161,11 @@ export const ResourceTable = ({
                         tableFields.length === defaultTableFields.length
                       }
                       onClick={() => setTableFields(defaultTableFields)}
-                      className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                      className="flex text-text-danger  items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
                     >
                       <Icon
                         icon="eva:refresh-outline"
-                        className="h-3.5 w-3.5"
+                        className="h-3.5 w-3.5 font-bold"
                       />
                       Reset
                     </button>
@@ -219,7 +219,7 @@ export const ResourceTable = ({
             return (
               <TableRow key={resource.id}>
                 {tableFields.map((field) => {
-                  return <TableCell>{field.render(resource)}</TableCell>;
+                  return <TableCell key={field.key} >{field.render(resource)}</TableCell>;
                 })}
 
                 <TableCell>

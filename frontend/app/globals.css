@@ -108,7 +108,7 @@
   --chart-5: oklch(0.65 0.20 155);  /* green */
 
   /* Sidebar */
-  --sidebar: oklch(0.97 0.02 165);
+  --sidebar: oklch(94.617% 0.05242 164.296);
   --sidebar-foreground: oklch(0.20 0.035 165);
 
   --sidebar-primary: oklch(0.60 0.16 160);
@@ -119,6 +119,16 @@
 
   --sidebar-border: oklch(0.88 0.025 165);
   --sidebar-ring: oklch(0.60 0.16 160);
+
+  /* Table Theme (Teal/Green) */
+  --table-bg: oklch(1 0 0);
+  --table-foreground: oklch(0.20 0.035 165);
+  --table-header-bg: oklch(0.95 0.02 165);
+  --table-header-foreground: oklch(0.25 0.06 165);
+  --table-row-hover: oklch(0.97 0.025 165);
+  --table-row-alternate: oklch(0.99 0.015 165);
+  --table-border: oklch(0.90 0.025 165);
+  --table-selected: oklch(0.93 0.04 165);
 }
 
 
@@ -178,7 +188,7 @@
 
   
   /* Sidebar */
-  --sidebar: oklch(0.17 0.03 165);
+  --sidebar: oklch(27.225% 0.04669 192.527);
   --sidebar-foreground: oklch(0.94 0.025 165);
 
   --sidebar-primary: oklch(0.70 0.17 160);
@@ -189,6 +199,16 @@
 
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.70 0.17 160);
+
+  /* Table Theme (Teal/Green) */
+  --table-bg: oklch(21.185% 0.04513 164.054);
+  --table-foreground: oklch(0.92 0.02 165);
+  --table-header-bg: oklch(55.641% 0.13741 155.073);
+  --table-header-foreground: oklch(0.85 0.05 165);
+  --table-row-hover: oklch(38.099% 0.08603 158.707);
+  --table-row-alternate: oklch(21.185% 0.04513 164.054);
+  --table-border: oklch(0.22 0.02 165);
+  --table-selected: oklch(0.24 0.04 165);
 }
 @theme inline {
   /* Reqora brand */
@@ -256,6 +276,16 @@
 
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Table Color Tokens */
+  --color-table-bg: var(--table-bg);
+  --color-table-foreground: var(--table-foreground);
+  --color-table-header-bg: var(--table-header-bg);
+  --color-table-header-foreground: var(--table-header-foreground);
+  --color-table-row-hover: var(--table-row-hover);
+  --color-table-row-alternate: var(--table-row-alternate);
+  --color-table-border: var(--table-border);
+  --color-table-selected: var(--table-selected);
 }
 
 @layer base {
@@ -265,4 +295,54 @@
   body {
     @apply bg-background text-foreground;
     }
+
+  /* Table Custom Theme overrides */
+  table, [data-slot="table"] {
+    background-color: var(--table-bg) !important;
+    color: var(--table-foreground) !important;
+    border-color: var(--table-border) !important;
+  }
+
+  thead, [data-slot="table-header"] {
+    background-color: var(--table-header-bg) !important;
+    border-bottom: 2px solid var(--table-border) !important;
+  }
+
+  th, [data-slot="table-head"] {
+    color: var(--table-header-foreground) !important;
+    font-weight: 600 !important;
+  }
+
+  tr, [data-slot="table-row"] {
+    border-bottom: 1px solid var(--table-border) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  tbody tr:nth-child(even), [data-slot="table-body"] tr:nth-child(even) {
+    background-color: var(--table-row-alternate);
+  }
+
+  tbody tr:hover, [data-slot="table-body"] [data-slot="table-row"]:hover {
+    background-color: var(--table-row-hover) !important;
+  }
+
+  thead tr:hover, [data-slot="table-header"] tr:hover, [data-slot="table-header"] [data-slot="table-row"]:hover {
+    background-color: var(--table-header-bg) !important;
+  }
+
+  tr[data-state="selected"], [data-slot="table-row"][data-state="selected"] {
+    background-color: var(--table-selected) !important;
+  }
+
+  td, [data-slot="table-cell"] {
+    color: var(--table-foreground) !important;
+    border-color: var(--table-border) !important;
+  }
+  
+  [data-slot="table-container"] {
+    border: 1px solid var(--table-border) !important;
+    border-radius: var(--radius-lg);
+    background-color: var(--table-bg) !important;
+    overflow: hidden;
+  }
 }
