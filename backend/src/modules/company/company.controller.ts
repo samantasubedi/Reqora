@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { transporter } from "../../lib/sendMail";
-import { refresh } from "../../services/authService.service";
+import { refresh } from "../../utils/refresh";
 import cryptoRandomString from "crypto-random-string";
 
 import { Refresh } from "../auth/auth.controller";
