@@ -8,10 +8,10 @@ import {
 } from "./auth.controller";
 import { authMiddlware } from "../../middleware/authMiddleware";
 
-import { registerSchema } from "./auth.schema";
+import { loginSchema, registerSchema } from "./auth.schema";
 import { validate } from "../../middleware/validationMiddleware";
 const router = Router();
-router.post("/login", Login);
+router.post("/login", validate(loginSchema),Login);
 router.post("/register",validate(registerSchema), Register);
 router.post("/logout", authMiddlware, Logout);
 router.post("/refresh", Refresh);
