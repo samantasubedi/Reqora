@@ -1,12 +1,13 @@
 import crypto from "crypto";
 import { transporter } from "../../lib/sendMail";
-import { refresh } from "../../utils/refresh";
+
 import cryptoRandomString from "crypto-random-string";
 
 import { Refresh } from "../auth/auth.controller";
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import bcrypt from "bcrypt-ts";
+import { refresh } from "../auth/auth.service";
 
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, email, address, size } = req.body;
@@ -80,18 +81,15 @@ export const createCompany = async (req: Request, res: Response) => {
 
     const refreshToken = req.cookies.refreshToken;
 
-    const { code, accessToken, NewRefreshToken } = await refresh(refreshToken);
+    const { accessToken, newRefreshToken } = await refresh(refreshToken);
 
-    if (code === "USER_NOT_FOUND") {
-      throw new Error("user not found");
-    }
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
       maxAge: 15 * 60 * 1000,
     });
-    res.cookie("refreshToken", NewRefreshToken, {
+    res.cookie("refreshToken", newRefreshToken, {
       sameSite: "strict",
       httpOnly: true,
       secure: true,
@@ -414,8 +412,7 @@ export const joinByEmail = async (req: Request, res: Response) => {
       const refreshToken = req.cookies.refreshToken;
       if (refreshToken) {
         try {
-          const { code, accessToken, NewRefreshToken } =
-            await refresh(refreshToken);
+          const { accessToken, newRefreshToken } = await refresh(refreshToken);
           if (code === "USER_NOT_FOUND") {
             throw new Error("user not found");
           }
@@ -425,7 +422,7 @@ export const joinByEmail = async (req: Request, res: Response) => {
             sameSite: "strict",
             maxAge: 15 * 60 * 1000,
           });
-          res.cookie("refreshToken", NewRefreshToken, {
+          res.cookie("refreshToken", newRefreshToken, {
             sameSite: "strict",
             httpOnly: true,
             secure: true,
@@ -516,8 +513,7 @@ export const joinByCode = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
       try {
-        const { code, accessToken, NewRefreshToken } =
-          await refresh(refreshToken);
+        const { accessToken, newRefreshToken } = await refresh(refreshToken);
         if (code === "USER_NOT_FOUND") {
           throw new Error("user not found");
         }
@@ -527,7 +523,7 @@ export const joinByCode = async (req: Request, res: Response) => {
           sameSite: "strict",
           maxAge: 15 * 60 * 1000,
         });
-        res.cookie("refreshToken", NewRefreshToken, {
+        res.cookie("refreshToken", newRefreshToken, {
           sameSite: "strict",
           httpOnly: true,
           secure: true,
@@ -568,18 +564,15 @@ export const leaveCompany = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
       try {
-        const { code, accessToken, NewRefreshToken } =
-          await refresh(refreshToken);
-        if (code === "USER_NOT_FOUND") {
-          throw new Error("user not found");
-        }
+        const { accessToken, newRefreshToken } = await refresh(refreshToken);
+
         res.cookie("accessToken", accessToken, {
           httpOnly: true,
           secure: true,
           sameSite: "strict",
           maxAge: 15 * 60 * 1000,
         });
-        res.cookie("refreshToken", NewRefreshToken, {
+        res.cookie("refreshToken", newRefreshToken, {
           sameSite: "strict",
           httpOnly: true,
           secure: true,

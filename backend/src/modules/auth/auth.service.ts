@@ -1,6 +1,6 @@
 import { appError } from "../../utils/appError";
 import { createUser, findByUsername } from "./auth.repository";
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt-ts";
 
 export const registerUser = async ({
@@ -53,13 +53,18 @@ export const loginUser = async ({
       username: string;
       email: string;
       role?: string;
-      companyId?: string;
+      companyId?: string | null;
     } = {
       username,
       email: user.email,
     };
     if (user.enrolled && user.role) {
-      tokenData = { username, email: user.email, role: user.role };
+      tokenData = {
+        username,
+        email: user.email,
+        role: user.role,
+        companyId: user.companyId,
+      };
     }
     const accessSecret = process.env.ACCESS_SECRET!;
     const refreshSecret = process.env.REFRESH_SECRET!;
@@ -67,10 +72,56 @@ export const loginUser = async ({
     const refreshToken = jwt.sign(tokenData, refreshSecret, {
       expiresIn: "15d",
     });
-    return ({user,refreshToken,accessToken})
-
- 
-
-  
+    return { user, refreshToken, accessToken };
   }
+};
+
+export const refresh = async (
+  refreshToken: string,
+): Promise<{
+  accessToken?: string;
+  newRefreshToken?: string;
+}> => {
+  const refreshSecret = process.env.REFRESH_SECRET!;
+  const accessSecret = process.env.ACCESS_SECRET!;
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(refreshToken, refreshSecret);
+  } catch {
+    throw new appError(401, "INVALID_TOKEN", "Invalid or expired token");
+  }
+
+  const { iat, exp, ...tokenData } = decodedToken as JwtPayload;
+  const userData = await findByUsername(tokenData.username);
+  if (!userData) {
+    //user may have been removed from the company but token could still exist in users cookie
+    throw new appError(400, "USER_NOT_FOUND", "invalid token, user not found");
+  }
+
+  let data;
+  if (userData?.enrolled) {
+    data = {
+      username: userData.username,
+      email: userData.email,
+      role: userData.role,
+      companyId: userData.companyId,
+    };
+  } else if (!userData?.enrolled) {
+    data = {
+      username: userData.username,
+      email: userData.email,
+    };
+  }
+  if (!data) {
+    throw new appError(400, "USER_NOT_FOUND", "invalid token, user not found");
+  }
+
+  const accessToken = jwt.sign(data, accessSecret, {
+    expiresIn: "15m",
+  });
+  const newRefreshToken = jwt.sign(data, refreshSecret, {
+    expiresIn: "15d",
+  });
+
+  return { accessToken, newRefreshToken };
 };

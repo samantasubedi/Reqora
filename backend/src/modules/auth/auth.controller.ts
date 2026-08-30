@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
-import { refresh } from "../../utils/refresh";
-import { loginUser, registerUser } from "./auth.service";
+import { loginUser, refresh, registerUser } from "./auth.service";
+import { appError } from "../../utils/appError";
+import { setCookie } from "../../utils/setCookie";
 
 export const Register = async (
   req: Request,
@@ -60,7 +61,7 @@ export const Login = async (
     next(err);
   }
 };
-export const Logout = (req: Request, res: Response) => {
+export const Logout = (req: Request, res: Response, next: NextFunction) => {
   try {
     res.clearCookie("accessToken", {
       sameSite: "strict",
@@ -78,73 +79,63 @@ export const Logout = (req: Request, res: Response) => {
       success: true,
     });
   } catch (err) {
-    res.status(401).json({
-      code: "LOGOUT_FAILED",
-      message: "Couldn't log you out !",
-      success: false,
-    });
+    next(err);
   }
 };
-export const Refresh = async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) {
-    return res.status(401).json({
-      success: false,
-      message: "refresh token not found",
-      code: "TOKEN_NOT_FOUND",
-    });
-  }
+export const Refresh = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { code, accessToken, NewRefreshToken } = await refresh(refreshToken);
-    if (code === "USER_NOT_FOUND") {
-      throw new Error("user not found");
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      throw new appError(401, "TOKEN_NOT_FOUND", "Refresh token not found");
     }
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
-    });
-    res.cookie("refreshToken", NewRefreshToken, {
-      sameSite: "strict",
-      httpOnly: true,
-      secure: true,
-      maxAge: 15 * 24 * 60 * 60 * 1000,
-    });
-    return res.status(201).json({
-      success: true,
-      message: "your access token has been regenerated",
-      code: "TOKEN_REFRESHED",
-    });
+    const { accessToken, newRefreshToken } = await refresh(refreshToken);
+
+    if (accessToken && newRefreshToken) {
+      setCookie(res, accessToken, newRefreshToken);
+      return res.status(201).json({
+        success: true,
+        message: "your tokens has been regenerated",
+        code: "TOKEN_REFRESHED",
+      });
+    }
   } catch (err) {
     res.clearCookie("refreshToken", {
       sameSite: "strict",
       httpOnly: true,
       secure: true,
     });
-    return res.status(401).json({
-      success: false,
-      message: "invalid or expired refresh token",
-      code: "INVALID_TOKEN",
-    });
+    next(err);
   }
 };
 
-export const isLoggedIn = (req: Request, res: Response) => {
+export const isLoggedIn = async (req: Request, res: Response) => {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
   const accessSecret = process.env.ACCESS_SECRET!;
   if (!accessToken) {
     if (!refreshToken) {
-      return res.json({
+      return res.status(200).json({
         code: "NOT_LOGGEDIN",
-        message: "the user is not logged in ",
+        message: "user is not logged in ",
       });
     }
-    return Refresh(req, res);
+    const { accessToken, newRefreshToken } = await refresh(refreshToken);
+    if (accessToken && newRefreshToken) {
+      setCookie(res, accessToken, newRefreshToken);
+      return res.status(201).json({
+        success: true,
+        message: "your tokens has been regenerated",
+        code: "TOKEN_REFRESHED",
+      });
+    }
   }
   const userData = jwt.verify(accessToken, accessSecret) as JwtPayload;
-  res.json({
+  res.status(200).json({
+    success: true,
     code: "LOGGEDIN",
     role: userData.role,
     username: userData.username,
