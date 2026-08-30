@@ -6,7 +6,7 @@ import {
   joinByCode,
   joinByEmail,
   leaveCompany,
-} from "./companyControllers.controller";
+} from "./company.controller";
 import { roleMiddleware } from "../../middleware/roleMIddleware";
 
 const router = Router();

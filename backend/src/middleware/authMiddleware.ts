@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
-import { Refresh } from "../modules/auth/authControllers.controller";
+import { Refresh } from "../modules/auth/auth.controller";
 export const authMiddlware = (
   req: Request,
   res: Response,

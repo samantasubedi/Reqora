@@ -5,7 +5,7 @@ import {
   changeUserRole,
   deleteAllusers,
   getProfileInfo,
-} from "../../modules/user/userControllers.controller";
+} from "./user.controller";
 import { roleMiddleware } from "../../middleware/roleMIddleware";
 const router = Router();
 router.get("/profile", getProfileInfo);

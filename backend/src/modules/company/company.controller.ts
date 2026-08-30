@@ -1,10 +1,9 @@
-
 import crypto from "crypto";
 import { transporter } from "../../lib/sendMail";
 import { refresh } from "../../services/authService.service";
 import cryptoRandomString from "crypto-random-string";
 
-import { Refresh } from "../auth/authControllers.controller";
+import { Refresh } from "../auth/auth.controller";
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import bcrypt from "bcrypt-ts";

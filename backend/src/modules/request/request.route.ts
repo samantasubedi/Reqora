@@ -7,7 +7,7 @@ import {
   handleReview,
   handleCancel,
   handleForward,
-} from "./requestControllers.controller";
+} from "./request.controller";
 const router = Router();
 router.get("/requests", getAllRequest);
 router.get("/requests/:id", roleMiddleware(["manager"]), getSpecificRequest);

@@ -4,16 +4,13 @@ import { prisma } from "../../lib/prisma";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
 import { refresh } from "../../services/authService.service";
+import { findByUsername } from "./auth.repository";
 
 export const Register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
-    if (!username || !password || !password) {
-      return res.status(400).json({ message: "all fields are required" }); // 400 means bad request
-    }
-    const duplicateUser = await prisma.user.findUnique({
-      where: { username },
-    });
+    
+    const duplicateUser = await findByUsername(username)
     if (duplicateUser) {
       return res.status(409).json({
         success: false,
