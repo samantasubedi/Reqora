@@ -1,5 +1,12 @@
+
+import crypto from "crypto";
+import { transporter } from "../../lib/sendMail";
+import { refresh } from "../../services/authService.service";
+import cryptoRandomString from "crypto-random-string";
+
+import { Refresh } from "../auth/authControllers.controller";
 import { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../../lib/prisma";
 import bcrypt from "bcrypt-ts";
 
 export const createCompany = async (req: Request, res: Response) => {
@@ -73,33 +80,7 @@ export const createCompany = async (req: Request, res: Response) => {
     }
 
     const refreshToken = req.cookies.refreshToken;
-    // if (refreshToken) {
-    //   try {
-    //     const { code, accessToken, NewRefreshToken } =
-    //       await refresh(refreshToken);
-    //     if (code === "USER_NOT_FOUND") {
-    //       throw new Error("user not found");
-    //     }
-    //     res.cookie("accessToken", accessToken, {
-    //       httpOnly: true,
-    //       secure: true,
-    //       sameSite: "strict",
-    //       maxAge: 15 * 60 * 1000,
-    //     });
-    //     res.cookie("refreshToken", NewRefreshToken, {
-    //       sameSite: "strict",
-    //       httpOnly: true,
-    //       secure: true,
-    //       maxAge: 15 * 24 * 60 * 60 * 1000,
-    //     });
-    //   } catch (err) {
-    //     res.clearCookie("refreshToken", {
-    //       sameSite: "strict",
-    //       httpOnly: true,
-    //       secure: true,
-    //     });
-    //   }
-    // }
+
     const { code, accessToken, NewRefreshToken } = await refresh(refreshToken);
 
     if (code === "USER_NOT_FOUND") {
@@ -131,13 +112,6 @@ export const createCompany = async (req: Request, res: Response) => {
     });
   }
 };
-
-import crypto from "crypto";
-import { transporter } from "../lib/sendMail";
-import { refresh } from "../services/authService.service";
-import cryptoRandomString from "crypto-random-string";
-
-import { handleRefresh } from "./authControllers.controller";
 
 export const inviteToCompany = async (req: Request, res: Response) => {
   const { email: userEmail, role, message, expiryTime } = req.body;

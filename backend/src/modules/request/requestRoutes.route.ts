@@ -1,5 +1,5 @@
 import Router from "express";
-import { roleMiddleware } from "../middleware/roleMIddleware";
+import { roleMiddleware } from "../../middleware/roleMIddleware";
 import {
   getAllRequest,
   getSpecificRequest,
@@ -7,7 +7,7 @@ import {
   handleReview,
   handleCancel,
   handleForward,
-} from "../controller/requestControllers.controller";
+} from "./requestControllers.controller";
 const router = Router();
 router.get("/requests", getAllRequest);
 router.get("/requests/:id", roleMiddleware(["manager"]), getSpecificRequest);

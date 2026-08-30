@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
-import { handleRefresh } from "../controller/authControllers.controller";
+import { Refresh } from "../modules/auth/authControllers.controller";
 export const authMiddlware = (
   req: Request,
   res: Response,
@@ -19,7 +19,7 @@ export const authMiddlware = (
           message: "access and refresh token not found",
         });
       } else if (refreshToken) {
-        handleRefresh(req, res);
+        Refresh(req, res);
       }
     } else if (accessToken) {
       const accessSecret = process.env.ACCESS_SECRET;

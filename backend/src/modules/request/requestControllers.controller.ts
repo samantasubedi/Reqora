@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../../lib/prisma";
 import { stat } from "node:fs";
 export const getAllRequest = async (req: Request, res: Response) => {
   const companyId = res.locals.user.companyId;

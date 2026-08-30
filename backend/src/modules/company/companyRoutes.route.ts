@@ -6,8 +6,8 @@ import {
   joinByCode,
   joinByEmail,
   leaveCompany,
-} from "../controller/companyControllers.controller";
-import { roleMiddleware } from "../middleware/roleMIddleware";
+} from "./companyControllers.controller";
+import { roleMiddleware } from "../../middleware/roleMIddleware";
 
 const router = Router();
 router.post("/createcompany", createCompany);

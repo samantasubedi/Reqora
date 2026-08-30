@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt-ts";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../../lib/prisma";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
-import { refresh } from "../services/authService.service";
+import { refresh } from "../../services/authService.service";
 
-export const handleRegister = async (req: Request, res: Response) => {
+export const Register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
     if (!username || !password || !password) {
@@ -46,7 +46,7 @@ export const handleRegister = async (req: Request, res: Response) => {
     }); //500 means internal server error
   }
 };
-export const handleLogin = async (req: Request, res: Response) => {
+export const Login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ message: "all fields are required" });
@@ -105,7 +105,7 @@ export const handleLogin = async (req: Request, res: Response) => {
     });
   }
 };
-export const handleLogout = (req: Request, res: Response) => {
+export const Logout = (req: Request, res: Response) => {
   try {
     res.clearCookie("accessToken", {
       sameSite: "strict",
@@ -130,7 +130,7 @@ export const handleLogout = (req: Request, res: Response) => {
     });
   }
 };
-export const handleRefresh = async (req: Request, res: Response) => {
+export const Refresh = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
     return res.status(401).json({
@@ -186,7 +186,7 @@ export const isLoggedIn = (req: Request, res: Response) => {
         message: "the user is not logged in ",
       });
     }
-    return handleRefresh(req, res);
+    return Refresh(req, res);
   }
   const userData = jwt.verify(accessToken, accessSecret) as JwtPayload;
   res.json({

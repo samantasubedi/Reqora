@@ -6,8 +6,8 @@ import {
   editResource,
   deleteResource,
   releaseResource,
-} from "../controller/resourceControllers.controller";
-import { roleMiddleware } from "../middleware/roleMIddleware";
+} from "./resourceControllers.controller";
+import { roleMiddleware } from "../../middleware/roleMIddleware";
 const router = Router();
 router.get("/resources", getAllResources);
 router.get("/resource/:id", getSpecificResource);

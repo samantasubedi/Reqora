@@ -1,9 +1,9 @@
 import { Router } from "express";
-import authRoutes from "./authRoutes.route";
-import userRoutes from "./userRoutes.route";
-import resourceRoutes from "./resourceRoutes.route";
-import requestRoutes from "./requestRoutes.route";
-import companyRoutes from "./companyRoutes.route";
+import authRoutes from "../modules/auth/authRoutes.route";
+import userRoutes from "../modules/user/userRoutes.route";
+import resourceRoutes from "../modules/resource/resourceRoutes.route";
+import requestRoutes from "../modules/request/requestRoutes.route";
+import companyRoutes from "../modules/company/companyRoutes.route";
 import { authMiddlware } from "../middleware/authMiddleware";
 
 const router = Router();

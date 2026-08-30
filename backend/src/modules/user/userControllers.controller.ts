@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../../lib/prisma";
 import { Request, Response } from "express";
 export const getProfileInfo = async (req: Request, res: Response) => {
   const email = res.locals.user.email;
@@ -45,20 +45,17 @@ export const getProfileInfo = async (req: Request, res: Response) => {
     });
   }
 };
-export const getAllUsers = async(req: Request, res: Response) => {
-  const companyId = res.locals.user.companyId
-  let users
-try{
- users= await prisma.user.findMany({where:{
-companyId
-  },
-})
-}catch(err){
-
-}
-  res.json({ message: `` ,
-  users
-  });
+export const getAllUsers = async (req: Request, res: Response) => {
+  const companyId = res.locals.user.companyId;
+  let users;
+  try {
+    users = await prisma.user.findMany({
+      where: {
+        companyId,
+      },
+    });
+  } catch (err) {}
+  res.json({ message: ``, users });
 };
 export const getSpecificUser = (req: Request, res: Response) => {
   const id = req.params.id;
