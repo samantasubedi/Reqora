@@ -86,24 +86,34 @@ export const findJoinToken = async (token: string) => {
     where: { token },
   });
 };
-export const updateUserAndJoinToken=async({email,role,companyId,token}:{email:string,role:Role,companyId:string,token:string})=>{
-  return  await prisma.$transaction([
-          prisma.user.update({
-            where: { email },
-            data: {
-              enrolled: true,
-              role,
-              companyId,
-            },
-          }),
-          prisma.joinToken.update({
-            data: {
-              used: true,
-            },
-            where: { token},
-          }),
-        ]);
-}
+export const updateUserAndJoinToken = async ({
+  email,
+  role,
+  companyId,
+  token,
+}: {
+  email: string;
+  role: Role;
+  companyId: string;
+  token: string;
+}) => {
+  return await prisma.$transaction([
+    prisma.user.update({
+      where: { email },
+      data: {
+        enrolled: true,
+        role,
+        companyId,
+      },
+    }),
+    prisma.joinToken.update({
+      data: {
+        used: true,
+      },
+      where: { token },
+    }),
+  ]);
+};
 export const storeJoinCode = async ({
   code,
   companyId,
@@ -123,4 +133,35 @@ export const storeJoinCode = async ({
       expiresAt,
     },
   });
+};
+export const findJoinCode = async (hashedJoinCode: string) => {
+  return await prisma.joinCode.findUnique({
+    where: { code: hashedJoinCode },
+  });
+};
+export const updateUserAndJoinCode = async ({
+  hashedJoinCode,
+  email,
+  role,
+  companyId,
+}: {
+  hashedJoinCode: string;
+  email: string;
+  role: Role;
+  companyId: string;
+}) => {
+  return await prisma.$transaction([
+    prisma.joinCode.update({
+      where: { code: hashedJoinCode },
+      data: { used: true },
+    }),
+    prisma.user.update({
+      where: { email },
+      data: {
+        role,
+        enrolled: true,
+        companyId,
+      },
+    }),
+  ]);
 };

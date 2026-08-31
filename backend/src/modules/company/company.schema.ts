@@ -25,3 +25,6 @@ export type generateCodeType = z.infer<typeof generateCodeSchema>;
 export const joinByEmailSchema=z.object({
   joinToken:z.string().min(1,"join code is required")
 })
+export const joinByCodeSchema=z.object({
+  joinCode:z.string().min(1,"join code is required")
+})

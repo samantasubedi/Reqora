@@ -10,6 +10,8 @@ import {
   storeJoinCode,
   findJoinToken,
   updateUserAndJoinToken,
+  findJoinCode,
+  updateUserAndJoinCode,
 } from "./company.repository";
 import crypto from "crypto";
 import {
@@ -122,13 +124,13 @@ export const generateCodeService = async ({
     throw new appError(500, "SERVER_ERROR", "unable to retrive user info");
   }
   const expiresAt = new Date(Date.now() + expiryTime);
-  const storedCode = storeJoinCode({
+  const storedCode = await storeJoinCode({
     code: hashedJoinCode,
     companyId: userInfo.companyId,
     role,
     expiresAt,
   });
-  return storedCode;
+  return joinCode;
 };
 export const joinByEmailService = async ({
   email,
@@ -136,7 +138,6 @@ export const joinByEmailService = async ({
 }: {
   email: string;
   joinToken: string;
-
 }) => {
   const userInfo = await findUserByEmail(email);
   if (userInfo?.enrolled) {
@@ -147,7 +148,10 @@ export const joinByEmailService = async ({
     );
   }
 
-  const hashedToken = crypto.createHash("sha256").update(joinToken).digest("hex");
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(joinToken)
+    .digest("hex");
   const retrivedToken = await findJoinToken(hashedToken);
   if (!retrivedToken) {
     throw new appError(400, "JOIN_FAILED", "Invalid token");
@@ -159,8 +163,50 @@ export const joinByEmailService = async ({
   if (retrivedToken.used || retrivedToken.expiresAt < new Date()) {
     throw new appError(400, "TOKEN_EXPIRED", "your token is expired");
   }
-    
-   const result= await updateUserAndJoinToken({email,role:retrivedToken.role,companyId:retrivedToken.companyId,token:hashedToken})
-   
-    return result
+
+  const result = await updateUserAndJoinToken({
+    email,
+    role: retrivedToken.role,
+    companyId: retrivedToken.companyId,
+    token: hashedToken,
+  });
+
+  return result;
+};
+export const joinByCodeService = async ({
+  joinCode,
+  email,
+}: {
+  joinCode: string;
+  email: string;
+}) => {
+  const hashedJoinCode = crypto
+    .createHash("sha256")
+    .update(joinCode)
+    .digest("hex");
+  const retrivedCode = await findJoinCode(hashedJoinCode);
+  if (!retrivedCode) {
+    throw new appError(400, "INVALID_CODE", "invalid join code");
+  }
+  if (retrivedCode.used) {
+    throw new appError(400, "INVALID_CODE", "code has been already used");
+  }
+  if (retrivedCode.expiresAt < new Date()) {
+    throw new appError(400, "CODE_EXPIRED", "Code has been expried");
+  }
+  const userInfo = await findUserByEmail(email);
+  if (userInfo?.enrolled) {
+    throw new appError(
+      409,
+      "ENROLLED",
+      "Couldnt accept invitation, you are already enrolled in a company",
+    );
+  }
+  const result = await updateUserAndJoinCode({
+    hashedJoinCode,
+    email,
+    role: retrivedCode.role,
+    companyId: retrivedCode.companyId,
+  });
+  return result 
 };

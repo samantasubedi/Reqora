@@ -8,6 +8,7 @@ import {
   createCompanyService,
   emailInviteService,
   generateCodeService,
+  joinByCodeService,
   joinByEmailService,
 } from "./company.service";
 import { setCookie } from "../../utils/setCookie";
@@ -78,7 +79,7 @@ export const generateCode = async (
   try {
     const { role, expiryTime } = req.body;
     const email = res.locals.user.email;
-    const generatedCodeObject = await generateCodeService({
+    const joinCode = await generateCodeService({
       role,
       expiryTime,
       email,
@@ -86,7 +87,7 @@ export const generateCode = async (
     res.status(201).json({
       success: true,
       code: "CODE_GENERATED",
-      joinCode: generatedCodeObject.code,
+      joinCode,
       message: "code generated successfully",
     });
   } catch (err) {
@@ -103,7 +104,7 @@ export const joinByEmail = async (
     const { joinToken } = req.body;
     const email = res.locals.user.email;
     const refreshToken = req.cookies.refreshToken;
-    const result = await joinByEmailService({ joinToken, email});
+    const result = await joinByEmailService({ joinToken, email });
     console.log("this is result returned by transaction", result);
     if (refreshToken) {
       try {
@@ -129,78 +130,17 @@ export const joinByEmail = async (
   }
 };
 
-export const joinByCode = async (req: Request, res: Response) => {
-  const { code } = req.body;
-
-  if (!code) {
-    return res.status(400).json({ message: "please provide all fields" });
-  }
-  const email = res.locals.user.email;
-
-  const hashedJoinCode = crypto.createHash("sha256").update(code).digest("hex");
+export const joinByCode = async (req: Request, res: Response,next:NextFunction) => {
   try {
-    const retrivedCode = await prisma.joinCode.findUnique({
-      where: { code: hashedJoinCode },
-    });
-
-    if (!retrivedCode) {
-      return res.status(500).json({ success: false, message: "Invalid code" });
-    }
-    if (retrivedCode.used) {
-      return res.status(400).json({
-        success: false,
-        message: "Code has already been used",
-      });
-    }
-    const userEnrolled = await prisma.user.findUnique({
-      where: { email },
-      select: { enrolled: true },
-    });
-    if (userEnrolled?.enrolled) {
-      return res.status(400).json({
-        success: false,
-        code: "ENROLLED",
-        message:
-          "Couldnt accept invitation, you are already enrolled in a company",
-      });
-    }
-    if (retrivedCode.expiresAt < new Date()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Code has been expried" });
-    }
-
-    await prisma.joinCode.update({
-      where: { code: hashedJoinCode },
-      data: { used: true },
-    });
-    await prisma.user.update({
-      where: { email },
-      data: {
-        role: retrivedCode.role,
-        enrolled: true,
-        companyId: retrivedCode.companyId,
-      },
-    });
+    const { joinCode } = req.body;
+    const email = res.locals.user.email;
+    const result = await joinByCodeService({ joinCode, email });
+    console.log("this is the result of join by code service", result);
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
       try {
         const { accessToken, newRefreshToken } = await refresh(refreshToken);
-        if (code === "USER_NOT_FOUND") {
-          throw new Error("user not found");
-        }
-        res.cookie("accessToken", accessToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "strict",
-          maxAge: 15 * 60 * 1000,
-        });
-        res.cookie("refreshToken", newRefreshToken, {
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-          maxAge: 15 * 24 * 60 * 60 * 1000,
-        });
+        setCookie(res, accessToken, newRefreshToken);
       } catch (err) {
         res.clearCookie("refreshToken", {
           sameSite: "strict",
@@ -211,13 +151,13 @@ export const joinByCode = async (req: Request, res: Response) => {
     }
 
     return res.status(201).json({
-      role: retrivedCode.role,
+      role: result[1].role, 
       success: "true",
       code: "JOIN_SUCCESSFULL",
       message: "You have been joined to the company",
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Server Error" });
+   next(err)
   }
 };
 export const leaveCompany = async (req: Request, res: Response) => {
