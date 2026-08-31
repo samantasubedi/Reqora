@@ -58,7 +58,7 @@ export const findCompanyByUsername = async (username: string) => {
     select: { company: true },
   });
 };
-export const createJoinToken = async ({
+export const storeJoinToken = async ({
   email,
   token,
   companyId,
@@ -81,3 +81,13 @@ export const createJoinToken = async ({
     },
   });
 };
+export const storeJoinCode=async({code,companyId,role,expiresAt}:{code:string,companyId:string,role:Role,expiresAt:Date|string})=>{
+ return await prisma.joinCode.create({
+      data: {
+        code,
+        companyId,
+        role,
+        expiresAt,
+      },
+    });
+}

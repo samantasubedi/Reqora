@@ -2,15 +2,21 @@ import { appError } from "../../utils/appError";
 import { findByUsername } from "../auth/auth.repository";
 import {
   createCompanyRepo,
-  createJoinToken,
+  storeJoinToken,
   findCompanyByEmail,
   findCompanyByUsername,
   findUserByEmail,
   updateUser,
+  storeJoinCode,
 } from "./company.repository";
 import crypto from "crypto";
-import { emailInviteType } from "./company.schema";
+import {
+  createCompanyType,
+  emailInviteType,
+  generateCodeType,
+} from "./company.schema";
 import { sendMail } from "../../utils/sendMail";
+import cryptoRandomString from "crypto-random-string";
 
 export const createCompanyService = async ({
   companyName,
@@ -18,13 +24,7 @@ export const createCompanyService = async ({
   address,
   size,
   username,
-}: {
-  companyName: string;
-  email: string;
-  address: string;
-  size: number;
-  username: string;
-}) => {
+}: createCompanyType & { username: string }) => {
   const duplicateEmail = await findCompanyByEmail(email);
   if (duplicateEmail) {
     throw new appError(
@@ -86,21 +86,43 @@ export const emailInviteService = async ({
     return console.log("authentication failed!");
   }
 
-    const createdToken = await createJoinToken({
-      email,
-      token: hashedToken,
-      companyId: companyInfo?.company?.id,
-      role,
-      expiresAt: new Date(Date.now() + expiryTime),
-    });
+  const createdToken = await storeJoinToken({
+    email,
+    token: hashedToken,
+    companyId: companyInfo?.company?.id,
+    role,
+    expiresAt: new Date(Date.now() + expiryTime),
+  });
 
-    await sendMail({
-      senderEmail: companyEmail,
-      receiverEmail: email,
-      companyName: companyInfo.company.companyName,
-      message,
-      inviteUrl,
-    });
- 
+  await sendMail({
+    senderEmail: companyEmail,
+    receiverEmail: email,
+    companyName: companyInfo.company.companyName,
+    message,
+    inviteUrl,
+  });
+};
+export const generateCodeService = async ({
+  role,
+  expiryTime,
+  email,
+}: generateCodeType & { email: string }) => {
+  const joinCode = cryptoRandomString({ length: 10, type: "alphanumeric" });
+  const hashedJoinCode = crypto
+    .createHash("sha256")
+    .update(joinCode)
+    .digest("hex");
 
+  const userInfo = await findUserByEmail(email);
+  if (!userInfo?.companyId) {
+    throw new appError(500, "SERVER_ERROR", "unable to retrive user info");
+  }
+  const expiresAt = new Date(Date.now() + expiryTime);
+  const storedCode = storeJoinCode({
+    code: hashedJoinCode,
+    companyId: userInfo.companyId,
+    role,
+    expiresAt,
+  });
+  return storedCode
 };

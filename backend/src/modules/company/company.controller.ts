@@ -4,7 +4,11 @@ import cryptoRandomString from "crypto-random-string";
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { refresh } from "../auth/auth.service";
-import { createCompanyService, emailInviteService } from "./company.service";
+import {
+  createCompanyService,
+  emailInviteService,
+  generateCodeService,
+} from "./company.service";
 import { setCookie } from "../../utils/setCookie";
 
 export const createCompany = async (
@@ -64,45 +68,27 @@ export const inviteToCompany = async (
   }
 };
 
-export const generateCode = async (req: Request, res: Response) => {
-  const { role, expiryTime } = req.body;
-  if (!role || !expiryTime) {
-    return res.json({ message: "please provide all fields" });
-  }
-  const joinCode = cryptoRandomString({ length: 10, type: "alphanumeric" });
-  const hashedJoinCode = crypto
-    .createHash("sha256")
-    .update(joinCode)
-    .digest("hex");
-  const email = res.locals.user.email;
-
+export const generateCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userInfo = await prisma.user.findUnique({
-      where: { email },
+    const { role, expiryTime } = req.body;
+    const email = res.locals.user.email;
+    const generatedCodeObject = await generateCodeService({
+      role,
+      expiryTime,
+      email,
     });
-    if (!userInfo?.companyId) {
-      return res.json({ message: "server error" });
-    }
-    await prisma.joinCode.create({
-      data: {
-        code: hashedJoinCode,
-        companyId: userInfo.companyId,
-        role,
-        expiresAt: new Date(Date.now() + expiryTime),
-      },
-    });
-
     res.status(201).json({
       success: true,
       code: "CODE_GENERATED",
-      joinCode,
+      joinCode: generatedCodeObject.code,
       message: "code generated successfully",
     });
   } catch (err) {
-    res.json({
-      error: err,
-      message: "server error",
-    });
+    next(err);
   }
 };
 
