@@ -22,3 +22,6 @@ export const generateCodeSchema = z.object({
   expiryTime: z.number().min(1, "expiry time is required"),
 });
 export type generateCodeType = z.infer<typeof generateCodeSchema>;
+export const joinByEmailSchema=z.object({
+  joinToken:z.string().min(1,"join code is required")
+})

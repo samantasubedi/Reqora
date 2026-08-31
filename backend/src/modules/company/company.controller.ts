@@ -8,8 +8,10 @@ import {
   createCompanyService,
   emailInviteService,
   generateCodeService,
+  joinByEmailService,
 } from "./company.service";
 import { setCookie } from "../../utils/setCookie";
+import { findUserByEmail } from "./company.repository";
 
 export const createCompany = async (
   req: Request,
@@ -92,117 +94,41 @@ export const generateCode = async (
   }
 };
 
-export const joinByEmail = async (req: Request, res: Response) => {
-  const { code } = req.body;
-  console.log("this is the token", code);
-  if (!code) {
-    console.log("token is required");
-    return res.status(400).json({
-      success: false,
-      code: "TOKEN_NOT_FOUND",
-      message: "token is required",
-    });
-  }
-  const email = res.locals.user.email;
-  const userEnrolled = await prisma.user.findUnique({
-    where: { email },
-    select: { enrolled: true },
-  });
-  if (userEnrolled?.enrolled) {
-    return res.status(400).json({
-      success: false,
-      code: "ENROLLED",
-      message:
-        "Couldnt accept invitation, you are already enrolled in a company",
-    });
-  }
-
+export const joinByEmail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const hashedCode = crypto.createHash("sha256").update(code).digest("hex");
-    const retrivedToken = await prisma.joinToken.findUnique({
-      where: { token: hashedCode },
-    });
+    const { joinToken } = req.body;
+    const email = res.locals.user.email;
+    const refreshToken = req.cookies.refreshToken;
+    const result = await joinByEmailService({ joinToken, email});
+    console.log("this is result returned by transaction", result);
+    if (refreshToken) {
+      try {
+        const { accessToken, newRefreshToken } = await refresh(refreshToken);
 
-    if (!retrivedToken) {
-      return res.status(404).json({
-        success: false,
-        code: "JOIN_FAILED",
-        message: "Invalid token!",
-      });
-    }
-
-    if (retrivedToken.email === email) {
-      if (retrivedToken.used || retrivedToken.expiresAt < new Date()) {
-        return res.status(400).json({
-          success: false,
-          message: "Your token has been expired",
-          code: "TOKEN_EXPIRED",
+        setCookie(res, accessToken, newRefreshToken);
+      } catch (err) {
+        res.clearCookie("refreshToken", {
+          sameSite: "strict",
+          httpOnly: true,
+          secure: true,
         });
       }
-      await prisma.$transaction([
-        prisma.user.update({
-          where: { email },
-          data: {
-            enrolled: true,
-            role: retrivedToken.role,
-            companyId: retrivedToken.companyId,
-          },
-        }),
-        prisma.joinToken.update({
-          data: {
-            used: true,
-          },
-          where: { token: hashedCode },
-        }),
-      ]);
-      const refreshToken = req.cookies.refreshToken;
-      if (refreshToken) {
-        try {
-          const { accessToken, newRefreshToken } = await refresh(refreshToken);
-          if (code === "USER_NOT_FOUND") {
-            throw new Error("user not found");
-          }
-          res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-            maxAge: 15 * 60 * 1000,
-          });
-          res.cookie("refreshToken", newRefreshToken, {
-            sameSite: "strict",
-            httpOnly: true,
-            secure: true,
-            maxAge: 15 * 24 * 60 * 60 * 1000,
-          });
-        } catch (err) {
-          res.clearCookie("refreshToken", {
-            sameSite: "strict",
-            httpOnly: true,
-            secure: true,
-          });
-        }
-      }
-      return res.status(201).json({
-        success: true,
-        message: "You have been joined to the company",
-        code: "JOIN_SUCCESSFULL",
-        role: retrivedToken.role,
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Couldn't join to the company, token may have been expired",
-        code: "JOIN_FAILED",
-      });
     }
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      code: "JOIN_FAILED",
-      message: "Couldn't join to the company, token may have been expired",
+    return res.status(201).json({
+      success: true,
+      message: "You have been joined to the company",
+      code: "JOIN_SUCCESSFULL",
+      role: result[0].role,
     });
+  } catch (err) {
+    next(err);
   }
 };
+
 export const joinByCode = async (req: Request, res: Response) => {
   const { code } = req.body;
 

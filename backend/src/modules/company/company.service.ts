@@ -8,6 +8,8 @@ import {
   findUserByEmail,
   updateUser,
   storeJoinCode,
+  findJoinToken,
+  updateUserAndJoinToken,
 } from "./company.repository";
 import crypto from "crypto";
 import {
@@ -17,6 +19,8 @@ import {
 } from "./company.schema";
 import { sendMail } from "../../utils/sendMail";
 import cryptoRandomString from "crypto-random-string";
+import { refresh } from "../auth/auth.service";
+import { setCookie } from "../../utils/setCookie";
 
 export const createCompanyService = async ({
   companyName,
@@ -124,5 +128,39 @@ export const generateCodeService = async ({
     role,
     expiresAt,
   });
-  return storedCode
+  return storedCode;
+};
+export const joinByEmailService = async ({
+  email,
+  joinToken,
+}: {
+  email: string;
+  joinToken: string;
+
+}) => {
+  const userInfo = await findUserByEmail(email);
+  if (userInfo?.enrolled) {
+    throw new appError(
+      409,
+      "ENROLLED",
+      "Couldnt accept invitation, you are already enrolled in a company",
+    );
+  }
+
+  const hashedToken = crypto.createHash("sha256").update(joinToken).digest("hex");
+  const retrivedToken = await findJoinToken(hashedToken);
+  if (!retrivedToken) {
+    throw new appError(400, "JOIN_FAILED", "Invalid token");
+  }
+
+  if (retrivedToken.email !== email) {
+    throw new appError(400, "JOIN_FAILED", "Invalid token");
+  }
+  if (retrivedToken.used || retrivedToken.expiresAt < new Date()) {
+    throw new appError(400, "TOKEN_EXPIRED", "your token is expired");
+  }
+    
+   const result= await updateUserAndJoinToken({email,role:retrivedToken.role,companyId:retrivedToken.companyId,token:hashedToken})
+   
+    return result
 };

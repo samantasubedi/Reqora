@@ -81,13 +81,46 @@ export const storeJoinToken = async ({
     },
   });
 };
-export const storeJoinCode=async({code,companyId,role,expiresAt}:{code:string,companyId:string,role:Role,expiresAt:Date|string})=>{
- return await prisma.joinCode.create({
-      data: {
-        code,
-        companyId,
-        role,
-        expiresAt,
-      },
-    });
+export const findJoinToken = async (token: string) => {
+  return await prisma.joinToken.findUnique({
+    where: { token },
+  });
+};
+export const updateUserAndJoinToken=async({email,role,companyId,token}:{email:string,role:Role,companyId:string,token:string})=>{
+  return  await prisma.$transaction([
+          prisma.user.update({
+            where: { email },
+            data: {
+              enrolled: true,
+              role,
+              companyId,
+            },
+          }),
+          prisma.joinToken.update({
+            data: {
+              used: true,
+            },
+            where: { token},
+          }),
+        ]);
 }
+export const storeJoinCode = async ({
+  code,
+  companyId,
+  role,
+  expiresAt,
+}: {
+  code: string;
+  companyId: string;
+  role: Role;
+  expiresAt: Date | string;
+}) => {
+  return await prisma.joinCode.create({
+    data: {
+      code,
+      companyId,
+      role,
+      expiresAt,
+    },
+  });
+};
