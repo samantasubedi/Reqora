@@ -33,7 +33,7 @@ export const updateUser = async ({
   companyId,
   username,
 }: {
-  role: Role
+  role: Role;
   enrolled: boolean;
   companyId: string;
   username: string;
@@ -46,6 +46,38 @@ export const updateUser = async ({
     },
     where: {
       username,
+    },
+  });
+};
+export const findUserByEmail = async (email: string) => {
+  return await prisma.user.findUnique({ where: { email } });
+};
+export const findCompanyByUsername = async (username: string) => {
+  return await prisma.user.findUnique({
+    where: { username },
+    select: { company: true },
+  });
+};
+export const createJoinToken = async ({
+  email,
+  token,
+  companyId,
+  role,
+  expiresAt,
+}: {
+  email: string;
+  token: string;
+  companyId: string;
+  role: Role;
+  expiresAt: string | Date;
+}) => {
+  return await prisma.joinToken.create({
+    data: {
+      email,
+      token,
+      companyId,
+      role,
+      expiresAt,
     },
   });
 };

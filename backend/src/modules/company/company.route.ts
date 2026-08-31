@@ -8,10 +8,17 @@ import {
   leaveCompany,
 } from "./company.controller";
 import { roleMiddleware } from "../../middleware/roleMIddleware";
+import { validate } from "../../middleware/validationMiddleware";
+import { createCompanySchema, emailInviteSchema } from "./company.schema";
 
 const router = Router();
-router.post("/createcompany", createCompany);
-router.post("/invite/emailInvite", roleMiddleware(["admin"]), inviteToCompany);
+router.post("/createcompany", validate(createCompanySchema), createCompany);
+router.post(
+  "/invite/emailInvite",
+  roleMiddleware(["admin"]),
+  validate(emailInviteSchema),
+  inviteToCompany,
+);
 router.post("/invite/codeInvite", roleMiddleware(["admin"]), generateCode);
 router.post("/join/byEmail", joinByEmail);
 router.post("/join/byCode", joinByCode);

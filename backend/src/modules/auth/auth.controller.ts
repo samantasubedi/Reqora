@@ -94,14 +94,12 @@ export const Refresh = async (
     }
     const { accessToken, newRefreshToken } = await refresh(refreshToken);
 
-    if (accessToken && newRefreshToken) {
-      setCookie(res, accessToken, newRefreshToken);
-      return res.status(201).json({
-        success: true,
-        message: "your tokens has been regenerated",
-        code: "TOKEN_REFRESHED",
-      });
-    }
+    setCookie(res, accessToken, newRefreshToken);
+    return res.status(201).json({
+      success: true,
+      message: "your tokens has been regenerated",
+      code: "TOKEN_REFRESHED",
+    });
   } catch (err) {
     res.clearCookie("refreshToken", {
       sameSite: "strict",
@@ -124,14 +122,13 @@ export const isLoggedIn = async (req: Request, res: Response) => {
       });
     }
     const { accessToken, newRefreshToken } = await refresh(refreshToken);
-    if (accessToken && newRefreshToken) {
-      setCookie(res, accessToken, newRefreshToken);
-      return res.status(201).json({
-        success: true,
-        message: "your tokens has been regenerated",
-        code: "TOKEN_REFRESHED",
-      });
-    }
+
+    setCookie(res, accessToken, newRefreshToken);
+    return res.status(201).json({
+      success: true,
+      message: "your tokens has been regenerated",
+      code: "TOKEN_REFRESHED",
+    });
   }
   const userData = jwt.verify(accessToken, accessSecret) as JwtPayload;
   res.status(200).json({

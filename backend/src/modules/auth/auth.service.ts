@@ -2,16 +2,13 @@ import { appError } from "../../utils/appError";
 import { createUser, findByUsername } from "./auth.repository";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt-ts";
+import { loginType, registerType } from "./auth.schema";
 
 export const registerUser = async ({
   email,
   username,
   password,
-}: {
-  email: string;
-  username: string;
-  password: string;
-}) => {
+}: registerType) => {
   const duplicateUser = await findByUsername(username);
   if (duplicateUser) {
     throw new appError(409, "DUPLICATE_USER", "user already exists");
@@ -26,13 +23,7 @@ export const registerUser = async ({
   });
   return createdUser;
 };
-export const loginUser = async ({
-  username,
-  password,
-}: {
-  username: string;
-  password: string;
-}) => {
+export const loginUser = async ({ username, password }: loginType) => {
   const user = await findByUsername(username);
   if (!user) {
     throw new appError(
@@ -79,8 +70,8 @@ export const loginUser = async ({
 export const refresh = async (
   refreshToken: string,
 ): Promise<{
-  accessToken?: string;
-  newRefreshToken?: string;
+  accessToken: string;
+  newRefreshToken: string;
 }> => {
   const refreshSecret = process.env.REFRESH_SECRET!;
   const accessSecret = process.env.ACCESS_SECRET!;
