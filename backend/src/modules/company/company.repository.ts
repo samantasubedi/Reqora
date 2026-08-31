@@ -1,12 +1,11 @@
 import { Role } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
-export const findCompanyByEmail = async (email: string) => {
+export const findCompanyByEmail = async ({email}:{email:string}) => {
   return await prisma.company.findUnique({
     where: { email },
   });
 };
-
 export const createCompanyRepo = async ({
   companyName,
   email,
@@ -49,10 +48,10 @@ export const updateUser = async ({
     },
   });
 };
-export const findUserByEmail = async (email: string) => {
+export const findUserByEmail = async ({email}:{email: string}) => {
   return await prisma.user.findUnique({ where: { email } });
 };
-export const findCompanyByUsername = async (username: string) => {
+export const findCompanyByUsername = async ({username}:{username: string}) => {
   return await prisma.user.findUnique({
     where: { username },
     select: { company: true },
@@ -81,7 +80,7 @@ export const storeJoinToken = async ({
     },
   });
 };
-export const findJoinToken = async (token: string) => {
+export const findJoinToken = async ({token}:{token: string}) => {
   return await prisma.joinToken.findUnique({
     where: { token },
   });
@@ -134,9 +133,9 @@ export const storeJoinCode = async ({
     },
   });
 };
-export const findJoinCode = async (hashedJoinCode: string) => {
+export const findJoinCode = async ({joinCode}:{joinCode: string}) => {
   return await prisma.joinCode.findUnique({
-    where: { code: hashedJoinCode },
+    where: { code: joinCode },
   });
 };
 export const updateUserAndJoinCode = async ({
@@ -165,3 +164,14 @@ export const updateUserAndJoinCode = async ({
     }),
   ]);
 };
+export const leaveCompanyRepo=async({email}:{email:string})=>{
+  return  await prisma.user.update({
+      data: {
+        role: null,
+        companyId: null,
+        enrolled: false,
+      },
+      where: { email },
+    });
+
+}

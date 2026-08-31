@@ -12,6 +12,7 @@ import {
   updateUserAndJoinToken,
   findJoinCode,
   updateUserAndJoinCode,
+  leaveCompanyRepo,
 } from "./company.repository";
 import crypto from "crypto";
 import {
@@ -21,9 +22,6 @@ import {
 } from "./company.schema";
 import { sendMail } from "../../utils/sendMail";
 import cryptoRandomString from "crypto-random-string";
-import { refresh } from "../auth/auth.service";
-import { setCookie } from "../../utils/setCookie";
-
 export const createCompanyService = async ({
   companyName,
   email,
@@ -31,7 +29,7 @@ export const createCompanyService = async ({
   size,
   username,
 }: createCompanyType & { username: string }) => {
-  const duplicateEmail = await findCompanyByEmail(email);
+  const duplicateEmail = await findCompanyByEmail({email});
   if (duplicateEmail) {
     throw new appError(
       400,
@@ -76,7 +74,7 @@ export const emailInviteService = async ({
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   const inviteUrl = `${frontendUrl}/getstarted/join/accept-invite?token=${token}`;
   const companyEmail = process.env.COMPANY_EMAIL!;
-  const invitedUser = await findUserByEmail(email);
+  const invitedUser = await findUserByEmail({email});
 
   if (invitedUser?.enrolled === true) {
     throw new appError(
@@ -86,7 +84,7 @@ export const emailInviteService = async ({
     );
   }
 
-  const companyInfo = await findCompanyByUsername(adminUsername);
+  const companyInfo = await findCompanyByUsername({username:adminUsername});
 
   if (!companyInfo?.company) {
     return console.log("authentication failed!");
@@ -119,7 +117,7 @@ export const generateCodeService = async ({
     .update(joinCode)
     .digest("hex");
 
-  const userInfo = await findUserByEmail(email);
+  const userInfo = await findUserByEmail({email});
   if (!userInfo?.companyId) {
     throw new appError(500, "SERVER_ERROR", "unable to retrive user info");
   }
@@ -139,7 +137,7 @@ export const joinByEmailService = async ({
   email: string;
   joinToken: string;
 }) => {
-  const userInfo = await findUserByEmail(email);
+  const userInfo = await findUserByEmail({email});
   if (userInfo?.enrolled) {
     throw new appError(
       409,
@@ -152,7 +150,7 @@ export const joinByEmailService = async ({
     .createHash("sha256")
     .update(joinToken)
     .digest("hex");
-  const retrivedToken = await findJoinToken(hashedToken);
+  const retrivedToken = await findJoinToken({token:hashedToken});
   if (!retrivedToken) {
     throw new appError(400, "JOIN_FAILED", "Invalid token");
   }
@@ -184,7 +182,7 @@ export const joinByCodeService = async ({
     .createHash("sha256")
     .update(joinCode)
     .digest("hex");
-  const retrivedCode = await findJoinCode(hashedJoinCode);
+  const retrivedCode = await findJoinCode({joinCode:hashedJoinCode});
   if (!retrivedCode) {
     throw new appError(400, "INVALID_CODE", "invalid join code");
   }
@@ -194,7 +192,7 @@ export const joinByCodeService = async ({
   if (retrivedCode.expiresAt < new Date()) {
     throw new appError(400, "CODE_EXPIRED", "Code has been expried");
   }
-  const userInfo = await findUserByEmail(email);
+  const userInfo = await findUserByEmail({email});
   if (userInfo?.enrolled) {
     throw new appError(
       409,
@@ -208,5 +206,25 @@ export const joinByCodeService = async ({
     role: retrivedCode.role,
     companyId: retrivedCode.companyId,
   });
-  return result 
+  return result;
+};
+export const leaveCompanyService = async ({
+  email,
+  role,
+}: {
+  email: string;
+  role: string;
+}) => {
+  if (role == "admin") {
+    throw new appError(
+      400,
+      "EXIT_FAILED",
+      "admin cannot leave thier own company",
+    );
+  }
+  if (!role) {
+    throw new appError(400, "EXIT_FAILED", "user is not enrolled in company");
+  }
+  const result = await leaveCompanyRepo({ email });
+  return result;
 };
