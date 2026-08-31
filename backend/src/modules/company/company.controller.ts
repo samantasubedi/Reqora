@@ -1,112 +1,41 @@
 import crypto from "crypto";
 import { transporter } from "../../lib/sendMail";
-
 import cryptoRandomString from "crypto-random-string";
-
-import { Refresh } from "../auth/auth.controller";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import bcrypt from "bcrypt-ts";
 import { refresh } from "../auth/auth.service";
+import { createCompanyService } from "./company.service";
+import { setCookie } from "../../utils/setCookie";
 
-export const createCompany = async (req: Request, res: Response) => {
+export const createCompany = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { companyName, email, address, size } = req.body;
-  if (!companyName || !email || !address || !size) {
-    return res.status(400).json({
-      success: false,
-      code: "INSUFFICIENT_DATA",
-      message: "please provide all fields",
-    });
-  }
-
   try {
     const username = res.locals.user.username;
-    const duplicateEmail = await prisma.company.findUnique({
-      select: {
-        companyName: true,
-      },
-      where: {
-        email,
-      },
+    const { createdCompany} = await createCompanyService({
+      companyName,
+      email,
+      address,
+      size,
+      username,
     });
-    if (duplicateEmail) {
-      return res.status(400).json({
-        success: false,
-        code: "DUPLICATE_EMAIL",
-        message: `company already registered with this email`,
-      });
-    }
-
-    const userData = await prisma.user.findFirst({
-      select: { enrolled: true },
-      where: { username },
-    });
-    if (userData?.enrolled) {
-      return res.status(400).json({
-        success: false,
-        code: "USER_ENROLLED",
-        message:
-          "You are already enrolled in a company, leave the current company to join new one",
-      });
-    }
-    await prisma.company.create({
-      data: {
-        companyName,
-        email,
-        address,
-        size,
-      },
-    });
-
-    const companyIdObj = await prisma.company.findUnique({
-      select: {
-        id: true,
-      },
-      where: {
-        email,
-      },
-    });
-    if (companyIdObj) {
-      await prisma.user.updateMany({
-        data: {
-          role: "admin",
-          enrolled: true,
-          companyId: companyIdObj.id,
-        },
-        where: {
-          username,
-        },
-      });
-    }
-
     const refreshToken = req.cookies.refreshToken;
-
     const { accessToken, newRefreshToken } = await refresh(refreshToken);
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
-    });
-    res.cookie("refreshToken", newRefreshToken, {
-      sameSite: "strict",
-      httpOnly: true,
-      secure: true,
-      maxAge: 15 * 24 * 60 * 60 * 1000,
-    });
+    if (accessToken && newRefreshToken)
+      setCookie(res, accessToken, newRefreshToken);
 
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
       code: "COMPANY_CREATED",
       message: "company created successfully",
+      data: createdCompany,
     });
-  } catch (err: any) {
-    return res.status(400).json({
-      success: false,
-      code: "CREATION_FAILED",
-      message: `failed to create company,${err.message}`,
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
