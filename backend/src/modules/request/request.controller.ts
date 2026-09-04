@@ -1,9 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { findByUsername } from "../auth/auth.repository";
-import { getAllRequestService } from "./request.service";
+import {
+  getAllRequestService,
+  getMyRequestService,
+  getRequestDetailsService,
+} from "./request.service";
 
-export const getAllRequest = async (req: Request, res: Response,next:NextFunction) => {
+export const getAllRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const companyId = res.locals.user.companyId;
     const allRequests = await getAllRequestService({ companyId });
@@ -14,52 +22,44 @@ export const getAllRequest = async (req: Request, res: Response,next:NextFunctio
       data: allRequests,
     });
   } catch (err) {
-    next(err)
+    next(err);
   }
 };
-export const getMyRequest = async (req: Request, res: Response) => {
+export const getMyRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { companyId, username } = res.locals.user;
-    const userInfo = await findByUsername({ username });
-    let myRequests;
-    if (userInfo) {
-      myRequests = await prisma.request.findMany({
-        where: { companyId, requestedById: userInfo?.id },
-        include: {
-          company: true,
-          requestedBy: true,
-          reviewedBy: true,
-          resource: true,
-        },
-      });
-    }
-    if (!myRequests) {
-      throw new Error("server error");
-    }
-    const requestData = myRequests.map((curr) => {
-      //we are doing this because we get an array not an object
-      return {
-        requestId: curr.id,
-        status: curr.status,
-        requestedQuantity: curr.requestedQuantity,
-        resourceId: curr.resourceId,
-        reviewedBy: curr.reviewedBy?.username,
-        requestedBy: curr.requestedBy.username,
-        companyName: curr.company.companyName,
-        resourceName: curr.resource.name,
-      };
+    const myRequests = await getMyRequestService({ username, companyId });
+    return res.status(200).json({
+      success: true,
+      code: "REQUESTS_RETRIVED",
+      message: "requests retirved successfully",
+      data: myRequests,
     });
   } catch (err) {
-    return res.status(500).json({
-      code: "SERVER_ERROR",
-      message: "server error",
-      success: false,
-    });
+    next(err);
   }
 };
-export const getSpecificRequest = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.send(`gets a specific request with id ${id}`);
+export const getSpecificRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id as string;
+    const requestDetails = await getRequestDetailsService({ id });
+    return res.status(200).json({
+      success: true,
+      code: "RESOURCE_RETRIVED",
+      message: "resource details retrived successfully",
+      data: requestDetails,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 export const createRequest = async (req: Request, res: Response) => {
   const { companyId, email } = res.locals.user;
