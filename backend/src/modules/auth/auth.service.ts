@@ -9,7 +9,7 @@ export const registerUser = async ({
   username,
   password,
 }: registerType) => {
-  const duplicateUser = await findByUsername(username);
+  const duplicateUser = await findByUsername({username});
   if (duplicateUser) {
     throw new appError(409, "DUPLICATE_USER", "user already exists");
   }
@@ -24,7 +24,7 @@ export const registerUser = async ({
   return createdUser;
 };
 export const loginUser = async ({ username, password }: loginType) => {
-  const user = await findByUsername(username);
+  const user = await findByUsername({username});
   if (!user) {
     throw new appError(
       401,
@@ -67,9 +67,11 @@ export const loginUser = async ({ username, password }: loginType) => {
   }
 };
 
-export const refresh = async (
-  refreshToken: string,
-): Promise<{
+export const refresh = async ({
+  refreshToken,
+}: {
+  refreshToken: string;
+}): Promise<{
   accessToken: string;
   newRefreshToken: string;
 }> => {

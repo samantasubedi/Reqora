@@ -13,12 +13,12 @@ export const authMiddlware = async (
     const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
-      const refreshToken = req.cookies.refreshToken;
+      const refreshToken:string = req.cookies.refreshToken;
 
       if (!refreshToken) {
         throw new appError(401, "UNAUTHORIZED", "user is not authorized");
       } else if (refreshToken) {
-        const { accessToken, newRefreshToken } = await refresh(refreshToken);
+        const { accessToken, newRefreshToken } = await refresh({refreshToken});
         if (accessToken && newRefreshToken) {
           setCookie(res, accessToken, newRefreshToken);
           return res.status(201).json({

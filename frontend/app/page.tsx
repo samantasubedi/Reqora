@@ -75,7 +75,7 @@ export default function Home() {
           </LiquidButton>
         </div>
       </GradientBackground>
-        <Footer />
+      <Footer />
     </>
   );
 }

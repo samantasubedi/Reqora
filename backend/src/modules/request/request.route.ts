@@ -9,7 +9,8 @@ import {
   handleForward,
 } from "./request.controller";
 const router = Router();
-router.get("/requests", getAllRequest);
+router.get("/requests",roleMiddleware(["admin"]), getAllRequest);
+router.get("/myRequests",)
 router.get("/requests/:id", roleMiddleware(["manager"]), getSpecificRequest);
 router.post("/requests", roleMiddleware(["employee"]), createRequest);
 router.post(

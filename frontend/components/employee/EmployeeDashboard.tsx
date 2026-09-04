@@ -89,9 +89,8 @@ export default function EmployeeDashboard() {
         </div>
       </div>
 
-    
-        <ResourceCard />
-   
+      <ResourceCard />
+
       <div className="grid grid-cols-2 gap-20">
         <RecentRequests />
         <ActiveGear />

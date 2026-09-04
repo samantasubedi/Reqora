@@ -38,7 +38,7 @@ export const createCompanyService = async ({
     );
   }
 
-  const userData = await findByUsername(username);
+  const userData = await findByUsername({username});
   if (userData?.enrolled) {
     throw new appError(
       400,

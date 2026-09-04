@@ -25,8 +25,8 @@ export const createCompany = async (
       size,
       username,
     });
-    const refreshToken = req.cookies.refreshToken;
-    const { accessToken, newRefreshToken } = await refresh(refreshToken);
+    const refreshToken: string = req.cookies.refreshToken;
+    const { accessToken, newRefreshToken } = await refresh({ refreshToken });
 
     if (accessToken && newRefreshToken)
       setCookie(res, accessToken, newRefreshToken);
@@ -74,12 +74,14 @@ export const joinByEmail = async (
   try {
     const { joinToken } = req.body;
     const email = res.locals.user.email;
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken: string = req.cookies.refreshToken;
     const result = await joinByEmailService({ joinToken, email });
     console.log("this is result returned by transaction", result);
     if (refreshToken) {
       try {
-        const { accessToken, newRefreshToken } = await refresh(refreshToken);
+        const { accessToken, newRefreshToken } = await refresh({
+          refreshToken,
+        });
 
         setCookie(res, accessToken, newRefreshToken);
       } catch (err) {
@@ -135,10 +137,12 @@ export const joinByCode = async (
     const email = res.locals.user.email;
     const result = await joinByCodeService({ joinCode, email });
     console.log("this is the result of join by code service", result);
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken: string = req.cookies.refreshToken;
     if (refreshToken) {
       try {
-        const { accessToken, newRefreshToken } = await refresh(refreshToken);
+        const { accessToken, newRefreshToken } = await refresh({
+          refreshToken,
+        });
         setCookie(res, accessToken, newRefreshToken);
       } catch (err) {
         res.clearCookie("refreshToken", {
@@ -165,12 +169,14 @@ export const leaveCompany = async (
   next: NextFunction,
 ) => {
   try {
-    const {email,role} = res.locals.user
-    const result = await leaveCompanyService({ email ,role});
-    const refreshToken = req.cookies.refreshToken;
+    const { email, role } = res.locals.user;
+    const result = await leaveCompanyService({ email, role });
+    const refreshToken: string = req.cookies.refreshToken;
     if (refreshToken) {
       try {
-        const { accessToken, newRefreshToken } = await refresh(refreshToken);
+        const { accessToken, newRefreshToken } = await refresh({
+          refreshToken,
+        });
         setCookie(res, accessToken, newRefreshToken);
       } catch (err) {
         res.clearCookie("refreshToken", {
@@ -184,7 +190,7 @@ export const leaveCompany = async (
       success: true,
       message: "company left successfully",
       code: "COMPANY_LEFT",
-      data:result
+      data: result,
     });
   } catch (err) {
     next(err);

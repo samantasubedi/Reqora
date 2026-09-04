@@ -88,11 +88,11 @@ export const Refresh = async (
   next: NextFunction,
 ) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken:string = req.cookies.refreshToken;
     if (!refreshToken) {
       throw new appError(401, "TOKEN_NOT_FOUND", "Refresh token not found");
     }
-    const { accessToken, newRefreshToken } = await refresh(refreshToken);
+    const { accessToken, newRefreshToken } = await refresh({refreshToken});
 
     setCookie(res, accessToken, newRefreshToken);
     return res.status(201).json({
@@ -112,7 +112,7 @@ export const Refresh = async (
 
 export const isLoggedIn = async (req: Request, res: Response) => {
   const accessToken = req.cookies.accessToken;
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken:string = req.cookies.refreshToken;
   const accessSecret = process.env.ACCESS_SECRET!;
   if (!accessToken) {
     if (!refreshToken) {
@@ -121,7 +121,7 @@ export const isLoggedIn = async (req: Request, res: Response) => {
         message: "user is not logged in ",
       });
     }
-    const { accessToken, newRefreshToken } = await refresh(refreshToken);
+    const { accessToken, newRefreshToken } = await refresh({refreshToken});
 
     setCookie(res, accessToken, newRefreshToken);
     return res.status(201).json({

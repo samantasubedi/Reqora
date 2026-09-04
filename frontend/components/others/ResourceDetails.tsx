@@ -7,12 +7,12 @@ enum ResourceStatus {
   underMaintenance,
 }
 type resourceType = {
-  id: String;
-  name: String;
-  location: String;
-  department: String;
-  type: String;
-  availability: Boolean;
+  id: string;
+  name: string;
+  location: string;
+  department: string;
+  type: string;
+  availability: boolean;
   status: ResourceStatus;
   totalQuantity: number;
   availableQuantity: number;

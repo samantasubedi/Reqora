@@ -1,7 +1,7 @@
 import { Role } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
-export const findByUsername = async (username: string) => {
+export const findByUsername = async ({username}:{username: string}) => {
   return await prisma.user.findUnique({ where: { username } });
 };
 export const createUser = async ({
