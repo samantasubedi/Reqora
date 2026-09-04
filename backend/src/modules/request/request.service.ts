@@ -1,6 +1,9 @@
 import { appError } from "../../utils/appError";
 import { findByUsername } from "../auth/auth.repository";
+import { findUserByEmail } from "../company/company.repository";
+import { findResourceById } from "../resource/resource.repository";
 import {
+  createRequest,
   findRequestById,
   findRequestsByCompanyId,
   findRequestsByUserId,
@@ -62,5 +65,40 @@ export const getMyRequestService = async ({
 };
 export const getRequestDetailsService = async ({ id }: { id: string }) => {
   const requestDetails = await findRequestById({ id });
-  return requestDetails
+  return requestDetails;
+};
+export const createRequestService = async ({
+  email,
+  companyId,
+  requestedQuantity,
+  resourceId,
+}: {
+  email: string;
+  companyId: string;
+  requestedQuantity: number;
+  resourceId: string;
+}) => {
+  const userDetails = await findUserByEmail({ email });
+  if (!userDetails) {
+    throw new appError(400, "INVALID_EMAIL", "unable to retrive user details");
+  }
+  const resourceDetails = await findResourceById({ id: resourceId });
+  if (!resourceDetails) {
+    throw new appError(400, "INVALID_ID", "unable to retrive resource details");
+  }
+  const availableQuantity = resourceDetails.availableQuantity;
+  if (availableQuantity < requestedQuantity) {
+    throw new appError(
+      400,
+      "INVALID_REQUEST",
+      "requested quantity of resource is unavailable",
+    );
+  }
+  const createdRequest = await createRequest({
+    requestedById: userDetails.id,
+    requestedQuantity,
+    resourceId,
+    companyId,
+  });
+  return createdRequest;
 };

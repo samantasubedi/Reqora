@@ -43,3 +43,24 @@ export const findRequestById = async ({ id }: { id: string }) => {
     },
   });
 };
+export const createRequest = async ({
+  requestedById,
+  requestedQuantity,
+  resourceId,
+  companyId,
+}: {
+  requestedById: string;
+  requestedQuantity: number;
+  resourceId: string;
+  companyId: string;
+}) => {
+  return await prisma.request.create({
+    data: {
+      requestedById,
+      requestedQuantity,
+      resourceId,
+      companyId,
+      status: "pending",
+    },
+  });
+};

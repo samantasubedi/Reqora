@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { findByUsername } from "../auth/auth.repository";
 import {
+  createRequestService,
   getAllRequestService,
   getMyRequestService,
   getRequestDetailsService,
@@ -62,54 +63,20 @@ export const getSpecificRequest = async (
   }
 };
 export const createRequest = async (req: Request, res: Response) => {
-  const { companyId, email } = res.locals.user;
-  const { requestedQuantity, resourceId } = req.body;
-  if (!requestedQuantity || requestedQuantity <= 0 || !resourceId) {
-    return res.status(400).json({
-      message: "please provide all fields",
-      code: "INSUFFICIENT_FIELDS",
-      success: false,
-    });
-  }
-  const idObj = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!idObj) {
-    return res.status(500).json({
-      message: "server error",
-      success: false,
-      code: "SERVER_ERROR",
-    });
-  }
-  const quantityObj = await prisma.resource.findUnique({
-    where: { id: resourceId },
-    select: { availableQuantity: true },
-  });
-  if (!quantityObj) {
-    return;
-  }
-  if (quantityObj.availableQuantity < requestedQuantity) {
-    return res.status(400).json({
-      code: "INVALID_REQUEST",
-      message: " requested quantity of resource is unavailable",
-      success: false,
-    });
-  }
   try {
-    await prisma.request.create({
-      data: {
-        requestedById: idObj.id,
-        requestedQuantity,
-        resourceId,
-        companyId,
-        status: "pending",
-      },
+    const { companyId, email } = res.locals.user;
+    const { requestedQuantity, resourceId } = req.body;
+    const createdRequest = createRequestService({
+      companyId,
+      email,
+      requestedQuantity,
+      resourceId,
     });
     return res.status(201).json({
       message: "Request created successfully",
       code: "REQUEST_CREATED",
       success: true,
+      data: createRequest,
     });
   } catch (err) {
     return res.status(500).json({
