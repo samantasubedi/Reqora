@@ -85,7 +85,10 @@ export const refresh = async ({
   }
 
   const { iat, exp, ...tokenData } = decodedToken as JwtPayload;
-  const userData = await findByUsername(tokenData.username);
+  if (typeof tokenData.username !== "string") {
+    throw new appError(401, "INVALID_TOKEN", "Invalid refresh token");
+  }
+  const userData = await findByUsername({ username: tokenData.username });
   if (!userData) {
     //user may have been removed from the company but token could still exist in users cookie
     throw new appError(400, "USER_NOT_FOUND", "invalid token, user not found");

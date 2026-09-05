@@ -76,7 +76,7 @@ export const createRequest = async (req: Request, res: Response) => {
       message: "Request created successfully",
       code: "REQUEST_CREATED",
       success: true,
-      data: createRequest,
+      data: createdRequest,
     });
   } catch (err) {
     return res.status(500).json({

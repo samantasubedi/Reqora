@@ -10,7 +10,7 @@ export const getAllResources = async (req: Request, res: Response) => {
     });
 
     if (!resources) {
-      throw new Error("server error");
+      throw new Error
     }
 
     const allResources = resources.map((curr) => ({

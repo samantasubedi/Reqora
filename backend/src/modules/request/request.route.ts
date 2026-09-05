@@ -22,7 +22,7 @@ router.get(
 );
 router.post(
   "/requests",
-  roleMiddleware(["employee"]),
+  roleMiddleware(["employee", "admin"]),
   validate(createRequestSchema),
   createRequest,
 );
