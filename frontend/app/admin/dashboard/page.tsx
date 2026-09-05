@@ -1,5 +1,5 @@
-import { AdminDashboard } from "@/components/admin/AdminDashboard";
-import SidebarMenu from "@/components/admin/Sidebarmenu";
+import { AdminDashboard } from "@/app/admin/components/AdminDashboard";
+import SidebarMenu from "@/app/admin/components/Sidebarmenu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Icon } from "@iconify/react";
 

@@ -28,7 +28,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { handleLogout } from "../admin/AdminDashboard";
+import { handleLogout } from "@/app/admin/components/AdminDashboard";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";

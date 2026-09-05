@@ -1,12 +1,12 @@
 "use client";
-import EmployeeCount from "@/components/employee/EmployeeCount";
-import { EmployeeTable } from "@/components/employee/EmployeeTable";
+import EmployeeCount from "@/app/employee/components/EmployeeCount";
+import { EmployeeTable } from "@/app/employee/components/EmployeeTable";
 import { useQuery } from "@tanstack/react-query";
 import axios, { isAxiosError } from "axios";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 
-const page = () => {
+const Page = () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const fetchApi = async () => {
     const response = await axios.get(`${backendUrl}/users`);
@@ -47,4 +47,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

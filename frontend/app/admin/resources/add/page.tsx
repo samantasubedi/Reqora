@@ -15,14 +15,6 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutaionError } from "@/types/global";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxInput,
-  ComboboxEmpty,
-  ComboboxList,
-  ComboboxItem,
-} from "@/components/ui/combobox";
 import SelectBox from "@/components/others/SelectBox";
 import { useRouter } from "next/navigation";
 
@@ -51,7 +43,7 @@ const schema = z.object({
   description: z.string().trim().optional(),
 });
 type formDataType = z.infer<typeof schema>;
-const page = () => {
+const Page = () => {
   const {
     register,
     setError,
@@ -183,7 +175,7 @@ const page = () => {
                   Type
                 </label>
                 <SelectBox
-                label="type"
+                  label="type"
                   options={typeOptions}
                   value={getValues("type")}
                   onChange={(v) => {
@@ -203,7 +195,7 @@ const page = () => {
                 </label>
 
                 <SelectBox
-                label="status"
+                  label="status"
                   options={statusOptions}
                   onChange={(v) => {
                     setValue("status", v);
@@ -221,7 +213,7 @@ const page = () => {
                   Department
                 </label>
                 <SelectBox
-                label="department"
+                  label="department"
                   options={departmentOptions}
                   onChange={(v) => {
                     setValue("department", v);
@@ -276,4 +268,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -6,9 +6,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../ui/card";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import RoleAndExpiryTime from "./RoleAndExpiryTime";
 import { useForm } from "react-hook-form";
@@ -18,7 +18,7 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutaionError } from "@/types/global";
-import { CopyButton } from "../animate-ui/components/buttons/copy";
+import { CopyButton } from "@/components/animate-ui/components/buttons/copy";
 const schema = z.object({
   role: z.string().min(1, "please select a role"),
   expiryTime: z.coerce.number().min(1, "please select an expiry time"),

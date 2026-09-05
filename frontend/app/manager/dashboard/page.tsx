@@ -1,6 +1,6 @@
 "use client";
-import { handleLogout } from "@/components/admin/AdminDashboard";
-import ManagerDashboard from "@/components/manager/ManagerDashboard";
+import { handleLogout } from "@/app/admin/components/AdminDashboard";
+import ManagerDashboard from "@/app/manager/components/ManagerDashboard";
 import { Button } from "@/components/ui/button";
 import {
   Table,

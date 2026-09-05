@@ -2,7 +2,7 @@
 import { Check, CircleAlert, LucideIcon, Plus, TrendingUp } from "lucide-react";
 import StatCard from "./StatCard";
 import { Book, Package } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { ResourceTable } from "./ResourceTable";
 import axios, { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -14,13 +14,13 @@ import { useEffect, useState } from "react";
 import { TableSkeleton } from "./TableSkeleton";
 import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
-import { ChartPieLabel } from "../others/PieChart";
+import { ChartPieLabel } from "@/components/others/PieChart";
 import {
   ChartBarLabel,
   countByStatusType,
   countByTypeType,
-} from "../others/BarChart";
-import ThemeToggler from "../global/ThemeToggler";
+} from "@/components/others/BarChart";
+import ThemeToggler from "@/components/global/ThemeToggler";
 export enum ResourceStatus {
   available = "available",
   inUse = "inUse",

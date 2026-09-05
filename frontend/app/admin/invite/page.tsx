@@ -1,7 +1,6 @@
 "use client";
-import EmailInviteForm from "@/components/admin/EmailInviteForm";
-import InviteCodeGenerator from "@/components/admin/InviteCodeGenerator";
-// import InviteCodeGenerator from "@/components/admin/InviteCodeGenerator";
+import EmailInviteForm from "@/app/admin/components/EmailInviteForm";
+import InviteCodeGenerator from "@/app/admin/components/InviteCodeGenerator";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "@iconify/react";
 import React, { useState } from "react";
 
-const page = () => {
+const Page = () => {
   const [emailForm, setEmailForm] = useState(true);
 
   return (
@@ -46,4 +45,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

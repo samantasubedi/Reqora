@@ -14,7 +14,7 @@ import {
   resourceType,
   tableResourceType,
 } from "./AdminDashboard";
-import { Badge } from "../ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -24,8 +24,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 
@@ -111,7 +111,6 @@ export const ResourceTable = ({
     if (fieldExists) {
       newFields = tableFields.filter((cur) => {
         return cur.key !== fieldKey;
-       
       });
     } else {
       const newUnorderedTableFieldsKeys = [
@@ -217,9 +216,16 @@ export const ResourceTable = ({
           {resourceData.map((resource) => {
             const statusDetails = getStatusDisaplay(resource.status);
             return (
-              <TableRow key={resource.id}>
+              <TableRow
+                key={resource.id}
+                onClick={() => router.push(`/admin/resources/${resource.id}`)}
+              >
                 {tableFields.map((field) => {
-                  return <TableCell key={field.key} >{field.render(resource)}</TableCell>;
+                  return (
+                    <TableCell key={field.key}>
+                      {field.render(resource)}
+                    </TableCell>
+                  );
                 })}
 
                 <TableCell>

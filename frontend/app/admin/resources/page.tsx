@@ -1,17 +1,51 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
-import React from "react";
+import { ResourceTable } from "@/app/admin/components/ResourceTable";
+import { TableSkeleton } from "@/app/admin/components/TableSkeleton";
+import ResourceDetailsSkeleton from "@/components/others/ResourceDetailsLoader";
+import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
+import axios, { isAxiosError } from "axios";
+import React, { useEffect } from "react";
+import { toast } from "react-toastify";
 
-const page = () => {
-  const { setTheme } = useTheme();
+const Page = () => {
+  const fetchApi = async () => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+    const response = await axios.get(`${backendUrl}/resources`, {
+      withCredentials: true,
+    });
+    return response.data;
+  };
+  const query = useQuery({
+    queryFn: fetchApi,
+    queryKey: ["resourceData"],
+  });
+  useEffect(() => {
+    if (query.isError) {
+      if (isAxiosError(query.error)) {
+        toast.error(query.error.response?.data.message);
+      } else {
+        toast.error(query.error.message);
+      }
+    }
+  }, [query.isError]);
+  if (query.isLoading) {
+    return <ResourceDetailsSkeleton />;
+  }
+
   return (
-    <>
-      <div className="text-mycolor">hello this is admin resource page</div>
-      <Button onClick={() => setTheme("dark")}>Dark</Button>
-      <Button onClick={() => setTheme("light")}>Light</Button>
-    </>
+    <div>
+      <div>
+        {" "}
+        <Input placeholder="Search for resources"></Input>
+      </div>
+      {query.isLoading ? (
+        <TableSkeleton />
+      ) : (
+        <ResourceTable resourceData={query.data.allResources} />
+      )}
+    </div>
   );
 };
 
-export default page;
+export default Page;

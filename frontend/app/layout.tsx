@@ -3,9 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 // @ts-expect-error
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
-import QueryClientProviderWrapper from "@/components/QueryClientProviderWrapper";
+import QueryClientProviderWrapper from "@/components/providers/QueryClientProviderWrapper";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
+import { ThemeProviderWrapper } from "@/components/providers/ThemeProviderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

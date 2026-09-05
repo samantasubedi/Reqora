@@ -1,4 +1,4 @@
-import EmployeeDashboard from "@/components/employee/EmployeeDashboard";
+import EmployeeDashboard from "@/app/employee/components/EmployeeDashboard";
 import React from "react";
 
 const Dashboard = () => {

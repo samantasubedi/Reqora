@@ -8,7 +8,7 @@ import {
   UseFormWatch,
 } from "react-hook-form";
 import { emailInviteFormType } from "./EmailInviteForm";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 type valuesType = {
   role: string;
   expiryTime: number;

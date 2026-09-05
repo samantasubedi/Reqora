@@ -21,9 +21,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { Icon } from "@iconify/react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 import { useRouter } from "next/navigation";
 import LogoutDialog from "./LogoutDialog";
@@ -31,7 +31,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../ui/collapsible";
+} from "@/components/ui/collapsible";
 
 const Sidebarmenu = () => {
   const router = useRouter();
@@ -124,7 +124,7 @@ const Sidebarmenu = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           onClick={() => {
-                            handleSidebarNavigation("/resources");
+                            handleSidebarNavigation("/admin/resources");
                           }}
                         >
                           <Icon icon="material-symbols:grid-view-outline-rounded" />
@@ -134,7 +134,7 @@ const Sidebarmenu = () => {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           onClick={() => {
-                            handleSidebarNavigation("/resources/add");
+                            handleSidebarNavigation("/admin/resources/add");
                           }}
                         >
                           <Icon icon="hugeicons:resources-add" />

@@ -1,6 +1,6 @@
 import { AlertCircle, RotateCcw } from "lucide-react";
 import { Icon } from "@iconify/react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 interface TableErrorProps {
   onRetry: () => void;

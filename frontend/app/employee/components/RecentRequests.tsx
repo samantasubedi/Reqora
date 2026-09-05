@@ -5,9 +5,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "@/components/ui/card";
 import { Search } from "lucide-react";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -15,9 +15,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const RecentRequests = () => {
   return (
@@ -51,7 +51,7 @@ export const RecentRequests = () => {
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell className="font-medium">MacBook Pro 14"</TableCell>
+                <TableCell className="font-medium">MacBook Pro 14</TableCell>
                 <TableCell>Oct 12, 2023</TableCell>
                 <TableCell>
                   <Badge className="bg-green-100 text-green-600">

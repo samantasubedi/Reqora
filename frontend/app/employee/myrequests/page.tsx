@@ -1,6 +1,5 @@
 import React from "react";
-import MyRequests from "@/components/employee/MyRequests";
-
+import MyRequests from "@/app/employee/components/MyRequests";
 
 const page = () => {
   return (

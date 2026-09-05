@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "@/components/ui/card";
 import { statCardInterface } from "./AdminDashboard";
 const borderGradientMap: Record<string, string> = {
   "border-blue-500": "via-blue-500",

@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { handleLogout } from "@/components/admin/AdminDashboard";
+import { handleLogout } from "@/app/admin/components/AdminDashboard";
 import axios from "axios";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { BorderBeam } from "@/components/ui/border-beam";
