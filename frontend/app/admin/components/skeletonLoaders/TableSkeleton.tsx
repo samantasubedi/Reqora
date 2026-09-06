@@ -12,9 +12,9 @@ const tableHeaders = [
 export function TableSkeleton() {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse bg-blue-200/40">
+      <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-slate-200">
+          <tr className="bg-accent">
             {tableHeaders.map((header) => (
               <th
                 key={header}
@@ -29,7 +29,7 @@ export function TableSkeleton() {
           {Array.from({ length: 10 }).map(
             (
               _,
-              index, //forms an empty array of length 4
+              index, //forms an empty array of length 10
             ) => (
               <tr key={index} className="border-b border-slate-200/50">
                 <td className="border border-slate-200/50 px-4 py-3">

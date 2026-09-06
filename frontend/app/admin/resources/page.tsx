@@ -1,6 +1,6 @@
 "use client";
 import { ResourceTable } from "@/app/admin/components/ResourceTable";
-import { TableSkeleton } from "@/app/admin/components/TableSkeleton";
+import { TableSkeleton } from "@/app/admin/components/skeletonLoaders/TableSkeleton";
 import ResourceDetailsSkeleton from "@/components/others/ResourceDetailsLoader";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";

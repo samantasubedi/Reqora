@@ -1,6 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import axios, { isAxiosError } from "axios";
+
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -8,12 +7,10 @@ import {
   ArrowLeft,
   Building2,
   Calendar,
-  Clock,
   Edit,
   MapPin,
   Package,
   Trash2,
-  User,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,44 +21,39 @@ import { Progress } from "@/components/ui/progress";
 import { ResourceTabs } from "@/components/others/ResourceTabs";
 import { useRouter } from "next/navigation";
 
+import { useResource } from "../../hooks/resourceHooks";
+import ResourceDetailsSkeleton from "../../components/skeletonLoaders/resourceDetailsSkeleton";
+
+
 const ResourceDetails = () => {
   const router = useRouter();
-  let inUseQuantity;
+
   let percentage;
   const params = useParams();
   const id = params.id;
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const fetchApi = async () => {
-    const response = await axios.get(`${backendUrl}/resource/${id}`, {
-      withCredentials: true,
-    });
-    return response.data;
-  };
-  const query = useQuery({
-    queryKey: ["resourceDetail"],
-    queryFn: fetchApi,
-  });
+
+  const { isError, error, isSuccess, isLoading, data } = useResource(id);
 
   useEffect(() => {
-    if (query.isError) {
-      if (isAxiosError(query.error)) {
-        toast.error(query.error.response?.data.message);
+    if (isError) {
+      if (error.response) {
+        toast.error(error.response?.data.message);
       } else {
-        toast.error(query.error.message);
+        toast.error(error.message);
       }
     }
-  }, [query.error]);
+  }, [error, isError]);
   let resourceDetail;
-  if (query.isSuccess) {
-    resourceDetail = query.data.resourceDetail;
+  if (isSuccess) {
+    resourceDetail = data.resourceDetail;
     percentage =
       (resourceDetail.availableQuantity / resourceDetail.totalQuantity) * 100;
     console.log("this is resourceDetail", resourceDetail);
   }
-  if (query.isLoading) {
-    return <div>Loading....</div>;
+  if (isLoading) {
+    return <ResourceDetailsSkeleton/>
   }
-  if (query.isSuccess) {
+  if (isSuccess) {
     return (
       <div className="mx-auto max-w-7xl space-y-6 p-6">
         <div className="flex items-center justify-between">
@@ -241,30 +233,6 @@ const ResourceDetails = () => {
                 </div>
               </CardContent>
             </Card>
-
-            {/* <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-                <div className="flex gap-3">
-                  <Clock className="h-4 w-4 mt-1" />
-                  <div>
-                    <p className="text-sm">Status changed to Available</p>
-                    <p className="text-xs text-muted-foreground">3 hours ago</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <Clock className="h-4 w-4 mt-1" />
-                  <div>
-                    <p className="text-sm">Quantity updated</p>
-                    <p className="text-xs text-muted-foreground">Yesterday</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card> */}
           </div>
         </div>
       </div>

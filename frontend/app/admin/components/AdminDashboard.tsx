@@ -11,7 +11,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { TableSkeleton } from "./TableSkeleton";
+import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
 import { ChartPieLabel } from "@/components/others/PieChart";
@@ -23,6 +23,7 @@ import {
 import ThemeToggler from "@/components/global/ThemeToggler";
 
 import { useResources } from "../hooks/resourceHooks";
+import { DashboardSkeleton } from "./skeletonLoaders/DahsboardSkeleton";
 export enum ResourceStatus {
   available = "available",
   inUse = "inUse",
@@ -225,7 +226,7 @@ export const AdminDashboard = () => {
         </div>
 
         {isLoading ? (
-          <TableSkeleton />
+          <DashboardSkeleton/>
         ) : isError ? (
           <TableError
             onRetry={() => {
