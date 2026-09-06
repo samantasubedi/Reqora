@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 
 const ThemeToggler = () => {
+  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const handleThemeChange = () => {
     if (theme == "dark") {
@@ -13,8 +14,14 @@ const ThemeToggler = () => {
       setTheme("dark");
     }
   };
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+  if (!mounted) {
+    return null;
+  }
   const isDark = theme === "dark";
-
   return (
     <div className="m-5">
       <button

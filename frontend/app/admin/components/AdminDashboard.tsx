@@ -1,5 +1,5 @@
 "use client";
-import { Check, CircleAlert, LucideIcon, Plus, TrendingUp } from "lucide-react";
+import { Check, CircleAlert, LucideIcon, TrendingUp } from "lucide-react";
 import StatCard from "./StatCard";
 import { Book, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ import {
   countByTypeType,
 } from "@/components/others/BarChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
+import { fetchResources } from "../apis/resourceApi";
+import { useResources } from "../hooks/resourceHooks";
 export enum ResourceStatus {
   available = "available",
   inUse = "inUse",
@@ -81,37 +83,21 @@ export const handleLogout = async (router: AppRouterInstance) => {
 };
 
 export const AdminDashboard = () => {
-  const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const fetchApi = async () => {
-    const response: AxiosResponse<{
-      success: boolean;
-      message: string;
-      allResources: resourceType[];
-      countsByType: countByTypeType;
-      countsByStatus: countByStatusType;
-    }> = await axios.get(`${backendUrl}/resources`, {
-      withCredentials: true,
-    });
-    return response.data;
-  };
-  const query = useQuery({
-    queryFn: fetchApi,
-    queryKey: ["resourceData"],
-  });
+  const { isError, error, data, isSuccess, isLoading, refetch } =
+    useResources();
 
   useEffect(() => {
-    if (query.isError) {
-      if (isAxiosError(query.error)) {
-        toast.error(query.error.response?.data.message);
+    if (isError) {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.message);
       } else {
-        toast.error(query.error.message);
+        toast.error(error.message);
       }
     }
-  }, [query.isError]);
+  }, [isError, error]);
 
-  if (query.isSuccess) {
-    console.log(query.data, "this is resource");
+  if (isSuccess) {
+    console.log(data, "this is resource");
   }
 
   const AdminStat: statCardInterface[] = [
@@ -156,12 +142,12 @@ export const AdminDashboard = () => {
     },
   ];
 
-  const pieChartData = query.isSuccess
-    ? query.data.countsByStatus
-        .filter((curr: any) => {
+  const pieChartData = isSuccess
+    ? data.countsByStatus
+        .filter((curr: { _count: number; status: string }) => {
           return curr.status != "all";
         })
-        .map((i: any) => {
+        .map((i: { _count: number; status: string }) => {
           return {
             status: i.status,
             Resources: i._count,
@@ -190,17 +176,21 @@ export const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex justify-between m-3">
-          {query.isSuccess &&
+          {isSuccess &&
             AdminStat.map((curr, index) => {
-              const currentStatus = query.data.countsByStatus.find((i: any) => {
-                return i.status === curr.statusKey;
-              });
+              const currentStatus = data.countsByStatus.find(
+                (i: { _count: number; status: string }) => {
+                  return i.status === curr.statusKey;
+                },
+              );
 
               if (!currentStatus) return;
 
-              const allCount = query.data.countsByStatus.find((i: any) => {
-                return i.status === "all";
-              })?._count;
+              const allCount = data.countsByStatus.find(
+                (i: { _count: number; status: string }) => {
+                  return i.status === "all";
+                },
+              )?._count;
 
               if (!allCount) return;
 
@@ -222,28 +212,28 @@ export const AdminDashboard = () => {
             })}
         </div>
         <div className="flex justify-evenly items-center">
-          {query.isSuccess && (
+          {isSuccess && (
             <div className="w-[40%]">
               <ChartPieLabel data={pieChartData} />
             </div>
           )}
-          {query.data?.countsByType && (
+          {data?.countsByType && (
             <div className="w-[40%]">
-              <ChartBarLabel chartData={query.data?.countsByType} />
+              <ChartBarLabel chartData={data.countsByType} />
             </div>
           )}
         </div>
 
-        {query.isLoading ? (
+        {isLoading ? (
           <TableSkeleton />
-        ) : query.isError ? (
+        ) : isError ? (
           <TableError
             onRetry={() => {
-              query.refetch();
+              refetch();
             }}
           />
-        ) : query.data?.allResources.length ? (
-          <ResourceTable resourceData={query.data.allResources} />
+        ) : data?.allResources.length ? (
+          <ResourceTable resourceData={data.allResources} />
         ) : (
           <TableEmpty />
         )}
