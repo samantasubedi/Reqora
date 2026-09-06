@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchResources } from "../apis/resourceApi";
+import { fetchResourcesApi } from "../apis/resourceApi";
 
 export const useResources=()=>{
   return   useQuery({
-    queryFn: fetchResources,
+    queryFn: fetchResourcesApi,
     queryKey: ["resourceData"],
   });
 }

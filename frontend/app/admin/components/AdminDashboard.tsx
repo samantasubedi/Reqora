@@ -21,7 +21,7 @@ import {
   countByTypeType,
 } from "@/components/others/BarChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
-import { fetchResources } from "../apis/resourceApi";
+
 import { useResources } from "../hooks/resourceHooks";
 export enum ResourceStatus {
   available = "available",

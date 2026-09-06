@@ -13,13 +13,15 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useGlobalStore } from "@/app/store/authStore";
 import { useMutation } from "@tanstack/react-query";
-import { T_MutaionError } from "@/types/global";
+import { Role, T_MutaionError } from "@/types/global";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import axios from "axios";
+import { LoginApi } from "@/app/admin/apis/authApi";
+import { useLogin } from "@/app/admin/hooks/authHooks";
 
 const schema = z.object({
   username: z
@@ -34,52 +36,43 @@ const schema = z.object({
 });
 type formDataType = z.infer<typeof schema>;
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const setUserData = useGlobalStore((state) => state.setUserData);
-
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
   } = useForm({ resolver: zodResolver(schema) });
-  const postApi = async (data: formDataType) => {
-    const response = await axios.post(`${backendUrl}/login`, data, {
-      withCredentials: true,
-    });
-    return response.data;
-  };
-  const postMutation = useMutation({
-    mutationFn: postApi,
-    onSuccess: (data) => {
-      if (data.success && data.code == "LOGIN_SUCCESSFULL")
-        toast.success(data.message);
-      const username = data.username;
-      const role = data.role;
-      setUserData({ username, role });
-      if (!role) {
-        router.push("/getstarted");
-      } else if (role) {
-        router.push(`/${data.role}/dashboard`);
-      }
-    },
-    onError: (error: T_MutaionError) => {
-      if (error.response) {
-        if (error.response?.data.code == "INVALID_CREDIENTIALS") {
-          setError("username", { message: error.response.data.message });
-          setError("password", { message: error.response.data.message });
-        }
-        toast.error(error.response?.data.message);
-      } else {
-        toast.error(error.message);
-      }
-    },
-  });
+  const loginMutation = useLogin();
 
   const formSubmitHandler: SubmitHandler<formDataType> = async (data) => {
-    postMutation.mutate(data);
+    loginMutation.mutate(data, {
+      onSuccess: (data) => {
+        if (data.success && data.code == "LOGIN_SUCCESSFULL")
+          toast.success(data.message);
+        const username = data.username;
+        const role: Role = data.role;
+        setUserData({ username, role });
+        if (!role) {
+          router.push("/getstarted");
+        } else if (role) {
+          router.push(`/${data.role}/dashboard`);
+        }
+      },
+      onError: (error: T_MutaionError) => {
+        if (error.response) {
+          if (error.response?.data.code == "INVALID_CREDIENTIALS") {
+            setError("username", { message: error.response.data.message });
+            setError("password", { message: error.response.data.message });
+          }
+          toast.error(error.response?.data.message);
+        } else {
+          toast.error(error.message);
+        }
+      },
+    });
   };
 
   return (
@@ -127,15 +120,15 @@ const page = () => {
               <p className="text-red-400">{errors.password?.message}</p>
             </div>
             <Button
-              disabled={postMutation.isPending}
+              disabled={loginMutation.isPending}
               type="submit"
               className="w-full mt-5 cursor-pointer bg-teal-600 hover:bg-teal-700 "
             >
-              {postMutation.isPending ? "Logging in" : "Login "}
+              {loginMutation.isPending ? "Logging in" : "Login "}
             </Button>
           </form>
           <CardAction className="flex gap-2 mt-4">
-            <p className="font-sans text-white">Don't have an account ?</p>{" "}
+            <p className="font-sans text-white">Dont have an account ?</p>
             <a
               className="text-blue-400 cursor-pointer font-bold"
               href="/register"
@@ -149,4 +142,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

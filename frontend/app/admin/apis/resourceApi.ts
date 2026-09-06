@@ -1,4 +1,3 @@
-"use client";
 import axios, { AxiosResponse } from "axios";
 import { resourceType } from "../components/AdminDashboard";
 import {
@@ -6,7 +5,7 @@ import {
   countByTypeType,
 } from "@/components/others/BarChart";
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-export const fetchResources = async () => {
+export const fetchResourcesApi = async () => {
   const response: AxiosResponse<{
     success: boolean;
     message: string;
