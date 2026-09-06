@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import {
   Card,
@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { useRegister } from "@/app/admin/hooks/authHooks";
+import { T_MutationError } from "@/types/global";
 type formDataType = z.infer<typeof schema>;
 const schema = z.object({
   email: z
@@ -34,7 +36,7 @@ const schema = z.object({
     .min(8, "Password must be atleast 8 characters"),
 });
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
@@ -43,26 +45,27 @@ const page = () => {
     setError,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
+  const registerMuation = useRegister();
   const handleFormSubmit: SubmitHandler<formDataType> = async (data) => {
-    console.log("form data", data);
-    try {
-      const response = await axios.post(`${backendUrl}/register`, data);
-      console.log(response);
-      if (response.status == 201) {
-        toast.success(`${response.data.message},Please login in to continue`);
-        router.push("/login");
-      }
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        console.log(err.response.data);
-        toast.error(err.response.data.message);
-        if (err.response.data.code === "DUPLICATE_USERNAME") {
-          setError("username", { message: err.response.data.message });
+    registerMuation.mutate(data, {
+      onSuccess: (data) => {
+        if (data.success) {
+          toast.success(`${data.message},please login to continue`);
+          router.push("/login");
         }
-      } else {
-        console.log("something went wrong", err);
-      }
-    }
+      },
+      onError: (err: T_MutationError) => {
+        if (err.response) {
+          toast.error(err.response.data.message);
+          if (err.response.data.code === "DUPLICATE_USERNAME") {
+            setError("username", { message: err.response.data.message });
+            console.log("this is error message", err.response.data.message);
+          }
+        } else {
+          toast.error(err.message);
+        }
+      },
+    });
   };
   return (
     <div className="flex justify-center  bg-linear-to-l from-blue-950 to-teal-800  min-h-screen">
@@ -125,4 +128,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

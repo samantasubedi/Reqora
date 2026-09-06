@@ -6,7 +6,7 @@ type T_BackendRespose = {
   success: boolean;
 };
 
-export type T_MutaionError = AxiosError<T_BackendRespose>;
+export type T_MutationError = AxiosError<T_BackendRespose>;
 export enum Role {
   "admin",
   "manager",

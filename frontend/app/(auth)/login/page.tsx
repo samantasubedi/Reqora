@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
 import { useGlobalStore } from "@/app/store/authStore";
 import { useMutation } from "@tanstack/react-query";
-import { Role, T_MutaionError } from "@/types/global";
+import { Role, T_MutationError } from "@/types/global";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import axios from "axios";
@@ -61,7 +61,7 @@ const Page = () => {
           router.push(`/${data.role}/dashboard`);
         }
       },
-      onError: (error: T_MutaionError) => {
+      onError: (error: T_MutationError) => {
         if (error.response) {
           if (error.response?.data.code == "INVALID_CREDIENTIALS") {
             setError("username", { message: error.response.data.message });
