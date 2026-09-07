@@ -62,7 +62,11 @@ export const getSpecificRequest = async (
     next(err);
   }
 };
-export const createRequest = async (req: Request, res: Response) => {
+export const createRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { companyId, email } = res.locals.user;
     const { requestedQuantity, resourceId } = req.body;
@@ -79,11 +83,7 @@ export const createRequest = async (req: Request, res: Response) => {
       data: createdRequest,
     });
   } catch (err) {
-    return res.status(500).json({
-      message: "server error",
-      success: false,
-      code: "SERVER_ERROR",
-    });
+    next(err);
   }
 };
 export const handleReview = async (req: Request, res: Response) => {

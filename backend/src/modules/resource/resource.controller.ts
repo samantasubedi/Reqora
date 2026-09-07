@@ -1,17 +1,57 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { ResourceStatus } from "../../generated/prisma/enums";
+import { findAllResourcesService } from "./resource.service";
+import { Prisma, ResourceStatus } from "../../generated/prisma/client";
+import { T_QueryFilters } from "../../middleware/queryMiddleware";
 export const getAllResources = async (req: Request, res: Response) => {
   try {
     const companyId = res.locals.user.companyId;
-    const status = (req.query.status as ResourceStatus) || undefined;
-    const resources = await prisma.resource.findMany({
-      where: { companyId, status },
-    });
 
-    if (!resources) {
-      throw new Error
+    // const {
+    //   status,
+    //   type,
+    //   availability,
+    //   availableQuantity,
+    //   search,
+    //   page,
+    //   limit,
+    // } = req.query;
+
+    const { limit, page, search, resourceStatus } = res.locals
+      .query as T_QueryFilters;
+
+    let where: Prisma.resourceWhereInput = {};
+    where.companyId = companyId;
+    // if (status) {
+    //   where.status = status as ResourceStatus;
+    // }
+    // if (type) {
+    //   where.type = type as string;
+    // }
+    // if (availability) {
+    //   where.availability = availability === "true";
+    // }
+    // if (availableQuantity) {
+    //   where.availableQuantity = Number(availableQuantity);
+    // }
+
+    where.name = { contains: search };
+
+    let pageNo = 1,
+      pageLimit = 10;
+    if (page) {
+      pageNo = Number(page);
     }
+    if (limit) {
+      pageLimit = Number(limit);
+    }
+    const skip = (pageNo - 1) * pageLimit;
+    const take = pageLimit;
+    const resources = await findAllResourcesService({
+      where: { status: resourceStatus, name: { contains: search } },
+      skip,
+      take,
+    });
 
     const allResources = resources.map((curr) => ({
       id: curr.id,
