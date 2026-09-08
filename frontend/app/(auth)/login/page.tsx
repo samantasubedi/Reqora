@@ -22,6 +22,7 @@ import z from "zod";
 import axios from "axios";
 import { LoginApi } from "@/app/admin/apis/authApi";
 import { useLogin } from "@/app/admin/hooks/authHooks";
+import Navbar from "@/components/others/Navbar";
 
 const schema = z.object({
   username: z
@@ -76,22 +77,24 @@ const Page = () => {
   };
 
   return (
-    <div className="flex justify-center  bg-linear-to-l from-blue-950 to-teal-800  min-h-screen">
-      <Card className="w-[30%] h-fit mt-[10%] bg-transparent/70 border-teal-950 shadow-md shadow-black">
+    <div className=" min-h-screen flex flex-col">
+    <Navbar/>
+    <div className="flex justify-center  bg-linear-to-l from-auth-gradient-end to-auth-gradient-start flex-1 ">
+      <Card className="w-[30%] h-fit mt-[10%] bg-auth-card-bg backdrop-blur-xl border-auth-card-border shadow-md shadow-black">
         <CardHeader>
-          <CardTitle className="text-3xl text-center text-cyan-400">
+          <CardTitle className="text-3xl text-center text-primary">
             Login to your account
           </CardTitle>
-          <CardDescription className="text-center text-white">
-            Enter your username below to login to your account
+          <CardDescription className="text-center text-card-foreground">
+            Enter your username and password below to login to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(formSubmitHandler)}>
             <div className="flex flex-col gap-2">
-              <label className="font-semibold text-white">Username</label>
+              <label className="font-semibold text-card-foreground">Username</label>
               <Input
-                className="bg-slate-400 border-none font-semibold "
+                className="bg-background/50 border-border font-semibold "
                 placeholder="Enter your username"
                 {...register("username", {
                   required: "username is required !",
@@ -101,12 +104,12 @@ const Page = () => {
                   },
                 })}
               />
-              <p className="text-red-400">{errors.username?.message}</p>
+              <p className="text-destructive">{errors.username?.message}</p>
             </div>
             <div className="flex flex-col gap-2 mt-4">
-              <label className="font-semibold text-white">Password</label>
+              <label className="font-semibold text-card-foreground">Password</label>
               <Input
-                className="bg-slate-400 border-none font-semibold"
+                className="bg-background/50 border-border font-semibold"
                 type="password"
                 placeholder="Enter your password"
                 {...register("password", {
@@ -117,20 +120,20 @@ const Page = () => {
                   },
                 })}
               />
-              <p className="text-red-400">{errors.password?.message}</p>
+              <p className="text-destructive">{errors.password?.message}</p>
             </div>
             <Button
               disabled={loginMutation.isPending}
               type="submit"
-              className="w-full mt-5 cursor-pointer bg-teal-600 hover:bg-teal-700 "
+              className="w-full mt-5 cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground "
             >
               {loginMutation.isPending ? "Logging in" : "Login "}
             </Button>
           </form>
           <CardAction className="flex gap-2 mt-4">
-            <p className="font-sans text-white">Dont have an account ?</p>
+            <p className="font-sans text-card-foreground">Dont have an account ?</p>
             <a
-              className="text-blue-400 cursor-pointer font-bold"
+              className="text-primary cursor-pointer font-bold"
               href="/register"
             >
               Register
@@ -138,7 +141,7 @@ const Page = () => {
           </CardAction>
         </CardContent>
       </Card>
-    </div>
+    </div></div>
   );
 };
 

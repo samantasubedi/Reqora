@@ -5,11 +5,11 @@ import { Icon } from "@iconify/react";
 
 export default function AdminDashboardPage() {
   return (
-    <div className="flex max-w-screen">
+    <div className="flex max-w-screen relative">
       <SidebarMenu />
-       <SidebarTrigger>
-                <Icon icon="charm:menu-hamburger"></Icon>
-              </SidebarTrigger>
+      <SidebarTrigger className="sticky top-0">
+        <Icon icon="charm:menu-hamburger"></Icon>
+      </SidebarTrigger>
       <div className="w-screen">
         <AdminDashboard />
       </div>

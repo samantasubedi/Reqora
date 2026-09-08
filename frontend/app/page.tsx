@@ -48,21 +48,21 @@ export default function Home() {
   return (
     <>
       <GradientBackground className="w-full min-h-screen">
-        <Navbar></Navbar>
+        <Navbar/>
         <div className="flex justify-center mt-20 flex-col items-center">
-          <p className="font-bold text-6xl text-blue-900">
+          <p className="font-bold text-6xl text-primary">
             Streamline Resource Requests.
           </p>
           <AnimatedGradientText
             speed={1.7}
-            colorFrom="#00a870"
-            colorTo="#0600a8"
+            colorFrom="#10b981"
+            colorTo="#0d9488"
             className="font-bold text-6xl"
           >
             Eliminate Chaos.
           </AnimatedGradientText>
         </div>
-        <div className="flex flex-col justify-center items-center gap-2 mt-[2%] text-purple-800 font-semibold">
+        <div className="flex flex-col justify-center items-center gap-2 mt-[2%] text-secondary-foreground font-semibold">
           <p className=" ">
             Reqora brings clarity to every resource request — from laptops to
             software access.
@@ -70,7 +70,7 @@ export default function Home() {
           <p className="">One platform for employees, managers, and admins.</p>
         </div>
         <div className="flex justify-center mt-10">
-          <LiquidButton className="cursor-pointer [--liquid-button-background-color:theme(colors.blue.400)] [--liquid-button-color:theme(colors.green.400)] text-white font-bold text-xl h-15 w-40">
+          <LiquidButton className="cursor-pointer [--liquid-button-background-color:theme(colors.emerald.500)] [--liquid-button-color:theme(colors.teal.600)] text-white font-bold text-xl h-15 w-40">
             Get Started
           </LiquidButton>
         </div>
