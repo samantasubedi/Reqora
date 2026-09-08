@@ -71,23 +71,23 @@ const EmailInviteForm = () => {
   };
 
   return (
-    <Card className="w-[40%] mx-auto shadow-sm border border-teal-200 bg-slate-100  rounded-2xl mt-5">
+    <Card className="w-[40%] mx-auto shadow-sm border border-border bg-card  rounded-2xl mt-5">
   <CardHeader>
-    <CardTitle className="text-center text-2xl text-teal-800 font-bold">Send an invitation Email</CardTitle>
+    <CardTitle className="text-center text-2xl text-primary font-bold">Send an invitation Email</CardTitle>
   </CardHeader>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <CardContent className="p-6">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-md font-medium text-teal-800">
+                <label className="text-md font-medium text-card-foreground">
                   Email Address
                 </label>
                 <Input
                   {...register("email")}
                   placeholder="Enter email"
-                  className="focus:ring-2 focus:ring-teal-400 border-teal-200 bg-white placeholder:text-slate-400"
+                  className="focus:ring-2 focus:ring-primary border-border bg-background placeholder:text-muted-foreground"
                 />
-                <p className="text-sm text-red-500">{errors.email?.message}</p>
+                <p className="text-sm text-destructive">{errors.email?.message}</p>
               </div>
               <RoleAndExpiryTime
                 errors={{
@@ -107,15 +107,15 @@ const EmailInviteForm = () => {
               />
 
               <div className="flex flex-col gap-2">
-                <label className="text-md font-medium text-teal-800">
+                <label className="text-md font-medium text-card-foreground">
                   Message
                 </label>
                 <textarea
                   {...register("description")}
                   rows={3}
                   placeholder="Write a message (optional)"
-                  className="border border-teal-200 rounded-xl p-3 text-sm
-                  focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white placeholder:text-slate-400 resize-none"
+                  className="border border-border rounded-xl p-3 text-sm
+                  focus:outline-none focus:ring-2 focus:ring-primary bg-background placeholder:text-muted-foreground resize-none"
                 />
               </div>
             </div>
@@ -124,7 +124,7 @@ const EmailInviteForm = () => {
           <CardFooter className="p-6 pt-0">
             <Button
               type="submit"
-              className="w-full rounded-xl text-sm font-semibold  hover:shadow-lg  bg-teal-700 hover:bg-teal-600 cursor-pointer text-white"
+              className="w-full rounded-xl text-sm font-semibold  hover:shadow-lg  bg-primary hover:bg-primary/90 cursor-pointer text-primary-foreground"
             >
               Send Invitation
             </Button>

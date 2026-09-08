@@ -39,7 +39,7 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <label className="text-md font-medium text-teal-800">Role</label>
+        <label className="text-md font-medium text-card-foreground">Role</label>
 
         <div className="flex gap-5">
           {roleArray.map((curr) => {
@@ -51,8 +51,8 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
                         transition-all duration-200
                         ${
                           values.role === curr.role.toLowerCase()
-                            ? "bg-teal-800/80 border-teal-500 shadow-md shadow-teal-200"
-                            : "bg-white border-teal-100 hover:bg-teal-50 hover:border-teal-300"
+                            ? "bg-primary border-primary shadow-md shadow-primary/30"
+                            : "bg-card border-border hover:bg-accent hover:border-primary"
                         }`}
                 onClick={() => {
                   values.role = curr.role.toLowerCase();
@@ -61,12 +61,12 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
               >
                 <div>
                   <div
-                    className={`font-semibold text-lg font-sans ${values.role === curr.role.toLowerCase() ? "text-white" : "text-teal-700"}`}
+                    className={`font-semibold text-lg font-sans ${values.role === curr.role.toLowerCase() ? "text-primary-foreground" : "text-primary"}`}
                   >
                     {curr.role}
                   </div>
                   <div
-                    className={`text-sm ${values.role === curr.role.toLowerCase() ? "text-teal-100" : "text-slate-400"}`}
+                    className={`text-sm ${values.role === curr.role.toLowerCase() ? "text-primary-foreground/80" : "text-muted-foreground"}`}
                   >
                     {curr.description}
                   </div>
@@ -75,57 +75,57 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
             );
           })}
         </div>
-        <p className="text-sm text-red-500">{errors?.roleError}</p>
+        <p className="text-sm text-destructive">{errors?.roleError}</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-md font-medium text-teal-800">Expiry Time</label>
+        <label className="text-md font-medium text-card-foreground">Expiry Time</label>
         <div>
           <RadioGroup
             onValueChange={(value) => {
               values.expiryTime = Number(value);
               onChange(values);
             }}
-            className="flex w-full justify-between bg-white p-2 rounded-lg"
+            className="flex w-full justify-between bg-card p-2 rounded-lg"
           >
-            <div className="flex text-teal-800 items-center gap-2">
+            <div className="flex text-foreground items-center gap-2">
               <RadioGroupItem
                 value="180000"
-                className="border border-teal-600 text-teal-600"
+                className="border border-primary text-primary"
               />
               <label className="font-semibold">3 min</label>
             </div>
-            <div className="flex text-teal-800 items-center gap-2">
+            <div className="flex text-foreground items-center gap-2">
               <RadioGroupItem
                 value="300000"
-                className="border border-teal-600 text-teal-600"
+                className="border border-primary text-primary"
               />
               <label className="font-semibold">5 min</label>
             </div>
-            <div className="flex text-teal-800 items-center gap-2">
+            <div className="flex text-foreground items-center gap-2">
               <RadioGroupItem
                 value="600000"
-                className="border border-teal-600 text-teal-600"
+                className="border border-primary text-primary"
               />
               <label className="font-semibold">10 min</label>
             </div>
-            <div className="flex text-teal-800 items-center gap-2">
+            <div className="flex text-foreground items-center gap-2">
               <RadioGroupItem
                 value="1800000"
-                className="border border-teal-600 text-teal-600"
+                className="border border-primary text-primary"
               />
               <label className="font-semibold">30 min</label>
             </div>
-            <div className="flex text-teal-800 items-center gap-2">
+            <div className="flex text-foreground items-center gap-2">
               <RadioGroupItem
                 value="3600000"
-                className="border border-teal-600 text-teal-600"
+                className="border border-primary text-primary"
               />
               <label className="font-semibold">1 hr</label>
             </div>
           </RadioGroup>
         </div>
-        <p className="text-sm text-red-500">{errors?.expiryTimeError}</p>
+        <p className="text-sm text-destructive">{errors?.expiryTimeError}</p>
       </div>
     </div>
   );

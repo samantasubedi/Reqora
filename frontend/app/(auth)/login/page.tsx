@@ -79,7 +79,7 @@ const Page = () => {
   return (
     <div className=" min-h-screen flex flex-col">
     <Navbar/>
-    <div className="flex justify-center  bg-linear-to-l from-auth-gradient-end to-auth-gradient-start flex-1 ">
+    <div className="flex justify-center bg-auth-bg flex-1 ">
       <Card className="w-[30%] h-fit mt-[10%] bg-auth-card-bg backdrop-blur-xl border-auth-card-border shadow-md shadow-black">
         <CardHeader>
           <CardTitle className="text-3xl text-center text-primary">

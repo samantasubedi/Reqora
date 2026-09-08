@@ -30,19 +30,19 @@ const RoleSelector: FC<{
             className={`h-20 flex flex-1 cursor-pointer justify-center items-center px-4 py-2 rounded-xl border
                         transition-all duration-200   ${
                           value === curr.role.toLowerCase()
-                            ? "bg-teal-800/80 border-teal-500 shadow-md shadow-teal-200"
-                            : "bg-white border-teal-100 hover:bg-teal-50 hover:border-teal-300"
+                            ? "bg-primary border-primary shadow-md shadow-primary/30"
+                            : "bg-card border-border hover:bg-accent hover:border-primary"
                         }`}
             onClick={() => onChange(curr.key)}
           >
             <div>
               <div
-                className={`font-semibold text-lg font-sans ${value === curr.role.toLowerCase() ? "text-white" : "text-teal-700"}`}
+                className={`font-semibold text-lg font-sans ${value === curr.role.toLowerCase() ? "text-primary-foreground" : "text-primary"}`}
               >
                 {curr.role}
               </div>
               <div
-                className={`text-sm ${value === curr.role.toLowerCase() ? "text-teal-100" : "text-slate-400"}`}
+                className={`text-sm ${value === curr.role.toLowerCase() ? "text-primary-foreground/80" : "text-muted-foreground"}`}
               >
                 {curr.description}
               </div>

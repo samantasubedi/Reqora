@@ -130,9 +130,8 @@
   --table-border: oklch(0.90 0.025 165);
   --table-selected: oklch(0.93 0.04 165);
 
-  /* Auth page gradient background - very light near-white teal/mint */
-  --auth-gradient-start: oklch(0.96 0.03 185);
-  --auth-gradient-end: oklch(0.96 0.03 160);
+  /* Auth page solid background - near-white mint (light mode) */
+  --auth-bg: oklch(0.96 0.03 170);
 
   /* Auth card - light mint tint (emerald-50) */
   --auth-card-bg: oklch(0.979 0.021 166);
@@ -223,11 +222,10 @@
   --table-border: oklch(0.22 0.02 165);
   --table-selected: oklch(0.24 0.04 165);
 
-  /* Auth page gradient background - deeper teal to emerald for dark mode */
-  --auth-gradient-start: oklch(0.16 0.06 200);
-  --auth-gradient-end: oklch(0.22 0.10 160);
+  /* Auth page solid background - dark charcoal-green (dark mode) */
+  --auth-bg: oklch(0.23 0.02 168);
 
-  /* Auth card glassmorphism - semi-transparent dark */
+  /* Auth card - semi-transparent dark */
   --auth-card-bg: oklch(0.15 0.03 165 / 55%);
   --auth-card-border: oklch(1 0 0 / 10%);
 
@@ -314,8 +312,7 @@
   --color-table-selected: var(--table-selected);
 
   /* Auth page tokens */
-  --color-auth-gradient-start: var(--auth-gradient-start);
-  --color-auth-gradient-end: var(--auth-gradient-end);
+  --color-auth-bg: var(--auth-bg);
   --color-auth-card-bg: var(--auth-card-bg);
   --color-auth-card-border: var(--auth-card-border);
 

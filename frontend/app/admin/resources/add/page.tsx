@@ -124,14 +124,14 @@ const Page = () => {
     { label: "Other", value: "Other" },
   ];
   return (
-    <div className="flex justify-center items-start min-h-screen bg-sky-200 py-12 px-4">
-      <Card className="w-full max-w-2xl shadow-xl border-0 rounded-2xl overflow-hidden bg-blue-100">
-        <div className="h-1.5 bg-linear-to-r from-violet-500 via-indigo-500 to-blue-500" />
+    <div className="flex justify-center items-start min-h-screen bg-background py-12 px-4">
+      <Card className="w-full max-w-2xl shadow-xl border-border rounded-2xl overflow-hidden bg-card">
+        <div className="h-1.5 bg-linear-to-r from-primary to-secondary-foreground" />
         <CardHeader className="text-center px-10 pt-10 pb-6">
-          <CardTitle className="text-4xl font-bold tracking-tight text-slate-800">
+          <CardTitle className="text-4xl font-bold tracking-tight text-card-foreground">
             Add Resource
           </CardTitle>
-          <CardDescription className="text-base text-slate-500 mt-1">
+          <CardDescription className="text-base text-muted-foreground mt-1">
             Fill the resource details below
           </CardDescription>
         </CardHeader>
@@ -141,37 +141,37 @@ const Page = () => {
             className="space-y-5"
           >
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+              <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
                 Resource Name
               </label>
               <Input
                 {...register("resourceName")}
                 placeholder="Enter the resource name"
-                className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+                className="h-11 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
               />
-              <p className="text-xs text-red-500 font-medium">
+              <p className="text-xs text-destructive font-medium">
                 {errors.resourceName?.message}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+                <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
                   Quantity
                 </label>
                 <Input
                   {...register("quantity")}
                   placeholder="e.g. 10"
                   type="select a type"
-                  className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+                  className="h-11 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
                 />
-                <p className="text-xs text-red-500 font-medium">
+                <p className="text-xs text-destructive font-medium">
                   {errors.quantity?.message}
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+                <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
                   Type
                 </label>
                 <SelectBox
@@ -182,7 +182,7 @@ const Page = () => {
                     setValue("type", v);
                   }}
                 />
-                <p className="text-xs text-red-500 font-medium">
+                <p className="text-xs text-destructive font-medium">
                   {errors.type?.message}
                 </p>
               </div>
@@ -190,7 +190,7 @@ const Page = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+                <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
                   Status
                 </label>
 
@@ -203,13 +203,13 @@ const Page = () => {
                   value={getValues("status")}
                 />
 
-                <p className="text-xs text-red-500 font-medium">
+                <p className="text-xs text-destructive font-medium">
                   {errors.status?.message}
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+                <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
                   Department
                 </label>
                 <SelectBox
@@ -220,35 +220,35 @@ const Page = () => {
                   }}
                   value={getValues("department")}
                 />
-                <p className="text-xs text-red-500 font-medium">
+                <p className="text-xs text-destructive font-medium">
                   {errors.department?.message}
                 </p>
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+              <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
                 Location
               </label>
               <Input
                 {...register("location")}
                 placeholder="Enter the resource location"
-                className="h-11  rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+                className="h-11  rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
               />
-              <p className="text-xs text-red-500 font-medium">
+              <p className="text-xs text-destructive font-medium">
                 {errors.location?.message}
               </p>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-slate-700 tracking-wide uppercase">
+              <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
                 Description
               </label>
               <Input
                 {...register("description")}
                 placeholder="Write a description about the resource (optional)"
-                className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+                className="h-11 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
               />
-              <p className="text-xs text-red-500 font-medium">
+              <p className="text-xs text-destructive font-medium">
                 {errors.description?.message}
               </p>
             </div>
@@ -256,7 +256,7 @@ const Page = () => {
             <div className="pt-2">
               <Button
                 type="submit"
-                className="w-full h-11 cursor-pointer rounded-lg bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-200"
+                className="w-full h-11 cursor-pointer rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-200"
               >
                 Submit Resource
               </Button>
