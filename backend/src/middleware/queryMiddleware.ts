@@ -1,13 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { ResourceStatus } from "../generated/prisma/enums";
+import { pageHelper } from "../utils/pageHelper";
 
 export type T_QueryFilters = {
+  // Shared
   search?: string;
-  page: number;
-  limit: number | undefined;
+  skip: number;
+  take: number;
 
   // Resource
-  resourceStatus: ResourceStatus | undefined;
+  status: ResourceStatus | undefined;
+  type: string | undefined;
+  availability: boolean | undefined;
+  availableQuantity: number | undefined;
 };
 
 export const parseQueryFilters = (
@@ -16,16 +21,27 @@ export const parseQueryFilters = (
   next: NextFunction,
 ) => {
   const query = req.query;
+  const { skip, take } = pageHelper({
+    page: Number(query.page),
+    limit: Number(query.limit),
+  });
 
   const parsed: T_QueryFilters = {
     // Shared
     search: query.search ? String(query.search).trim() : undefined,
-    page: query.page ? Number(query.page) : 1,
-    limit: query.limit ? Number(query.limit) : 10,
+    skip,
+    take,
 
     // Resource
-    resourceStatus: query.resourceStatus
+    status: query.resourceStatus
       ? (String(query.resourceStatus) as ResourceStatus)
+      : undefined,
+    type: query.resourceType ? String(query.resourceType) : undefined,
+    availability: query.availability
+      ? query.availability === "true"
+      : undefined,
+    availableQuantity: query.availableQuantity
+      ? Number(query.availableQuantity)
       : undefined,
   };
 

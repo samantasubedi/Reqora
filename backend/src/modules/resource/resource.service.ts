@@ -2,14 +2,33 @@ import { Prisma, ResourceStatus } from "../../generated/prisma/client";
 import { findAllResources } from "./resource.repository";
 
 export const findAllResourcesService = async ({
+  companyId,
   skip,
   take,
-  where,
+  search,
+  status,
+  type,
+  availability,
+  availableQuantity,
 }: {
+  companyId:string,
   skip: number;
   take: number;
-  where: Prisma.resourceWhereInput;
+  search?: string;
+  status?: ResourceStatus;
+  type?: string;
+  availability?: boolean;
+  availableQuantity?: number;
 }) => {
-  const resources = await findAllResources({ skip, take, where });
+  const resources = await findAllResources({
+    companyId,
+    skip,
+    take,
+    search,
+    status,
+    type,
+    availability,
+    availableQuantity,
+  });
   return resources;
 };
