@@ -31,18 +31,9 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import TableEmpty from "./TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
+import { useTableResources } from "../hooks/resourceHooks";
 
-export const ResourceTable = ({
-  resourceData,
-  debouncedSearchText,
-  isLoading,
-  setDebouncedSearchText,
-}: {
-  resourceData?: resourceType[];
-  debouncedSearchText?: string;
-  setDebouncedSearchText: Dispatch<SetStateAction<string>>;
-  isLoading: boolean;
-}) => {
+export const ResourceTable = () => {
   const router = useRouter();
   const defaultTableFields: {
     label: string;
@@ -137,12 +128,14 @@ export const ResourceTable = ({
     }
   };
   const [searchText, setSearchText] = useState("");
+    const [debouncedSearchText, setDebouncedSearchText] = useState("");
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchText(searchText);
     }, 500);
     return () => clearTimeout(timer);
   }, [searchText]);
+  const{isLoading,data,isSuccess}=useTableResources({searchText:debouncedSearchText})
   return (
     <div className="mt-5 mb-5 px-3">
       <Table>
@@ -243,8 +236,8 @@ export const ResourceTable = ({
           <TableSkeleton columnCount={tableFields.length + 1} />
         ) : (
           <TableBody>
-            {resourceData?.length ? (
-              resourceData.map((resource) => {
+            {isSuccess && data.allResources.length ? (
+              data.allResources.map((resource) => {
                 const statusDetails = getStatusDisaplay(resource.status);
                 return (
                   <TableRow

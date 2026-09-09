@@ -3,10 +3,10 @@ import { fetchResourceApi, fetchResourcesApi } from "../apis/resourceApi";
 import { ParamValue } from "next/dist/server/request/params";
 import { T_MutationError } from "@/types/global";
 
-export const useResources = ({ searchText }: { searchText: string }) => {
+export const useResources = () => {
   return useQuery({
-    queryFn: () => fetchResourcesApi({ searchText }),
-    queryKey: ["resourceData",searchText],
+    queryFn: () => fetchResourcesApi({}),
+    queryKey: ["resourceData"],
   });
 };
 export const useResource = (id: ParamValue) => {
@@ -16,5 +16,11 @@ export const useResource = (id: ParamValue) => {
   >({
     queryFn: () => fetchResourceApi(id),
     queryKey: ["resourceDetails", id],
+  });
+};
+export const useTableResources = ({ searchText }: { searchText: string }) => {
+  return useQuery({
+    queryFn: () => fetchResourcesApi({searchText}),
+    queryKey: ["tableResourceData",searchText],
   });
 };

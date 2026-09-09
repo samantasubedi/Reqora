@@ -82,10 +82,8 @@ export const handleLogout = async (router: AppRouterInstance) => {
 };
 
 export const AdminDashboard = () => {
-  const [debouncedSearchText, setDebouncedSearchText] = useState("");
-  const { isError, error, data, isSuccess, isLoading, refetch } = useResources({
-    searchText: debouncedSearchText,
-  });
+
+  const { isError, error, data, isSuccess, isLoading, refetch } = useResources();
 
 
 
@@ -225,10 +223,10 @@ export const AdminDashboard = () => {
           </div>}
 
           <ResourceTable
-          isLoading={isLoading}
-            resourceData={data?.allResources}
-            debouncedSearchText={debouncedSearchText}
-            setDebouncedSearchText={setDebouncedSearchText}
+          // isLoading={isLoading}
+          //   resourceData={data?.allResources}
+          //   debouncedSearchText={debouncedSearchText}
+          //   setDebouncedSearchText={setDebouncedSearchText}
           />
 
       </div>
