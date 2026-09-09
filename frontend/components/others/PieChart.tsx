@@ -62,7 +62,7 @@ export function ChartPieLabel({ data }: propType) {
   //   },
   // ];
   return (
-    <Card className="flex flex-col ">
+    <Card className="flex h-[390px] flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-xl text-teal-800">
           Resource distribution

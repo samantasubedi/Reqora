@@ -14,7 +14,7 @@ import { Check, X, Building2 } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const params = useSearchParams();
@@ -38,7 +38,7 @@ const page = () => {
               withCredentials: true,
             },
           );
-          const { code, message, success ,role} = response.data;
+          const { code, message, success, role } = response.data;
           console.log("this his the response", code, message, success);
           if (success && code == "JOIN_SUCCESSFULL") {
             toast.success(message);
@@ -78,11 +78,11 @@ const page = () => {
           </div>
 
           <CardTitle className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-zinc-100">
-            You've been invited!
+            You&apos;ve been invited!
           </CardTitle>
 
           <CardDescription className="text-base">
-            You've received an invitation to join{" "}
+            You&apos;ve received an invitation to join{" "}
             <span className="font-bold text-teal-600 dark:text-teal-400">
               Our Company
             </span>{" "}
@@ -96,7 +96,7 @@ const page = () => {
 
         <CardContent className="text-center px-8">
           <p className="text-sm leading-relaxed text-slate-500 dark:text-zinc-400">
-            By accepting this invitation, you will get access to your team's
+            By accepting this invitation, you will get access to your team&apos;s
             workspace, shared resources, and active requests.
           </p>
         </CardContent>
@@ -122,4 +122,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

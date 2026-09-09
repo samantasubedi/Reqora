@@ -1,29 +1,27 @@
 "use client";
-import { Check, CircleAlert, LucideIcon, TrendingUp } from "lucide-react";
+import { Check, CircleAlert, LucideIcon, Package, TrendingUp } from "lucide-react";
 import StatCard from "./StatCard";
-import { Book, Package } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { ResourceTable } from "./ResourceTable";
-import axios, { AxiosResponse, isAxiosError } from "axios";
+
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
+
 import { TableError } from "./TableError";
 import TableEmpty from "./TableEmpty";
 import { ChartPieLabel } from "@/components/others/PieChart";
-import {
-  ChartBarLabel,
-  countByStatusType,
-  countByTypeType,
-} from "@/components/others/BarChart";
+import { ChartBarLabel } from "@/components/others/BarChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
 
 import { useResources } from "../hooks/resourceHooks";
 import { DashboardSkeleton } from "./skeletonLoaders/DahsboardSkeleton";
+import axios from "axios";
+import { StatCardsSkeleton } from "./skeletonLoaders/statCardSkeleton";
+import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
+import { EmptyChart } from "./emptyStates/emptyChart";
 export enum ResourceStatus {
   available = "available",
   inUse = "inUse",
@@ -84,18 +82,12 @@ export const handleLogout = async (router: AppRouterInstance) => {
 };
 
 export const AdminDashboard = () => {
-  const { isError, error, data, isSuccess, isLoading, refetch } =
-    useResources();
+  const [debouncedSearchText, setDebouncedSearchText] = useState("");
+  const { isError, error, data, isSuccess, isLoading, refetch } = useResources({
+    searchText: debouncedSearchText,
+  });
 
-  useEffect(() => {
-    if (isError) {
-      if (isAxiosError(error)) {
-        toast.error(error.response?.data.message);
-      } else {
-        toast.error(error.message);
-      }
-    }
-  }, [isError, error]);
+
 
   if (isSuccess) {
     console.log(data, "this is resource");
@@ -144,7 +136,7 @@ export const AdminDashboard = () => {
   ];
 
   const pieChartData = isSuccess
-    ? data.countsByStatus
+    ? data?.countsByStatus
         .filter((curr: { _count: number; status: string }) => {
           return curr.status != "all";
         })
@@ -177,67 +169,68 @@ export const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex justify-between m-3">
-          {isSuccess &&
-            AdminStat.map((curr, index) => {
-              const currentStatus = data.countsByStatus.find(
-                (i: { _count: number; status: string }) => {
-                  return i.status === curr.statusKey;
-                },
-              );
+          {isLoading?<StatCardsSkeleton/>:AdminStat.map((curr) => {
+            const countsByStatus = data?.countsByStatus ?? [];
+            const currentCount =
+              countsByStatus.find(
+                (i: { _count: number; status: string }) =>
+                  i.status === curr.statusKey,
+              )?._count ?? curr.number;
+            const allCount =
+              countsByStatus.find(
+                (i: { _count: number; status: string }) =>
+                  i.status === "all",
+              )?._count ?? 0;
+            const subText =
+              allCount > 0
+                ? `${((currentCount / allCount) * 100).toFixed(2)}% of total`
+                : "0.00% of total";
 
-              if (!currentStatus) return;
-
-              const allCount = data.countsByStatus.find(
-                (i: { _count: number; status: string }) => {
-                  return i.status === "all";
-                },
-              )?._count;
-
-              if (!allCount) return;
-
-              const subText = `${((currentStatus?._count / allCount) * 100).toFixed(2)}% of total`;
-
-              return (
-                <StatCard
-                  key={index}
-                  statusKey={curr.statusKey}
-                  title={curr.title}
-                  number={currentStatus._count}
-                  IconName={curr.IconName}
-                  subtext={subText}
-                  bgColor={curr.bgColor}
-                  textColor={curr.textColor}
-                  borderColor={curr.borderColor}
-                ></StatCard>
-              );
-            })}
+            return (
+              <StatCard
+                key={curr.statusKey}
+                statusKey={curr.statusKey}
+                title={curr.title}
+                number={currentCount}
+                IconName={curr.IconName}
+                subtext={subText}
+                bgColor={curr.bgColor}
+                textColor={curr.textColor}
+                borderColor={curr.borderColor}
+              ></StatCard>
+            );
+          })}
         </div>
-        <div className="flex justify-evenly items-center">
-          {isSuccess && (
+
+       {isLoading?
+         <div className="flex justify-evenly items-center">
+               <ChartSkeleton />
+               <ChartSkeleton />
+             </div>
+       
+      :  isSuccess ?<div className="flex justify-evenly items-center">
+        
             <div className="w-[40%]">
               <ChartPieLabel data={pieChartData} />
             </div>
-          )}
+          
           {data?.countsByType && (
             <div className="w-[40%]">
               <ChartBarLabel chartData={data.countsByType} />
             </div>
           )}
-        </div>
+        </div>:<div className="flex justify-evenly items-center">
+          <EmptyChart/>
+          <EmptyChart/>
+          </div>}
 
-        {isLoading ? (
-          <DashboardSkeleton/>
-        ) : isError ? (
-          <TableError
-            onRetry={() => {
-              refetch();
-            }}
+          <ResourceTable
+          isLoading={isLoading}
+            resourceData={data?.allResources}
+            debouncedSearchText={debouncedSearchText}
+            setDebouncedSearchText={setDebouncedSearchText}
           />
-        ) : data?.allResources.length ? (
-          <ResourceTable resourceData={data.allResources} />
-        ) : (
-          <TableEmpty />
-        )}
+
       </div>
     </>
   );

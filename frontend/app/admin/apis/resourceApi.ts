@@ -6,14 +6,24 @@ import {
 } from "@/components/others/BarChart";
 import { ParamValue } from "next/dist/server/request/params";
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-export const fetchResourcesApi = async () => {
+export const fetchResourcesApi = async ({
+  searchText,
+}: {
+  searchText?: string;
+}) => {
+  let reqUrl;
+  if (searchText) {
+    reqUrl = `${backendUrl}/resources?search=${searchText}`;
+  } else {
+    reqUrl = `${backendUrl}/resources`;
+  }
   const response: AxiosResponse<{
     success: boolean;
     message: string;
     allResources: resourceType[];
     countsByType: countByTypeType;
     countsByStatus: countByStatusType;
-  }> = await axios.get(`${backendUrl}/resources`, { withCredentials: true });
+  }> = await axios.get(reqUrl, { withCredentials: true });
   return response.data;
 };
 export const fetchResourceApi = async (id: ParamValue) => {

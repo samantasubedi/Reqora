@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -28,11 +28,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import TableEmpty from "./TableEmpty";
+import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 
 export const ResourceTable = ({
   resourceData,
+  debouncedSearchText,
+  isLoading,
+  setDebouncedSearchText,
 }: {
-  resourceData: resourceType[];
+  resourceData?: resourceType[];
+  debouncedSearchText?: string;
+  setDebouncedSearchText: Dispatch<SetStateAction<string>>;
+  isLoading: boolean;
 }) => {
   const router = useRouter();
   const defaultTableFields: {
@@ -127,11 +136,29 @@ export const ResourceTable = ({
       setTableFields(newFields);
     }
   };
-
+  const [searchText, setSearchText] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchText]);
   return (
-    <div className="mt-5 px-3">
+    <div className="mt-5 mb-5 px-3">
       <Table>
         <TableHeader>
+          <TableRow>
+            <TableHead colSpan={tableFields.length + 1}>
+              <Input
+                placeholder="Search by resource Name"
+                className="w-[50%]"
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                }}
+              ></Input>
+            </TableHead>
+          </TableRow>
           <TableRow>
             {tableFields.map((cur) => (
               <TableHead key={cur.key}>{cur.label}</TableHead>
@@ -212,51 +239,61 @@ export const ResourceTable = ({
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {resourceData.map((resource) => {
-            const statusDetails = getStatusDisaplay(resource.status);
-            return (
-              <TableRow
-                key={resource.id}
-                onClick={() => router.push(`/admin/resources/${resource.id}`)}
-              >
-                {tableFields.map((field) => {
-                  return (
-                    <TableCell key={field.key}>
-                      {field.render(resource)}
-                    </TableCell>
-                  );
-                })}
+        {isLoading ? (
+          <TableSkeleton columnCount={tableFields.length + 1} />
+        ) : (
+          <TableBody>
+            {resourceData?.length ? (
+              resourceData.map((resource) => {
+                const statusDetails = getStatusDisaplay(resource.status);
+                return (
+                  <TableRow
+                    key={resource.id}
+                    onClick={() =>
+                      router.push(`/admin/resources/${resource.id}`)
+                    }
+                  >
+                    {tableFields.map((field) => {
+                      return (
+                        <TableCell key={field.key}>
+                          {field.render(resource)}
+                        </TableCell>
+                      );
+                    })}
 
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <EllipsisVertical />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => {
-                          router.push(`/resources/${resource.id}`);
-                        }}
-                      >
-                        <View className="text-blue-500" /> view Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
-                        <Edit className="text-yellow-500" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
-                        <Delete className="text-red-500" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <EllipsisVertical />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => {
+                              router.push(`/resources/${resource.id}`);
+                            }}
+                          >
+                            <View className="text-blue-500" /> view Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
+                            <Edit className="text-yellow-500" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
+                            <Delete className="text-red-500" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableEmpty colSpan={tableFields.length + 1} />
+            )}
+          </TableBody>
+        )}
       </Table>
     </div>
   );

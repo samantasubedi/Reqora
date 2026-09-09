@@ -40,7 +40,7 @@ const chartConfig = {
 export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
   console.log(chartData);
   return (
-    <Card>
+    <Card className="h-[390px]">
       <CardHeader>
         <CardTitle>Bar Chart - Label</CardTitle>
         <CardDescription></CardDescription>

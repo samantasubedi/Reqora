@@ -1,13 +1,10 @@
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { Plus, FolderOpen } from "lucide-react";
 import { Icon } from "@iconify/react";
 
-export default function TableEmpty() {
+export default function TableEmpty({ colSpan }: { colSpan: number }) {
   return (
-    <div className="w-full">
-      <Card className="border border-dashed border-teal-300 bg-linear-to-br from-teal-50 to-blue-50">
-        <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+    <tr>
+      <td colSpan={colSpan} className="p-0">
+        <div className="flex min-h-[280px] w-full flex-col items-center justify-center border border-dashed border-teal-300 bg-linear-to-br from-teal-50 to-blue-50 px-6 py-12 text-center">
           <div className="mb-6 p-4 bg-white rounded-full shadow-sm">
             <Icon
               icon="material-symbols:folder-open-rounded"
@@ -32,7 +29,7 @@ export default function TableEmpty() {
             Add resource
           </button>
         </div>
-      </Card>
-    </div>
+      </td>
+    </tr>
   );
 }

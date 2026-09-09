@@ -1,66 +1,17 @@
 import { Skeleton } from "@/components/ui/skeleton";
-const tableHeaders = [
-  "ID",
-  "Resource Name",
-  "Type",
-  "Status",
-  "Department",
-  "Location",
-  "Availability",
-  "Actions",
-];
-export function TableSkeleton() {
+
+export function TableSkeleton({ columnCount }: { columnCount: number }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-accent">
-            {tableHeaders.map((header) => (
-              <th
-                key={header}
-                className="border border-slate-200/50 px-4 py-3 text-left"
-              >
-                <Skeleton className="h-4 w-20" />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: 10 }).map(
-            (
-              _,
-              index, //forms an empty array of length 10
-            ) => (
-              <tr key={index} className="border-b border-slate-200/50">
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-10" />
-                </td>
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-28" />
-                </td>
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-16" />
-                </td>
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-14" />
-                </td>
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-20" />
-                </td>
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-16" />
-                </td>
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-24" />
-                </td>
-                <td className="border border-slate-200/50 px-4 py-3">
-                  <Skeleton className="h-4 w-14" />
-                </td>
-              </tr>
-            ),
-          )}
-        </tbody>
-      </table>
-    </div>
+    <tbody>
+      {Array.from({ length: 10 }).map((_, rowIndex) => (
+        <tr key={rowIndex} className="border-b border-slate-200/50">
+          {Array.from({ length: columnCount }).map((_, columnIndex) => (
+            <td key={columnIndex} className="px-4 py-3">
+              <Skeleton className="h-4 w-full max-w-28" />
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
   );
 }
