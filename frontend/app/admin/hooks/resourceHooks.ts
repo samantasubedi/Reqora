@@ -22,13 +22,15 @@ export const useResource = (id: ParamValue) => {
 export const useTableResources = ({
   searchText,
   filters,
+  page,
 }: {
   searchText: string;
   filters: FilterValues;
+  page: number;
 }) => {
-  
+  const pageNumber = String(page);
   return useQuery({
-    queryFn: () => fetchResourcesApi({searchText,filters}),
-    queryKey: ["tableResourceData",searchText,filters],
+    queryFn: () => fetchResourcesApi({ searchText, filters, page: pageNumber }),
+    queryKey: ["tableResourceData", searchText, filters, page],
   });
 };

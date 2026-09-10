@@ -4,6 +4,7 @@ import {
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -168,10 +169,17 @@ export const ResourceTable = () => {
     },
   ];
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const { isLoading, data, isSuccess } = useTableResources({
     searchText: debouncedSearchText,
     filters,
+    page: currentPage,
   });
+  let TotalPages;
+  if (data?.success) {
+    TotalPages = Array.from({ length: data.totalPages });
+    console.log("this is totlal pages array", TotalPages);
+  }
   return (
     <div className="mt-5 mb-5 px-3">
       <Table>
@@ -326,6 +334,15 @@ export const ResourceTable = () => {
             )}
           </TableBody>
         )}
+        <TableFooter className="flex gap-5">
+          {TotalPages?.map((_, index) => {
+            return (
+              <Button key={index} onClick={() => setCurrentPage(index + 1)}>
+                {index + 1}
+              </Button>
+            );
+          })}
+        </TableFooter>
       </Table>
     </div>
   );
