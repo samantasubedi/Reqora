@@ -1,5 +1,11 @@
 "use client";
-import { Check, CircleAlert, LucideIcon, Package, TrendingUp } from "lucide-react";
+import {
+  Check,
+  CircleAlert,
+  LucideIcon,
+  Package,
+  TrendingUp,
+} from "lucide-react";
 import StatCard from "./StatCard";
 
 import { ResourceTable } from "./ResourceTable";
@@ -11,7 +17,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { useEffect, useState } from "react";
 
 import { TableError } from "./TableError";
-import TableEmpty from "./TableEmpty";
+import TableEmpty from "./emptyStates/TableEmpty";
 import { ChartPieLabel } from "@/components/others/PieChart";
 import { ChartBarLabel } from "@/components/others/BarChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
@@ -82,10 +88,8 @@ export const handleLogout = async (router: AppRouterInstance) => {
 };
 
 export const AdminDashboard = () => {
-
-  const { isError, error, data, isSuccess, isLoading, refetch } = useResources();
-
-
+  const { isError, error, data, isSuccess, isLoading, refetch } =
+    useResources();
 
   if (isSuccess) {
     console.log(data, "this is resource");
@@ -167,68 +171,72 @@ export const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex justify-between m-3">
-          {isLoading?<StatCardsSkeleton/>:AdminStat.map((curr) => {
-            const countsByStatus = data?.countsByStatus ?? [];
-            const currentCount =
-              countsByStatus.find(
-                (i: { _count: number; status: string }) =>
-                  i.status === curr.statusKey,
-              )?._count ?? curr.number;
-            const allCount =
-              countsByStatus.find(
-                (i: { _count: number; status: string }) =>
-                  i.status === "all",
-              )?._count ?? 0;
-            const subText =
-              allCount > 0
-                ? `${((currentCount / allCount) * 100).toFixed(2)}% of total`
-                : "0.00% of total";
+          {isLoading ? (
+            <StatCardsSkeleton />
+          ) : (
+            AdminStat.map((curr) => {
+              const countsByStatus = data?.countsByStatus ?? [];
+              const currentCount =
+                countsByStatus.find(
+                  (i: { _count: number; status: string }) =>
+                    i.status === curr.statusKey,
+                )?._count ?? curr.number;
+              const allCount =
+                countsByStatus.find(
+                  (i: { _count: number; status: string }) => i.status === "all",
+                )?._count ?? 0;
+              const subText =
+                allCount > 0
+                  ? `${((currentCount / allCount) * 100).toFixed(2)}% of total`
+                  : "0.00% of total";
 
-            return (
-              <StatCard
-                key={curr.statusKey}
-                statusKey={curr.statusKey}
-                title={curr.title}
-                number={currentCount}
-                IconName={curr.IconName}
-                subtext={subText}
-                bgColor={curr.bgColor}
-                textColor={curr.textColor}
-                borderColor={curr.borderColor}
-              ></StatCard>
-            );
-          })}
+              return (
+                <StatCard
+                  key={curr.statusKey}
+                  statusKey={curr.statusKey}
+                  title={curr.title}
+                  number={currentCount}
+                  IconName={curr.IconName}
+                  subtext={subText}
+                  bgColor={curr.bgColor}
+                  textColor={curr.textColor}
+                  borderColor={curr.borderColor}
+                ></StatCard>
+              );
+            })
+          )}
         </div>
 
-       {isLoading?
-         <div className="flex justify-evenly items-center">
-               <ChartSkeleton />
-               <ChartSkeleton />
-             </div>
-       
-      :  isSuccess ?<div className="flex justify-evenly items-center">
-        
+        {isLoading ? (
+          <div className="flex justify-evenly items-center">
+            <ChartSkeleton />
+            <ChartSkeleton />
+          </div>
+        ) : isSuccess ? (
+          <div className="flex justify-evenly items-center">
             <div className="w-[40%]">
               <ChartPieLabel data={pieChartData} />
             </div>
-          
-          {data?.countsByType && (
-            <div className="w-[40%]">
-              <ChartBarLabel chartData={data.countsByType} />
-            </div>
-          )}
-        </div>:<div className="flex justify-evenly items-center">
-          <EmptyChart/>
-          <EmptyChart/>
-          </div>}
 
-          <ResourceTable
-          // isLoading={isLoading}
-          //   resourceData={data?.allResources}
-          //   debouncedSearchText={debouncedSearchText}
-          //   setDebouncedSearchText={setDebouncedSearchText}
-          />
+            {data?.countsByType && (
+              <div className="w-[40%]">
+                <ChartBarLabel chartData={data.countsByType} />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex justify-evenly items-center">
+            <EmptyChart />
+            <EmptyChart />
+          </div>
+        )}
 
+        <ResourceTable
+        // isLoading={isLoading}
+        //   resourceData={data?.allResources}
+        //   debouncedSearchText={debouncedSearchText}
+        //   setDebouncedSearchText={setDebouncedSearchText}
+        />
       </div>
     </>
   );

@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Delete, Edit, EllipsisVertical, View } from "lucide-react";
+import { Delete, Edit, EllipsisVertical, FilterIcon, View } from "lucide-react";
 import {
   ResourceStatus,
   resourceType,
@@ -29,9 +29,11 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import TableEmpty from "./TableEmpty";
+import TableEmpty from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
+import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
+// import Filter, { filterProps } from "@/components/global/Filter";
 
 export const ResourceTable = () => {
   const router = useRouter();
@@ -128,14 +130,31 @@ export const ResourceTable = () => {
     }
   };
   const [searchText, setSearchText] = useState("");
-    const [debouncedSearchText, setDebouncedSearchText] = useState("");
+  const [debouncedSearchText, setDebouncedSearchText] = useState("");
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchText(searchText);
     }, 500);
     return () => clearTimeout(timer);
   }, [searchText]);
-  const{isLoading,data,isSuccess}=useTableResources({searchText:debouncedSearchText})
+  const [filters, setFilters] = useState<FilterValues>({});
+  const dummyFilter: FilterConfig[] = [
+    {
+      key: "resourceStatus",
+      title: "Status",
+      type: "dropdown",
+      multiple: true,
+      options: [
+        { label: "Available", value: "available" },
+        { label: "In use", value: "inUse" },
+        { label: "Under Maintenance", value: "underMaintainence" },
+      ],
+    },
+  ];
+  const { isLoading, data, isSuccess } = useTableResources({
+    searchText: debouncedSearchText,
+    filters,
+  });
   return (
     <div className="mt-5 mb-5 px-3">
       <Table>
@@ -150,6 +169,7 @@ export const ResourceTable = () => {
                   setSearchText(e.target.value);
                 }}
               ></Input>
+              <Filter filters={dummyFilter} setFilters={setFilters} />
             </TableHead>
           </TableRow>
           <TableRow>
