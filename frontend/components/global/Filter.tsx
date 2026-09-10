@@ -46,7 +46,7 @@ const Filter = ({ filters, setFilters }: FilterProps) => {
   const handleSelectToggle = (
     filterKey: string,
     optionValue: string,
-    multiple?: boolean
+    multiple?: boolean,
   ) => {
     setStaged((prev) => {
       if (multiple) {
@@ -75,8 +75,9 @@ const Filter = ({ filters, setFilters }: FilterProps) => {
   const handleApply = () => {
     const cleaned = Object.fromEntries(
       Object.entries(staged).filter(
-        ([, v]) => v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0)
-      )
+        ([, v]) =>
+          v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0),
+      ),
     );
     setFilters(cleaned);
     setAppliedCount(Object.keys(cleaned).length);
@@ -91,18 +92,21 @@ const Filter = ({ filters, setFilters }: FilterProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 bg-secondary!">
           Filters
           <ListFilterPlus className="h-4 w-4" />
           {appliedCount > 0 && (
-            <Badge variant="secondary" className="ml-1 rounded-full px-1.5 py-0 text-xs">
+            <Badge
+              variant="secondary"
+              className="ml-1 rounded-full px-1.5 py-0 text-xs"
+            >
               {appliedCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-72">
+      <PopoverContent className="w-100">
         <div className="flex flex-col gap-4">
           {filters.map((filter) => (
             <div key={filter.key} className="flex flex-col gap-2">
@@ -111,9 +115,9 @@ const Filter = ({ filters, setFilters }: FilterProps) => {
               {filter.type === "select" && filter.multiple && (
                 <div className="flex flex-col gap-1.5">
                   {filter.options?.map((option) => {
-                    const checked = ((staged[filter.key] as string[]) || []).includes(
-                      option.value
-                    );
+                    const checked = (
+                      (staged[filter.key] as string[]) || []
+                    ).includes(option.value);
                     return (
                       <label
                         key={option.value}
@@ -155,9 +159,11 @@ const Filter = ({ filters, setFilters }: FilterProps) => {
               {filter.type === "dropdown" && (
                 <Select
                   value={(staged[filter.key] as string) || ""}
-                  onValueChange={(value) => handleDropdownChange(filter.key, value)}
+                  onValueChange={(value) =>
+                    handleDropdownChange(filter.key, value)
+                  }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder={filter.placeholder ?? "Select"} />
                   </SelectTrigger>
                   <SelectContent>
@@ -174,14 +180,16 @@ const Filter = ({ filters, setFilters }: FilterProps) => {
                 <Input
                   placeholder={filter.placeholder}
                   value={(staged[filter.key] as string) || ""}
-                  onChange={(e) => handleInputChange(filter.key, e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(filter.key, e.target.value)
+                  }
                 />
               )}
             </div>
           ))}
 
           <div className="flex justify-between gap-2 pt-2 border-t">
-            <Button variant="ghost" size="sm" onClick={handleReset}>
+            <Button variant="destructive" size="sm" onClick={handleReset}>
               Reset
             </Button>
             <Button size="sm" onClick={handleApply}>

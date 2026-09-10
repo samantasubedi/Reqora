@@ -33,7 +33,6 @@ import TableEmpty from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
-// import Filter, { filterProps } from "@/components/global/Filter";
 
 export const ResourceTable = () => {
   const router = useRouter();
@@ -138,19 +137,37 @@ export const ResourceTable = () => {
     return () => clearTimeout(timer);
   }, [searchText]);
   const [filters, setFilters] = useState<FilterValues>({});
-  const dummyFilter: FilterConfig[] = [
+  const tableFilter: FilterConfig[] = [
     {
       key: "resourceStatus",
       title: "Status",
       type: "dropdown",
-      multiple: true,
       options: [
         { label: "Available", value: "available" },
         { label: "In use", value: "inUse" },
         { label: "Under Maintenance", value: "underMaintainence" },
       ],
     },
+    {
+      key: "resourceTypeSearch",
+      title: "Type",
+      type: "input",
+      placeholder: "Search by resource type",
+    },
+    {
+      key: "resourceDepartmentSearch",
+      title: "Department",
+      type: "input",
+      placeholder: "Search by resource department",
+    },
+    {
+      key: "resourceAvailableQuantity",
+      title: "Available Quantity",
+      type: "input",
+      placeholder: "Min available quantity",
+    },
   ];
+
   const { isLoading, data, isSuccess } = useTableResources({
     searchText: debouncedSearchText,
     filters,
@@ -160,16 +177,18 @@ export const ResourceTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead colSpan={tableFields.length + 1}>
-              <Input
-                placeholder="Search by resource Name"
-                className="w-[50%]"
-                value={searchText}
-                onChange={(e) => {
-                  setSearchText(e.target.value);
-                }}
-              ></Input>
-              <Filter filters={dummyFilter} setFilters={setFilters} />
+            <TableHead className="p-2" colSpan={tableFields.length + 1}>
+              <div className="flex justify-end gap-5">
+                <Input
+                  placeholder="Search by resource Name"
+                  className="w-[50%] bg-secondary!"
+                  value={searchText}
+                  onChange={(e) => {
+                    setSearchText(e.target.value);
+                  }}
+                ></Input>
+                <Filter filters={tableFilter} setFilters={setFilters} />
+              </div>
             </TableHead>
           </TableRow>
           <TableRow>
@@ -180,9 +199,9 @@ export const ResourceTable = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className="h-9 w-9 border-border/60 hover:bg-muted/60"
+                    className="h-9 w-9 border-border/60 hover:bg-muted/60 bg-secondary!"
                   >
                     <Icon icon="eva:options-2-fill" className="h-4 w-4" />
                   </Button>
