@@ -12,9 +12,10 @@ export type T_QueryFilters = {
 
   // Resource
   resourceStatus: ResourceStatus | undefined;
-  resourceType: string | undefined;
-  resourceAvailability: boolean | undefined;
+  resourceTypeSearch: string | undefined;
+
   resourceAvailableQuantity: number | undefined;
+  resourceDepartmentSearch: string | undefined;
 };
 
 export const parseQueryFilters = (
@@ -40,12 +41,15 @@ export const parseQueryFilters = (
     resourceStatus: query.resourceStatus
       ? (String(query.resourceStatus) as ResourceStatus)
       : undefined,
-    resourceType: query.resourceType ? String(query.resourceType) : undefined,
-    resourceAvailability: query.availability
-      ? query.availability === "true"
+    resourceTypeSearch: query.resourceTypeSearch
+      ? String(query.resourceTypeSearch)
       : undefined,
-    resourceAvailableQuantity: query.availableQuantity
-      ? Number(query.availableQuantity)
+
+    resourceAvailableQuantity: query.resourceAvailableQuantity
+      ? Number(query.resourceAvailableQuantity)
+      : undefined,
+    resourceDepartmentSearch: query.resourceDepartmentSearch
+      ? String(query.resourceDepartmentSearch)
       : undefined,
   };
 

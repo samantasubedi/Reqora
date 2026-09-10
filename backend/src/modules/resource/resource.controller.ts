@@ -12,8 +12,9 @@ export const getAllResources = async (req: Request, res: Response) => {
       pageLimit,
       search,
       resourceStatus,
-      resourceType,
-      resourceAvailability,
+      resourceTypeSearch,
+      resourceDepartmentSearch,
+     
       resourceAvailableQuantity,
     } = res.locals.query as T_QueryFilters;
 
@@ -26,8 +27,8 @@ export const getAllResources = async (req: Request, res: Response) => {
     } = await findAllResourcesService({
       companyId,
       status: resourceStatus,
-      type: resourceType,
-      availability: resourceAvailability,
+     resourceTypeSearch,
+    resourceDepartmentSearch,
       availableQuantity: resourceAvailableQuantity,
       search,
       skip,

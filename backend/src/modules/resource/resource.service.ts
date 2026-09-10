@@ -8,8 +8,9 @@ export const findAllResourcesService = async ({
   take,
   search,
   status,
-  type,
-  availability,
+  resourceTypeSearch,
+  resourceDepartmentSearch,
+
   availableQuantity,
 }: {
   companyId: string;
@@ -17,8 +18,8 @@ export const findAllResourcesService = async ({
   take: number;
   search?: string;
   status?: ResourceStatus;
-  type?: string;
-  availability?: boolean;
+  resourceTypeSearch?: string;
+  resourceDepartmentSearch?: string;
   availableQuantity?: number;
 }) => {
   const resources = await findAllResources({
@@ -27,8 +28,8 @@ export const findAllResourcesService = async ({
     take,
     search,
     status,
-    type,
-    availability,
+    resourceTypeSearch,
+    resourceDepartmentSearch,
     availableQuantity,
   });
   const countsByStatus = await prisma.resource.groupBy({
@@ -46,12 +47,18 @@ export const findAllResourcesService = async ({
     where: {
       companyId,
       status,
-      type,
-      availability,
-      availableQuantity,
+      type: { contains: resourceTypeSearch },
+      department: { contains: resourceDepartmentSearch },
+      availableQuantity: { gt: availableQuantity },
       name: { contains: search },
     },
   });
   const totalPages = Math.ceil(totalCount / take);
-  return { resources, countsByStatus, countsByType, totalPages,totalResources:totalCountWithoutFilters };
+  return {
+    resources,
+    countsByStatus,
+    countsByType,
+    totalPages,
+    totalResources: totalCountWithoutFilters,
+  };
 };

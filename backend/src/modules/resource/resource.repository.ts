@@ -10,8 +10,8 @@ export const findAllResources = async ({
   take,
   search,
   status,
-  type,
-  availability,
+  resourceDepartmentSearch,
+  resourceTypeSearch,
   availableQuantity,
 }: {
   companyId: string;
@@ -19,8 +19,9 @@ export const findAllResources = async ({
   take: number;
   search?: string;
   status?: ResourceStatus;
-  type?: string;
-  availability?: boolean;
+  resourceTypeSearch?: string;
+  resourceDepartmentSearch?: string;
+
   availableQuantity?: number;
 }) => {
   return await prisma.resource.findMany({
@@ -29,9 +30,9 @@ export const findAllResources = async ({
     where: {
       companyId,
       status,
-      type,
-      availability,
-      availableQuantity,
+      type: { contains: resourceTypeSearch },
+      department: { contains: resourceDepartmentSearch },
+      availableQuantity: { gte: availableQuantity },
       name: { contains: search },
     },
   });
