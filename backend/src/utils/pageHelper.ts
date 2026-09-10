@@ -1,3 +1,5 @@
+import { getPackedSettings } from "node:http2";
+
 export const pageHelper = ({
   page,
   limit,
@@ -15,5 +17,5 @@ export const pageHelper = ({
   }
   const skip = (pageNumber - 1) * pageLimit;
   const take = pageLimit;
-  return { skip, take };
+  return { skip, take ,pageNumber,pageLimit};
 };

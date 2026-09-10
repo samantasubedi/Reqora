@@ -8,19 +8,27 @@ export const getAllResources = async (req: Request, res: Response) => {
     const {
       skip,
       take,
+      pageNumber,
+      pageLimit,
       search,
-      status,
-      type,
-      availability,
-      availableQuantity,
+      resourceStatus,
+      resourceType,
+      resourceAvailability,
+      resourceAvailableQuantity,
     } = res.locals.query as T_QueryFilters;
 
-    const resources = await findAllResourcesService({
+    const {
+      resources,
+      countsByStatus,
+      countsByType,
+      totalPages,
+      totalResources,
+    } = await findAllResourcesService({
       companyId,
-      status,
-      type,
-      availability,
-      availableQuantity,
+      status: resourceStatus,
+      type: resourceType,
+      availability: resourceAvailability,
+      availableQuantity: resourceAvailableQuantity,
       search,
       skip,
       take,
@@ -40,25 +48,17 @@ export const getAllResources = async (req: Request, res: Response) => {
       updatedAt: curr.updatedAt,
     }));
 
-    const countsByStatus = await prisma.resource.groupBy({
-      by: ["status"],
-      _count: true,
-    });
-
-    const countsByType = await prisma.resource.groupBy({
-      by: ["type"],
-      _count: true,
-    });
-
     res.json({
       success: true,
       message: "got all resources",
       allResources,
       countsByStatus: [
         ...countsByStatus,
-        { _count: allResources.length, status: "all" },
+        { _count: totalResources, status: "all" },
       ],
       countsByType,
+      totalPages,
+      currentPage: pageNumber,
     });
   } catch (err) {
     console.log(err);

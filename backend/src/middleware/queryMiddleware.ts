@@ -7,12 +7,14 @@ export type T_QueryFilters = {
   search?: string;
   skip: number;
   take: number;
+  pageNumber: number;
+  pageLimit: number;
 
   // Resource
-  status: ResourceStatus | undefined;
-  type: string | undefined;
-  availability: boolean | undefined;
-  availableQuantity: number | undefined;
+  resourceStatus: ResourceStatus | undefined;
+  resourceType: string | undefined;
+  resourceAvailability: boolean | undefined;
+  resourceAvailableQuantity: number | undefined;
 };
 
 export const parseQueryFilters = (
@@ -21,7 +23,7 @@ export const parseQueryFilters = (
   next: NextFunction,
 ) => {
   const query = req.query;
-  const { skip, take } = pageHelper({
+  const { skip, take, pageNumber, pageLimit } = pageHelper({
     page: Number(query.page),
     limit: Number(query.limit),
   });
@@ -31,16 +33,18 @@ export const parseQueryFilters = (
     search: query.search ? String(query.search).trim() : undefined,
     skip,
     take,
+    pageNumber,
+    pageLimit,
 
     // Resource
-    status: query.resourceStatus
+    resourceStatus: query.resourceStatus
       ? (String(query.resourceStatus) as ResourceStatus)
       : undefined,
-    type: query.resourceType ? String(query.resourceType) : undefined,
-    availability: query.availability
+    resourceType: query.resourceType ? String(query.resourceType) : undefined,
+    resourceAvailability: query.availability
       ? query.availability === "true"
       : undefined,
-    availableQuantity: query.availableQuantity
+    resourceAvailableQuantity: query.availableQuantity
       ? Number(query.availableQuantity)
       : undefined,
   };
