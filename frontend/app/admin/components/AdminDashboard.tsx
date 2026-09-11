@@ -187,7 +187,9 @@ export const AdminDashboard = () => {
   ];
   const pieChartData = isSuccess
     ? (data?.countsByStatus ?? [])
-        .filter((item: { _count: number; status: string }) => item.status !== "all")
+        .filter(
+          (item: { _count: number; status: string }) => item.status !== "all",
+        )
         .map((item: { _count: number; status: string }) => ({
           status: item.status,
           Resources: item._count,
@@ -208,81 +210,79 @@ export const AdminDashboard = () => {
           </h1>
           <ThemeToggler />
         </div>
-        <div className="flex justify-between px-2">
-          <p className="m-2 font-semibold text-text-primary">
-            Monitor and manage all organization resource
-          </p>
-        </div>
+
         <section className="space-y-4">
-          <h2 className="border-b pb-2 text-2xl font-semibold text-primary">
+          <h2 className="border-b pb-2 text-2xl font-semibold text-foreground">
             Resource Overview
           </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {isLoading ? (
+              <StatCardsSkeleton />
+            ) : (
+              resourceStat.map((curr) => {
+                const countsByStatus = data?.countsByStatus ?? [];
+                const currentCount =
+                  countsByStatus.find(
+                    (i: { _count: number; status: string }) =>
+                      i.status === curr.statusKey,
+                  )?._count ?? curr.number;
+                const allCount =
+                  countsByStatus.find(
+                    (i: { _count: number; status: string }) =>
+                      i.status === "all",
+                  )?._count ?? 0;
+                const subText =
+                  allCount > 0
+                    ? `${((currentCount / allCount) * 100).toFixed(2)}% of total`
+                    : "0.00% of total";
+
+                return (
+                  <StatCard
+                    key={curr.statusKey}
+                    title={curr.title}
+                    number={currentCount}
+                    IconName={curr.IconName}
+                    subtext={subText}
+                    bgColor={curr.bgColor}
+                    textColor={curr.textColor}
+                    borderColor={curr.borderColor}
+                  ></StatCard>
+                );
+              })
+            )}
+          </div>
+
           {isLoading ? (
-            <StatCardsSkeleton />
+            <div className="grid gap-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <ChartSkeleton />
+                <ChartSkeleton />
+              </div>
+              <ChartSkeleton />
+            </div>
+          ) : isSuccess ? (
+            <div className="grid gap-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <ChartPieLabel data={pieChartData} />
+                {data?.countsByType && (
+                  <ChartBarLabel chartData={data.countsByType} />
+                )}
+              </div>
+              <AreaChartDefault />
+            </div>
           ) : (
-            resourceStat.map((curr) => {
-              const countsByStatus = data?.countsByStatus ?? [];
-              const currentCount =
-                countsByStatus.find(
-                  (i: { _count: number; status: string }) =>
-                    i.status === curr.statusKey,
-                )?._count ?? curr.number;
-              const allCount =
-                countsByStatus.find(
-                  (i: { _count: number; status: string }) => i.status === "all",
-                )?._count ?? 0;
-              const subText =
-                allCount > 0
-                  ? `${((currentCount / allCount) * 100).toFixed(2)}% of total`
-                  : "0.00% of total";
-
-              return (
-                <StatCard
-                  key={curr.statusKey}
-                
-                  title={curr.title}
-                  number={currentCount}
-                  IconName={curr.IconName}
-                  subtext={subText}
-                  bgColor={curr.bgColor}
-                  textColor={curr.textColor}
-                  borderColor={curr.borderColor}
-                ></StatCard>
-              );
-            })
+            <div className="grid gap-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <EmptyChart />
+                <EmptyChart />
+              </div>
+              <EmptyChart />
+            </div>
           )}
-        </div>
-
-        {isLoading ? (
-          <div className="grid gap-4">
-            <div className="grid gap-4 lg:grid-cols-2">
-              <ChartSkeleton />
-              <ChartSkeleton />
-            </div>
-            <ChartSkeleton />
-          </div>
-        ) : isSuccess ? (
-          <div className="grid gap-4">
-            <div className="grid gap-4 lg:grid-cols-2">
-              <ChartPieLabel data={pieChartData} />
-              {data?.countsByType && <ChartBarLabel chartData={data.countsByType} />}
-            </div>
-            <AreaChartDefault />
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            <div className="grid gap-4 lg:grid-cols-2">
-              <EmptyChart />
-              <EmptyChart />
-            </div>
-            <EmptyChart />
-          </div>
-        )}
         </section>
 
         <section className="space-y-4 border-t pt-6">
-          <h2 className="border-b pb-2 text-2xl font-semibold text-primary">
+          <h2 className="border-b pb-2 text-2xl font-semibold text-foreground">
             Users Overview
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
