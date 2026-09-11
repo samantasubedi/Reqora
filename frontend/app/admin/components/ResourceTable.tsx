@@ -345,7 +345,7 @@ export const ResourceTable = () => {
                 {mappingPages?.map((pageNumber, index) => {
                   return (
                     <Button
-                    className={`${pageNumber==data?.currentPage?"border-2! border-foreground!":""}`}
+                      className={`${pageNumber == data?.currentPage ? "border-2! border-foreground!" : ""}`}
                       key={index}
                       onClick={() => {
                         if (typeof pageNumber === "number") {

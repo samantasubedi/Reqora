@@ -1,10 +1,15 @@
 "use client";
 import {
+  Briefcase,
+  ChartCandlestickIcon,
   Check,
   CircleAlert,
   LucideIcon,
   Package,
+  ShieldCheck,
   TrendingUp,
+  UserCog,
+  Users,
 } from "lucide-react";
 import StatCard from "./StatCard";
 
@@ -18,8 +23,8 @@ import { useEffect, useState } from "react";
 
 import { TableError } from "./TableError";
 import TableEmpty from "./emptyStates/TableEmpty";
-import { ChartPieLabel } from "@/components/others/PieChart";
 import { ChartBarLabel } from "@/components/others/BarChart";
+import { ChartPieLabel } from "@/components/others/PieChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
 
 import { useResources } from "../hooks/resourceHooks";
@@ -28,6 +33,8 @@ import axios from "axios";
 import { StatCardsSkeleton } from "./skeletonLoaders/statCardSkeleton";
 import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
 import { EmptyChart } from "./emptyStates/emptyChart";
+import { AreaChartDefault } from "@/components/ui/areaChart";
+import { ChartPieDonut } from "@/components/ui/donoutChart";
 export enum ResourceStatus {
   available = "available",
   inUse = "inUse",
@@ -36,7 +43,7 @@ export enum ResourceStatus {
 
 export interface statCardInterface {
   title: string;
-  statusKey: "all" | "available" | "inUse" | "underMaintainence";
+  statusKey?: "all" | "available" | "inUse" | "underMaintainence";
   number: number;
   IconName?: LucideIcon;
   subtext?: string;
@@ -95,7 +102,7 @@ export const AdminDashboard = () => {
     console.log(data, "this is resource");
   }
 
-  const AdminStat: statCardInterface[] = [
+  const resourceStat: statCardInterface[] = [
     {
       title: "Total Resources",
       statusKey: "all",
@@ -136,45 +143,85 @@ export const AdminDashboard = () => {
       borderColor: "border-red-500",
     },
   ];
-
+  const userStat: statCardInterface[] = [
+    {
+      title: "Total Users",
+      number: 0,
+      IconName: Users,
+      bgColor: "bg-blue-100",
+      textColor: "text-blue-800",
+      borderColor: "border-blue-500",
+    },
+    {
+      title: "Employees",
+      number: 0,
+      IconName: Briefcase,
+      subtext: ``,
+      bgColor: "bg-green-100",
+      textColor: "text-green-800",
+      borderColor: "border-green-500",
+    },
+    {
+      title: "Managers",
+      number: 0,
+      IconName: UserCog,
+      subtext: ``,
+      bgColor: "bg-amber-100",
+      textColor: "text-amber-800",
+      borderColor: "border-amber-500",
+    },
+    {
+      title: "Admins",
+      number: 0,
+      IconName: ShieldCheck,
+      subtext: ``,
+      bgColor: "bg-red-100",
+      textColor: "text-red-800",
+      borderColor: "border-red-500",
+    },
+  ];
+  const userChartData = [
+    { _count: 42, type: "Employees" },
+    { _count: 18, type: "Managers" },
+    { _count: 6, type: "Admins" },
+  ];
   const pieChartData = isSuccess
-    ? data?.countsByStatus
-        .filter((curr: { _count: number; status: string }) => {
-          return curr.status != "all";
-        })
-        .map((i: { _count: number; status: string }) => {
-          return {
-            status: i.status,
-            Resources: i._count,
-            fill:
-              i.status == "available"
-                ? "var(--color-Available)"
-                : i.status == "inUse"
-                  ? "var(--color-InUse)"
-                  : "var(--color-UnderMaintenance)",
-          };
-        })
+    ? (data?.countsByStatus ?? [])
+        .filter((item: { _count: number; status: string }) => item.status !== "all")
+        .map((item: { _count: number; status: string }) => ({
+          status: item.status,
+          Resources: item._count,
+          fill:
+            item.status === "available"
+              ? "var(--color-Available)"
+              : item.status === "inUse"
+                ? "var(--color-InUse)"
+                : "var(--color-UnderMaintenance)",
+        }))
     : [];
-
   return (
     <>
-      <div className="w-full  min-h-screen">
+      <div className="w-full min-h-screen space-y-6 px-3 pb-8">
         <div className="flex justify-between">
-          <h1 className="text-4xl font-bold text-primary m-2">
+          <h1 className="m-2 text-4xl font-bold text-primary">
             Admin Dashboard
           </h1>
           <ThemeToggler />
         </div>
-        <div className="flex justify-between px-3">
-          <p className="text-text-primary font-semibold m-2">
+        <div className="flex justify-between px-2">
+          <p className="m-2 font-semibold text-text-primary">
             Monitor and manage all organization resource
           </p>
         </div>
-        <div className="flex justify-between m-3">
+        <section className="space-y-4">
+          <h2 className="border-b pb-2 text-2xl font-semibold text-primary">
+            Resource Overview
+          </h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {isLoading ? (
             <StatCardsSkeleton />
           ) : (
-            AdminStat.map((curr) => {
+            resourceStat.map((curr) => {
               const countsByStatus = data?.countsByStatus ?? [];
               const currentCount =
                 countsByStatus.find(
@@ -193,7 +240,7 @@ export const AdminDashboard = () => {
               return (
                 <StatCard
                   key={curr.statusKey}
-                  statusKey={curr.statusKey}
+                
                   title={curr.title}
                   number={currentCount}
                   IconName={curr.IconName}
@@ -208,35 +255,58 @@ export const AdminDashboard = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-evenly items-center">
-            <ChartSkeleton />
+          <div className="grid gap-4">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <ChartSkeleton />
+              <ChartSkeleton />
+            </div>
             <ChartSkeleton />
           </div>
         ) : isSuccess ? (
-          <div className="flex justify-evenly items-center">
-            <div className="w-[40%]">
+          <div className="grid gap-4">
+            <div className="grid gap-4 lg:grid-cols-2">
               <ChartPieLabel data={pieChartData} />
+              {data?.countsByType && <ChartBarLabel chartData={data.countsByType} />}
             </div>
-
-            {data?.countsByType && (
-              <div className="w-[40%]">
-                <ChartBarLabel chartData={data.countsByType} />
-              </div>
-            )}
+            <AreaChartDefault />
           </div>
         ) : (
-          <div className="flex justify-evenly items-center">
-            <EmptyChart />
+          <div className="grid gap-4">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <EmptyChart />
+              <EmptyChart />
+            </div>
             <EmptyChart />
           </div>
         )}
+        </section>
 
-        <ResourceTable
-        // isLoading={isLoading}
-        //   resourceData={data?.allResources}
-        //   debouncedSearchText={debouncedSearchText}
-        //   setDebouncedSearchText={setDebouncedSearchText}
-        />
+        <section className="space-y-4 border-t pt-6">
+          <h2 className="border-b pb-2 text-2xl font-semibold text-primary">
+            Users Overview
+          </h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {userStat.map((curr) => (
+              <StatCard
+                key={curr.title}
+                title={curr.title}
+                number={curr.number}
+                IconName={curr.IconName}
+                subtext={curr.subtext}
+                bgColor={curr.bgColor}
+                textColor={curr.textColor}
+                borderColor={curr.borderColor}
+              />
+            ))}
+          </div>
+          <div className="grid gap-4">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <ChartPieDonut />
+              <ChartBarLabel chartData={userChartData} />
+            </div>
+            <AreaChartDefault />
+          </div>
+        </section>
       </div>
     </>
   );

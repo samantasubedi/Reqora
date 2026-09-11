@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function ChartSkeleton() {
   return (
-    <Card className="h-[390px] w-[40%]">
+    <Card className="h-[390px] w-full">
       <CardHeader className="space-y-2">
         <Skeleton className="h-6 w-40" />
         <Skeleton className="h-4 w-56" />

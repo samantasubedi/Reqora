@@ -41,7 +41,7 @@ const StatCard = ({
     bgRadialMap[bgColor] || "from-blue-200/40 dark:from-blue-500/15";
 
   return (
-    <Card className="relative h-[180px] w-[23%] overflow-hidden border-none transition-all duration-300 ease-in-out cursor-pointer hover:translate-1">
+    <Card className="relative h-[180px] w-full overflow-hidden border-none transition-all duration-300 ease-in-out cursor-pointer hover:translate-1">
       <div
         className={`absolute inset-0 bg-radial ${centerGlow} via-transparent to-transparent pointer-events-none`}
       />

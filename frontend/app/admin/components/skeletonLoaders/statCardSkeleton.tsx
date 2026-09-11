@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function StatCardSkeleton() {
   return (
-    <Card className="relative h-[180px] w-[23%] overflow-hidden border-none">
+    <Card className="relative h-[180px] w-full overflow-hidden border-none">
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div className="space-y-2">
           <Skeleton className="h-5 w-32" />
@@ -20,7 +20,7 @@ export function StatCardSkeleton() {
 
 export function StatCardsSkeleton() {
   return (
-    <div className="flex w-full justify-between">
+    <div className="col-span-full grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {Array.from({ length: 4 }, (_, index) => (
         <StatCardSkeleton key={index} />
       ))}

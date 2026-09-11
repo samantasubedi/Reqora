@@ -4,7 +4,7 @@ import React from 'react'
 
 export const EmptyChart = () => {
   return (
-   <Card className="h-[390px] w-[40%]">
+   <Card className="h-[390px] w-full">
   <CardHeader className="space-y-2">
     <CardTitle className="text-base font-medium">Chart Title</CardTitle>
     <CardDescription>Description of the chart</CardDescription>
