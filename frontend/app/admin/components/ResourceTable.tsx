@@ -34,6 +34,7 @@ import TableEmpty from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
+import { calculatePages } from "@/lib/paginationHelper";
 
 export const ResourceTable = () => {
   const router = useRouter();
@@ -175,10 +176,13 @@ export const ResourceTable = () => {
     filters,
     page: currentPage,
   });
-  let TotalPages;
+
+  let mappingPages;
   if (data?.success) {
-    TotalPages = Array.from({ length: data.totalPages });
-    console.log("this is totlal pages array", TotalPages);
+    mappingPages = calculatePages({
+      totalPages: data?.totalPages,
+      currentPage: data?.currentPage,
+    });
   }
   return (
     <div className="mt-5 mb-5 px-3">
@@ -334,14 +338,28 @@ export const ResourceTable = () => {
             )}
           </TableBody>
         )}
-        <TableFooter className="flex gap-5">
-          {TotalPages?.map((_, index) => {
-            return (
-              <Button key={index} onClick={() => setCurrentPage(index + 1)}>
-                {index + 1}
-              </Button>
-            );
-          })}
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={tableFields.length + 1}>
+              <div className="flex w-full justify-center gap-5">
+                {mappingPages?.map((pageNumber, index) => {
+                  return (
+                    <Button
+                    className={`${pageNumber==data?.currentPage?"border-2! border-foreground!":""}`}
+                      key={index}
+                      onClick={() => {
+                        if (typeof pageNumber === "number") {
+                          setCurrentPage(pageNumber);
+                        }
+                      }}
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                })}
+              </div>
+            </TableCell>
+          </TableRow>
         </TableFooter>
       </Table>
     </div>
