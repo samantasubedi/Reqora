@@ -33,16 +33,15 @@ const Page = () => {
     getUserStatus();
   }, []);
 
-  const cardClass =
-    "relative group flex-1 h-full p-5 shadow-white hover:shadow-xl transition-all duration-300 ease-in-out hover:translate-x-1 backdrop-blur-xl";
+  const cardClass = "relative group flex-1 h-full p-5 h-full!  backdrop-blur-xl";
   const buttonClass =
     " w-full h-15 transition-all duration-400! text-3xl cursor-pointer  transition-all duration-300 ease-in-out p-3 ";
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <div className="flex-1 overflow-hidden p-4">
-        <div className="w-full h-full flex justify-center">
-          <div className="flex justify-evenly w-full gap-8">
+      <div className="flex-1 overflow-hidden p-4 mt-30">
+        <div className="w-full h-full flex justify-center ">
+          <div className="flex justify-evenly w-full gap-8 items-center">
             <Card className={`${cardClass} bg-teal-500/15 border-teal-500/40`}>
               <BorderBeam
                 size={250}

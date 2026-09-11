@@ -80,7 +80,7 @@ const page = () => {
   });
 
   return (
-    <div className=" p-5 bg-linear-to-t from-sky-300 to-blue-950 min-h-screen">
+    <div className="p-5 bg-background min-h-screen">
       <div className="flex justify-start">
         {" "}
         <button
@@ -98,12 +98,12 @@ const page = () => {
         </button>
       </div>
       <div className="flex justify-center ">
-        <Card className="w-[40%] p-5 h-fit mt-[4%] bg-purple-800/20 shadow-md shadow-blue-900  border-t-3 border-white border-l-0 border-r-0 border-b-0 ">
+        <Card className="w-[40%] p-5 h-fit mt-[4%] bg-card shadow-md shadow-border border-t-3 border-primary border-l-0 border-r-0 border-b-0 ">
           <CardHeader>
-            <CardTitle className="font-bold text-3xl text-center text-sky-300">
+            <CardTitle className="font-bold text-3xl text-center text-primary">
               Create Your Company
             </CardTitle>
-            <CardDescription className="text-center text-gray-400 font-semibold">
+            <CardDescription className="text-center text-muted-foreground font-semibold">
               Fill your company details
             </CardDescription>
           </CardHeader>
@@ -112,62 +112,62 @@ const page = () => {
             <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
                 {" "}
-                <label className="font-semibold text-md text-white">
+                <label className="font-semibold text-md text-foreground">
                   Company Name
                 </label>
                 <Input
-                  className="bg-slate-300 border-none"
+                  className="bg-background border-border"
                   placeholder="Enter your company name"
                   {...register("companyName")}
                 />
-                <p className="text-red-400 text-sm">
+                <p className="text-destructive text-sm">
                   {errors.companyName?.message}
                 </p>
               </div>
               <div className="flex flex-col gap-2">
                 {" "}
-                <label className="font-semibold text-md text-white">
+                <label className="font-semibold text-md text-foreground">
                   Address
                 </label>
                 <Input
-                  className="bg-slate-300 border-none"
+                  className="bg-background border-border"
                   placeholder="Enter your company address"
                   {...register("address")}
                 />
-                <p className="text-red-400 text-sm">
+                <p className="text-destructive text-sm">
                   {errors.address?.message}
                 </p>
               </div>
               <div className="flex flex-col gap-2">
                 {" "}
-                <label className="font-semibold text-md text-white">
+                <label className="font-semibold text-md text-foreground">
                   Email
                 </label>
                 <Input
-                  className="bg-slate-300 border-none"
+                  className="bg-background border-border"
                   placeholder="Enter your company email"
                   {...register("email")}
                 />
-                <p className="text-red-400 text-sm">{errors.email?.message}</p>
+                <p className="text-destructive text-sm">{errors.email?.message}</p>
               </div>
 
               <div className="flex flex-col gap-2">
                 {" "}
-                <label className="font-semibold text-md text-white">
+                <label className="font-semibold text-md text-foreground">
                   Company Size
                 </label>
                 <Input
-                  className="bg-slate-300 border-none"
+                  className="bg-background border-border"
                   type="number"
                   placeholder="Enter your company size (eg: 50)"
                   {...register("size")}
                 />
-                <p className="text-red-400 text-sm">{errors.size?.message}</p>
+                <p className="text-destructive text-sm">{errors.size?.message}</p>
               </div>
               <Button
                 type="submit"
                 size="lg"
-                className="bg-purple-700 hover:bg-purple-600 cursor-pointer transition-all duration-300 text-xl! font-bold "
+                className="bg-primary hover:bg-primary/90 cursor-pointer transition-all duration-300 text-xl! font-bold text-primary-foreground"
                 disabled={mutation.isPending}
               >
                 {mutation.isPending ? "Creating.." : "Create"}

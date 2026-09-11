@@ -17,8 +17,8 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const page = () => {
-  const router=useRouter()
+const Page = () => {
+  const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const postApi = async (code: string) => {
     const response = await axios.post(
@@ -35,7 +35,7 @@ const page = () => {
     onSuccess: (data) => {
       if (data.success) {
         toast.success(data.message);
-        router.push(`/${data.role}/dashboard`)
+        router.push(`/${data.role}/dashboard`);
       }
     },
     onError: (error: T_MutaionError) => {
@@ -48,23 +48,23 @@ const page = () => {
   });
   const [joinCode, setJoinCode] = useState("");
   return (
-    <div className="flex justify-center">
-      <Card className="md:w-[30%] md:mt-[10%] bg-white">
-        <CardHeader className="p-4 bg-teal-100 rounded-b-2xl">
+    <div className="flex justify-center min-h-screen bg-background">
+      <Card className="md:w-[30%] md:mt-[10%] bg-card h-fit">
+        <CardHeader className="p-4 bg-primary rounded-b-2xl">
           <CardTitle className="flex gap-5 text-2xl justify-center items-center">
             <Icon
               icon="mdi:people"
-              className="text-5xl! bg-white rounded-full p-2 text-teal-800"
+              className="text-5xl! bg-card rounded-full p-2 text-primary"
             />
-            <span className="text-teal-800">Join a Company</span>
+            <span className="text-primary-foreground">Join a Company</span>
           </CardTitle>
-          <CardDescription className="text-gray-600 font-semibold text-center">
+          <CardDescription className="text-foreground font-semibold text-center">
             Enter the company code shared by your administrator.
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <label className="text-xl font-semibold text-teal-700">
+          <label className="text-xl font-semibold text-secondary-foreground">
             Join Code
           </label>
           <Input
@@ -72,7 +72,7 @@ const page = () => {
               setJoinCode(e.target.value);
             }}
             placeholder="eg: H3E0klMT3f"
-            className="bg-white mt-2 h-14! text-2xl! font-semibold text-teal-800 border-teal-500"
+            className="bg-card mt-2 h-14! text-2xl! font-semibold text-foreground border-border"
           ></Input>
         </CardContent>
         <CardFooter>
@@ -81,7 +81,7 @@ const page = () => {
               console.log(joinCode);
               mutation.mutate(joinCode);
             }}
-            className="bg-teal-700 w-full! font-extrabold text-lg mt-5 hover:bg-teal-600 cursor-pointer"
+            className="bg-primary w-full! font-extrabold text-lg mt-5 hover:bg-primary/90 cursor-pointer text-primary-foreground"
           >
             Join
           </Button>
@@ -91,4 +91,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

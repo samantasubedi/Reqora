@@ -1,49 +1,40 @@
 "use client";
 import { ResourceTable } from "@/app/admin/components/ResourceTable";
-import { TableSkeleton } from "@/app/admin/components/skeletonLoaders/TableSkeleton";
-
-import { Input } from "@/components/ui/input";
-import { useQuery } from "@tanstack/react-query";
-import axios, { isAxiosError } from "axios";
-import React, { useEffect } from "react";
-import { toast } from "react-toastify";
+import ResourceStats from "@/app/admin/components/ResourceStats";
+import { useResources } from "@/app/admin/hooks/resourceHooks";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 
 const Page = () => {
-  const fetchApi = async () => {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-    const response = await axios.get(`${backendUrl}/resources`, {
-      withCredentials: true,
-    });
-    return response.data;
-  };
-  const query = useQuery({
-    queryFn: fetchApi,
-    queryKey: ["resourceData"],
-  });
-  useEffect(() => {
-    if (query.isError) {
-      if (isAxiosError(query.error)) {
-        toast.error(query.error.response?.data.message);
-      } else {
-        toast.error(query.error.message);
-      }
-    }
-  }, [query.isError]);
-  if (query.isLoading) {
-    return <div>loading......</div>;
-  }
+  const router = useRouter();
+  const { data, isLoading, isError, error } = useResources();
 
   return (
-    <div>
-      <div>
-        {" "}
-        <Input placeholder="Search for resources"></Input>
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
+          <p className="text-muted-foreground">
+            Manage company resources and track availability.
+          </p>
+        </div>
+
+        <Button
+          onClick={() => router.push("/admin/resources/add")}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+        >
+          <Plus className="h-5 w-5" />
+          Add Resource
+        </Button>
       </div>
-      {query.isLoading ? (
-        <TableSkeleton />
-      ) : (
-        <ResourceTable resourceData={query.data.allResources} />
-      )}
+
+      <ResourceStats
+        countsByStatus={data?.countsByStatus}
+        isLoading={isLoading}
+      />
+
+      <ResourceTable />
     </div>
   );
 };

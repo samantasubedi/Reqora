@@ -24,7 +24,7 @@ import {
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import LogoutDialog from "./LogoutDialog";
 import {
   Collapsible,
@@ -34,7 +34,9 @@ import {
 
 const Sidebarmenu = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { state, setOpen } = useSidebar();
+  const isActive = (path: string) => pathname === path;
   const handleSidebarNavigation = (pathName: string) => {
     if (pathName == "none") {
       setOpen(true);
@@ -71,21 +73,16 @@ const Sidebarmenu = () => {
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Dashboard"
-                asChild
+                isActive={isActive("/admin/dashboard")}
                 suppressHydrationWarning
-                className="flex justify-start"
+                className="flex justify-start font-bold"
                 onClick={() => handleSidebarNavigation("/admin/dashboard")}
               >
-                <Button
-                  className="bg-transparent font-bold"
-                  variant={"secondary"}
-                >
-                  <Icon
-                    icon="material-symbols-light:home-rounded"
-                    className="size-6!"
-                  />
-                  Dashboard
-                </Button>
+                <Icon
+                  icon="material-symbols-light:home-rounded"
+                  className="size-6!"
+                />
+                Dashboard
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -124,6 +121,7 @@ const Sidebarmenu = () => {
                         onClick={() => {
                           handleSidebarNavigation("/admin/resources");
                         }}
+                        isActive={isActive("/admin/resources")}
                       >
                         <Icon icon="material-symbols:grid-view-outline-rounded" />
                         View Resources
@@ -134,6 +132,7 @@ const Sidebarmenu = () => {
                         onClick={() => {
                           handleSidebarNavigation("/admin/resources/add");
                         }}
+                        isActive={isActive("/admin/resources/add")}
                       >
                         <Icon icon="hugeicons:resources-add" />
                         Add Resources
@@ -169,6 +168,7 @@ const Sidebarmenu = () => {
                         onClick={() => {
                           handleSidebarNavigation("/admin/employees");
                         }}
+                        isActive={isActive("/admin/employees")}
                       >
                         <Icon icon="material-symbols:view-day-rounded" />
                         View Employees
@@ -179,6 +179,7 @@ const Sidebarmenu = () => {
                         onClick={() => {
                           handleSidebarNavigation("/admin/employees/invite");
                         }}
+                        isActive={isActive("/admin/employees/invite")}
                       >
                         <Icon icon="mdi:invite" />
                         Invite Employees
@@ -197,7 +198,7 @@ const Sidebarmenu = () => {
               <SidebarMenuButton
                 tooltip="Settings"
                 suppressHydrationWarning
-                className="  font-bold"
+                className="cursor-pointer font-bold"
               >
                 <Icon icon="material-symbols:settings" className="size-5!" />
                 Settings
@@ -207,7 +208,7 @@ const Sidebarmenu = () => {
               <SidebarMenuButton
                 tooltip="Logs"
                 suppressHydrationWarning
-                className="  font-bold"
+                className="cursor-pointer font-bold"
               >
                 <Icon icon="tabler:logs" className="size-5!" />
                 <span>Logs</span>
@@ -224,7 +225,7 @@ const Sidebarmenu = () => {
                 <SidebarMenuButton
                   tooltip="Account"
                   suppressHydrationWarning
-                  className="flex gap-2 "
+                  className="flex cursor-pointer gap-2"
                 >
                   <Icon icon="codicon:account" className="size-6" />
                   <span className="font-semibold">Your account</span>
