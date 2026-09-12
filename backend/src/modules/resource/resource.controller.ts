@@ -1,8 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { findAllResourcesService } from "./resource.service";
 import { T_QueryFilters } from "../../middleware/queryMiddleware";
-export const getAllResources = async (req: Request, res: Response) => {
+export const getAllResources = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const companyId = res.locals.user.companyId;
     const {
@@ -14,7 +18,6 @@ export const getAllResources = async (req: Request, res: Response) => {
       resourceStatus,
       resourceTypeSearch,
       resourceDepartmentSearch,
-     
       resourceAvailableQuantity,
     } = res.locals.query as T_QueryFilters;
 
@@ -27,8 +30,8 @@ export const getAllResources = async (req: Request, res: Response) => {
     } = await findAllResourcesService({
       companyId,
       status: resourceStatus,
-     resourceTypeSearch,
-    resourceDepartmentSearch,
+      resourceTypeSearch,
+      resourceDepartmentSearch,
       availableQuantity: resourceAvailableQuantity,
       search,
       skip,
@@ -62,11 +65,7 @@ export const getAllResources = async (req: Request, res: Response) => {
       currentPage: pageNumber,
     });
   } catch (err) {
-    console.log(err);
-    return res.status(400).json({
-      success: false,
-      message: "server error , couldnt retirve the resources",
-    });
+    next(err);
   }
 };
 

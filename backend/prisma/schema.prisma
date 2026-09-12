@@ -36,11 +36,12 @@ model user {
   username         String    @unique
   id               String    @id @default(cuid())
   email            String    @unique
-  role             Role?
   password         String
   description      String?
   enrolled         Boolean   @default(false)
   companyId        String?
+  role             Role?
+  department       String?
   company          company?  @relation(fields: [companyId], references: [id])
   createdRequests  request[] @relation("requestedByUser")
   reviewedRequests request[] @relation("reviewedByUser")

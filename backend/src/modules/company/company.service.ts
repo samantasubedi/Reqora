@@ -22,6 +22,7 @@ import {
 } from "./company.schema";
 import { sendMail } from "../../utils/sendMail";
 import cryptoRandomString from "crypto-random-string";
+import { prisma } from "../../lib/prisma";
 export const createCompanyService = async ({
   companyName,
   email,
@@ -227,4 +228,40 @@ export const leaveCompanyService = async ({
   }
   const result = await leaveCompanyRepo({ email });
   return result;
+};
+export const dashabordAnalyticsService = async ({
+  companyId,
+}: {
+  companyId: string;
+}) => {
+  const resourceCountsByStatus = await prisma.resource.groupBy({
+    by: ["status"],
+    _count: true,
+    where: { companyId },
+  });
+  const resourceCountsByType = await prisma.resource.groupBy({
+    by: ["type"],
+    _count: true,
+    where: { companyId },
+  });
+  const userCountsByRole = await prisma.user.groupBy({
+    by: ["role"],
+    _count: true,
+    where: { companyId },
+  });
+  const userCountsByDepartment = await prisma.user.groupBy({
+    by: ["department"],
+    _count: true,
+    where: { companyId },
+  });
+  return {
+    resourceStats: {
+      countsByStatus: resourceCountsByStatus,
+      countsByType: resourceCountsByType,
+    },
+    userStats: {
+      countsByRole: userCountsByRole,
+      countsByDepartment: userCountsByDepartment,
+    },
+  };
 };
