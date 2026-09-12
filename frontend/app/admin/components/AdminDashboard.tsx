@@ -1,7 +1,6 @@
 "use client";
 import {
   Briefcase,
-  ChartCandlestickIcon,
   Check,
   CircleAlert,
   LucideIcon,
@@ -13,67 +12,24 @@ import {
 } from "lucide-react";
 import StatCard from "./StatCard";
 
-import { ResourceTable } from "./ResourceTable";
-
 import { toast } from "react-toastify";
 
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-import { useEffect, useState } from "react";
-
-import { TableError } from "./TableError";
-import TableEmpty from "./emptyStates/TableEmpty";
 import { ChartBarLabel } from "@/components/others/BarChart";
 import { ChartPieLabel } from "@/components/others/PieChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
 
 import { useResources } from "../hooks/resourceHooks";
-import { DashboardSkeleton } from "./skeletonLoaders/DahsboardSkeleton";
+
 import axios from "axios";
 import { StatCardsSkeleton } from "./skeletonLoaders/statCardSkeleton";
 import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
 import { EmptyChart } from "./emptyStates/emptyChart";
 import { AreaChartDefault } from "@/components/ui/areaChart";
 import { ChartPieDonut } from "@/components/ui/donoutChart";
-export enum ResourceStatus {
-  available = "available",
-  inUse = "inUse",
-  underMaintainence = "underMaintainence",
-}
-
-export interface statCardInterface {
-  title: string;
-  statusKey?: "all" | "available" | "inUse" | "underMaintainence";
-  number: number;
-  IconName?: LucideIcon;
-  subtext?: string;
-  bgColor: string;
-  textColor: string;
-  borderColor: string;
-}
-export type resourceType = {
-  id: string;
-  name: string;
-  location: string;
-  department: string;
-  type: string;
-  availability: boolean;
-  status: ResourceStatus;
-  totalQuantity: number;
-  availableQuantity: number;
-  createdAt: string;
-  updatedAt: string;
-};
-export type tableResourceType = {
-  id: string;
-  name: string;
-  status: ResourceStatus;
-  type: string;
-  department: string;
-  location: string;
-  availability: boolean;
-  availabilityPercentage?: number;
-};
+import ResourceStats, { statCardInterface } from "./ResourceStats";
+import { useAnalytics } from "../hooks/companyHooks";
 
 export const handleLogout = async (router: AppRouterInstance) => {
   try {
@@ -96,53 +52,10 @@ export const handleLogout = async (router: AppRouterInstance) => {
 
 export const AdminDashboard = () => {
   const { isError, error, data, isSuccess, isLoading, refetch } =
-    useResources();
+    useAnalytics();
 
-  if (isSuccess) {
-    console.log(data, "this is resource");
-  }
 
-  const resourceStat: statCardInterface[] = [
-    {
-      title: "Total Resources",
-      statusKey: "all",
-      number: 0,
-      IconName: Package,
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-800",
-      borderColor: "border-blue-500",
-    },
-    {
-      title: "Available",
-      statusKey: "available",
-      number: 0,
-      IconName: Check,
-      subtext: ``,
-      bgColor: "bg-green-100",
-      textColor: "text-green-800",
-      borderColor: "border-green-500",
-    },
-    {
-      title: "In Use",
-      statusKey: "inUse",
-      number: 0,
-      IconName: TrendingUp,
-      subtext: ``,
-      bgColor: "bg-amber-100",
-      textColor: "text-amber-800",
-      borderColor: "border-amber-500",
-    },
-    {
-      title: "Under Maintenance",
-      statusKey: "underMaintainence",
-      number: 0,
-      IconName: CircleAlert,
-      subtext: ``,
-      bgColor: "bg-red-100",
-      textColor: "text-red-800",
-      borderColor: "border-red-500",
-    },
-  ];
+
   const userStat: statCardInterface[] = [
     {
       title: "Total Users",
@@ -186,7 +99,7 @@ export const AdminDashboard = () => {
     { _count: 6, type: "Admins" },
   ];
   const pieChartData = isSuccess
-    ? (data?.countsByStatus ?? [])
+    ? (data?.resourceStats.countsByStatus ?? [])
         .filter(
           (item: { _count: number; status: string }) => item.status !== "all",
         )
@@ -215,42 +128,8 @@ export const AdminDashboard = () => {
           <h2 className="border-b pb-2 text-2xl font-semibold text-foreground">
             Resource Overview
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {isLoading ? (
-              <StatCardsSkeleton />
-            ) : (
-              resourceStat.map((curr) => {
-                const countsByStatus = data?.countsByStatus ?? [];
-                const currentCount =
-                  countsByStatus.find(
-                    (i: { _count: number; status: string }) =>
-                      i.status === curr.statusKey,
-                  )?._count ?? curr.number;
-                const allCount =
-                  countsByStatus.find(
-                    (i: { _count: number; status: string }) =>
-                      i.status === "all",
-                  )?._count ?? 0;
-                const subText =
-                  allCount > 0
-                    ? `${((currentCount / allCount) * 100).toFixed(2)}% of total`
-                    : "0.00% of total";
 
-                return (
-                  <StatCard
-                    key={curr.statusKey}
-                    title={curr.title}
-                    number={currentCount}
-                    IconName={curr.IconName}
-                    subtext={subText}
-                    bgColor={curr.bgColor}
-                    textColor={curr.textColor}
-                    borderColor={curr.borderColor}
-                  ></StatCard>
-                );
-              })
-            )}
-          </div>
+          <ResourceStats countsByStatus={data?.resourceStats.countsByStatus} isLoading={isLoading} />
 
           {isLoading ? (
             <div className="grid gap-4">
@@ -264,8 +143,8 @@ export const AdminDashboard = () => {
             <div className="grid gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
                 <ChartPieLabel data={pieChartData} />
-                {data?.countsByType && (
-                  <ChartBarLabel chartData={data.countsByType} />
+                {data?.resourceStats.countsByType && (
+                  <ChartBarLabel chartData={data.resourceStats.countsByType} />
                 )}
               </div>
               <AreaChartDefault />

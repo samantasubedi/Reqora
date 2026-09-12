@@ -5,7 +5,34 @@ import { useResources } from "@/app/admin/hooks/resourceHooks";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-
+export enum ResourceStatus {
+  available = "available",
+  inUse = "inUse",
+  underMaintainence = "underMaintainence",
+}
+export type resourceType = {
+  id: string;
+  name: string;
+  location: string;
+  department: string;
+  type: string;
+  availability: boolean;
+  status: ResourceStatus;
+  totalQuantity: number;
+  availableQuantity: number;
+  createdAt: string;
+  updatedAt: string;
+};
+export type tableResourceType = {
+  id: string;
+  name: string;
+  status: ResourceStatus;
+  type: string;
+  department: string;
+  location: string;
+  availability: boolean;
+  availabilityPercentage?: number;
+};
 const Page = () => {
   const router = useRouter();
   const { data, isLoading, isError, error } = useResources();

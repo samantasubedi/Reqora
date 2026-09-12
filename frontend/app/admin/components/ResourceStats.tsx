@@ -1,7 +1,16 @@
 import React from "react";
 import StatCard from "./StatCard";
-import { Package, Check, TrendingUp, CircleAlert } from "lucide-react";
-import { statCardInterface } from "./AdminDashboard";
+import { Package, Check, TrendingUp, CircleAlert, LucideIcon } from "lucide-react";
+export interface statCardInterface {
+  title: string;
+  statusKey?: "all" | "available" | "inUse" | "underMaintainence";
+  number: number;
+  IconName?: LucideIcon;
+  subtext?: string;
+  bgColor: string;
+  textColor: string;
+  borderColor: string;
+}
 
 interface ResourceStatsProps {
   countsByStatus?: Array<{

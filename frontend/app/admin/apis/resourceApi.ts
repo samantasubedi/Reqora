@@ -1,12 +1,13 @@
 import axios, { AxiosResponse } from "axios";
-import { resourceType } from "../components/AdminDashboard";
+
 import {
   countByStatusType,
   countByTypeType,
 } from "@/components/others/BarChart";
 import { FilterValues } from "@/components/global/Filter";
 import { ParamValue } from "next/dist/server/request/params";
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+import { resourceType } from "../resources/page";
+export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 export const fetchResourcesApi = async ({
   searchText,
   filters,
