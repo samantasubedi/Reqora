@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation";
 
 import { useResource } from "../../hooks/resourceHooks";
 import ResourceDetailsSkeleton from "../../components/skeletonLoaders/resourceDetailsSkeleton";
-import { camelToSentence } from "@/lib/HelperFunctions";
 type ResourceDetail = {
   id: string;
   name: string;
@@ -134,7 +133,7 @@ const ResourceDetails = () => {
           </div>
 
           <div className="grid grid-cols-4 gap-4">
-            {cardData.map((curr) => {
+            {cardData.map((curr: { label: string; value: number }) => {
               return (
                 <Card key={curr.label}>
                   <CardContent className="p-4 text-center">

@@ -147,14 +147,14 @@ const Sidebarmenu = () => {
               <Collapsible>
                 <CollapsibleTrigger asChild className="w-full">
                   <SidebarMenuButton
-                    tooltip="Employees"
+                    tooltip="Users"
                     suppressHydrationWarning
                     className="flex justify-between font-bold w-full"
                     onClick={() => handleSidebarNavigation("none")}
                   >
                     <div className="flex justify-start gap-2 ">
                       <Icon icon="ic:baseline-people" className="size-5! " />
-                      <span>Employees</span>
+                      <span>Users</span>
                     </div>
                     <div className="flex justify-end">
                       <Icon icon="akar-icons:chevron-down"></Icon>
@@ -166,23 +166,23 @@ const Sidebarmenu = () => {
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton
                         onClick={() => {
-                          handleSidebarNavigation("/admin/employees");
+                          handleSidebarNavigation("/admin/users");
                         }}
-                        isActive={isActive("/admin/employees")}
+                        isActive={isActive("/admin/users")}
                       >
                         <Icon icon="material-symbols:view-day-rounded" />
-                        View Employees
+                        View Users
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton
                         onClick={() => {
-                          handleSidebarNavigation("/admin/employees/invite");
+                          handleSidebarNavigation("/admin/users/invite");
                         }}
-                        isActive={isActive("/admin/employees/invite")}
+                        isActive={isActive("/admin/users/invite")}
                       >
                         <Icon icon="mdi:invite" />
-                        Invite Employees
+                        Invite Users
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   </SidebarMenuSub>

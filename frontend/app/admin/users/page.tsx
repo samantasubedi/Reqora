@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { isAxiosError } from "axios";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
+import { UserTable } from "../components/UserTable";
 
 const Page = () => {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -29,20 +30,20 @@ const Page = () => {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Users</h1>
           <p className="text-muted-foreground">
-            Manage company employees and permissions.
+            Manage company users and permissions.
           </p>
         </div>
 
         <button className="rounded-lg bg-primary px-4 py-2 text-primary-foreground">
-          Invite Employee
+          Invite Users
         </button>
       </div>
 
       <EmployeeCount />
 
-      <EmployeeTable />
+     <UserTable/>
     </div>
   );
 };

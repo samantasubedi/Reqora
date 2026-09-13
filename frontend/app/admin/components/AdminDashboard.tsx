@@ -40,6 +40,9 @@ export const handleLogout = async (router: AppRouterInstance) => {
     console.log("request failed", err);
   }
 };
+export type countsByRoleType={ role: string; _count: number }
+export type countsByStatusType={ status: string; _count: number }
+export type countsByTypeType={ type: string; _count: number }
 
 export const AdminDashboard = () => {
   const { isError, error, data, isSuccess, isLoading, refetch } =
