@@ -6,7 +6,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-svh w-full">
       <Sidebarmenu />
-      <SidebarTrigger />
+      <SidebarTrigger className="sticky top-3"/>
       <SidebarInset>
         <main className="flex-1">{children}</main>
       </SidebarInset>
