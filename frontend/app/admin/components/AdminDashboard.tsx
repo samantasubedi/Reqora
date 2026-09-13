@@ -1,17 +1,4 @@
 "use client";
-import {
-  Briefcase,
-  Check,
-  CircleAlert,
-  LucideIcon,
-  Package,
-  ShieldCheck,
-  TrendingUp,
-  UserCog,
-  Users,
-} from "lucide-react";
-import StatCard from "./StatCard";
-
 import { toast } from "react-toastify";
 
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -28,7 +15,8 @@ import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
 import { EmptyChart } from "./emptyStates/emptyChart";
 import { AreaChartDefault } from "@/components/ui/areaChart";
 import { ChartPieDonut } from "@/components/ui/donoutChart";
-import ResourceStats, { statCardInterface } from "./ResourceStats";
+import ResourceStats from "./ResourceStats";
+import UserStats from "./UserStats";
 import { useAnalytics } from "../hooks/companyHooks";
 
 export const handleLogout = async (router: AppRouterInstance) => {
@@ -56,43 +44,6 @@ export const AdminDashboard = () => {
 
 
 
-  const userStat: statCardInterface[] = [
-    {
-      title: "Total Users",
-      number: 0,
-      IconName: Users,
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-800",
-      borderColor: "border-blue-500",
-    },
-    {
-      title: "Employees",
-      number: 0,
-      IconName: Briefcase,
-      subtext: ``,
-      bgColor: "bg-green-100",
-      textColor: "text-green-800",
-      borderColor: "border-green-500",
-    },
-    {
-      title: "Managers",
-      number: 0,
-      IconName: UserCog,
-      subtext: ``,
-      bgColor: "bg-amber-100",
-      textColor: "text-amber-800",
-      borderColor: "border-amber-500",
-    },
-    {
-      title: "Admins",
-      number: 0,
-      IconName: ShieldCheck,
-      subtext: ``,
-      bgColor: "bg-red-100",
-      textColor: "text-red-800",
-      borderColor: "border-red-500",
-    },
-  ];
   const userChartData = [
     { _count: 42, type: "Employees" },
     { _count: 18, type: "Managers" },
@@ -164,20 +115,10 @@ export const AdminDashboard = () => {
           <h2 className="border-b pb-2 text-2xl font-semibold text-foreground">
             Users Overview
           </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {userStat.map((curr) => (
-              <StatCard
-                key={curr.title}
-                title={curr.title}
-                number={curr.number}
-                IconName={curr.IconName}
-                subtext={curr.subtext}
-                bgColor={curr.bgColor}
-                textColor={curr.textColor}
-                borderColor={curr.borderColor}
-              />
-            ))}
-          </div>
+          <UserStats
+            countsByRole={data?.userStats.countsByRole}
+            isLoading={isLoading}
+          />
           <div className="grid gap-4">
             <div className="grid gap-4 lg:grid-cols-2">
               <ChartPieDonut />

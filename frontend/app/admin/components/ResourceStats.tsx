@@ -1,10 +1,16 @@
 import React from "react";
 import StatCard from "./StatCard";
-import { Package, Check, TrendingUp, CircleAlert, LucideIcon } from "lucide-react";
+import {
+  Package,
+  Check,
+  TrendingUp,
+  CircleAlert,
+  LucideIcon,
+} from "lucide-react";
 export interface statCardInterface {
   title: string;
-  statusKey?: "all" | "available" | "inUse" | "underMaintainence";
   number: number;
+  statusKey?: "all" | "available" | "inUse" | "underMaintainence";
   IconName?: LucideIcon;
   subtext?: string;
   bgColor: string;
@@ -20,7 +26,10 @@ interface ResourceStatsProps {
   isLoading: boolean;
 }
 
-const ResourceStats = ({ countsByStatus = [], isLoading }: ResourceStatsProps) => {
+const ResourceStats = ({
+  countsByStatus = [],
+  isLoading,
+}: ResourceStatsProps) => {
   const resourceStatConfig: Omit<statCardInterface, "number">[] = [
     {
       title: "Total Resources",
@@ -75,7 +84,10 @@ const ResourceStats = ({ countsByStatus = [], isLoading }: ResourceStatsProps) =
     return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-[180px] rounded-xl border bg-card animate-pulse" />
+          <div
+            key={i}
+            className="h-[180px] rounded-xl border bg-card animate-pulse"
+          />
         ))}
       </div>
     );

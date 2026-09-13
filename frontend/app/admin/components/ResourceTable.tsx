@@ -10,11 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Delete, Edit, EllipsisVertical, FilterIcon, View } from "lucide-react";
-import {
-  ResourceStatus,
-  resourceType,
-  tableResourceType,
-} from "./AdminDashboard";
+
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import {
@@ -35,6 +31,7 @@ import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
 import { calculatePages } from "@/lib/paginationHelper";
+import { ResourceStatus, resourceType } from "../resources/page";
 
 export const ResourceTable = () => {
   const router = useRouter();
