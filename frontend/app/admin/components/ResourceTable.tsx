@@ -30,7 +30,7 @@ import TableEmpty from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
-import { calculatePages } from "@/lib/paginationHelper";
+import { calculatePages } from "@/lib/HelperFunctions";
 import { ResourceStatus, resourceType } from "../resources/page";
 
 export const ResourceTable = () => {

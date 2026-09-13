@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-import { ChartBarLabel } from "@/components/others/BarChart";
+import { ChartBarLabel, chartPropsType } from "@/components/others/BarChart";
 import { ChartPieLabel } from "@/components/others/PieChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
 
@@ -14,10 +14,13 @@ import { StatCardsSkeleton } from "./skeletonLoaders/statCardSkeleton";
 import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
 import { EmptyChart } from "./emptyStates/emptyChart";
 import { AreaChartDefault } from "@/components/ui/areaChart";
-import { ChartPieDonut } from "@/components/ui/donoutChart";
+import { ChartPieDonut } from "@/components/others/donoutChart";
 import ResourceStats from "./ResourceStats";
 import UserStats from "./UserStats";
 import { useAnalytics } from "../hooks/companyHooks";
+import { Currency } from "lucide-react";
+import { Role } from "@/types/global";
+import { camelToSentence } from "@/lib/HelperFunctions";
 
 export const handleLogout = async (router: AppRouterInstance) => {
   try {
@@ -41,29 +44,61 @@ export const handleLogout = async (router: AppRouterInstance) => {
 export const AdminDashboard = () => {
   const { isError, error, data, isSuccess, isLoading, refetch } =
     useAnalytics();
+  const userBarChartData: chartPropsType = {
+    chartTitle: "User Distribution",
+    chartData:
+      data?.userStats.countsByRole.map(
+        (item: { role: string; _count: number }) => ({
+          label: item.role,
+          value: item._count,
+        }),
+      ) ?? [],
+    chartFooter: "Showing user distribution by Role ",
+  };
 
+  const resourceBarChartData: chartPropsType = {
+    chartTitle: "Resource Distribution",
+    chartData:
+      data?.resourceStats.countsByType.map(
+        (item: { type: string; _count: number }) => ({
+          label: item.type,
+          value: item._count,
+        }),
+      ) ?? [],
+    chartFooter: "Showing resource distribution by Type ",
+  };
 
-
-  const userChartData = [
-    { _count: 42, type: "Employees" },
-    { _count: 18, type: "Managers" },
-    { _count: 6, type: "Admins" },
-  ];
   const pieChartData = isSuccess
     ? (data?.resourceStats.countsByStatus ?? [])
         .filter(
           (item: { _count: number; status: string }) => item.status !== "all",
         )
         .map((item: { _count: number; status: string }) => ({
-          status: item.status,
-          Resources: item._count,
+          label: camelToSentence(item.status),
+          value: item._count,
           fill:
             item.status === "available"
-              ? "var(--color-Available)"
+              ? "var(--chart-1)"
               : item.status === "inUse"
-                ? "var(--color-InUse)"
-                : "var(--color-UnderMaintenance)",
+                ? "var(--chart-2)"
+                : "var(--chart-3)",
         }))
+    : [];
+  const donoutChartData = isSuccess
+    ? data.userStats.countsByRole.map(
+        (curr: { _count: string; role: string }) => {
+          return {
+            label: camelToSentence(curr.role),
+            value: curr._count,
+            fill:
+              curr.role == "admin"
+                ? "var(--chart-1)"
+                : curr.role == "manager"
+                  ? "var(--chart-2)"
+                  : "var(--chart-3)",
+          };
+        },
+      )
     : [];
   return (
     <>
@@ -80,7 +115,10 @@ export const AdminDashboard = () => {
             Resource Overview
           </h2>
 
-          <ResourceStats countsByStatus={data?.resourceStats.countsByStatus} isLoading={isLoading} />
+          <ResourceStats
+            countsByStatus={data?.resourceStats.countsByStatus}
+            isLoading={isLoading}
+          />
 
           {isLoading ? (
             <div className="grid gap-4">
@@ -95,7 +133,7 @@ export const AdminDashboard = () => {
               <div className="grid gap-4 lg:grid-cols-2">
                 <ChartPieLabel data={pieChartData} />
                 {data?.resourceStats.countsByType && (
-                  <ChartBarLabel chartData={data.resourceStats.countsByType} />
+                  <ChartBarLabel {...resourceBarChartData} />
                 )}
               </div>
               <AreaChartDefault />
@@ -119,13 +157,30 @@ export const AdminDashboard = () => {
             countsByRole={data?.userStats.countsByRole}
             isLoading={isLoading}
           />
-          <div className="grid gap-4">
-            <div className="grid gap-4 lg:grid-cols-2">
-              <ChartPieDonut />
-              <ChartBarLabel chartData={userChartData} />
+
+          {isLoading ? (
+            <div className="grid gap-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <ChartSkeleton />
+                <ChartSkeleton />
+              </div>
+              <ChartSkeleton />
             </div>
-            <AreaChartDefault />
-          </div>
+          ) : isSuccess ? (
+            <div className="grid gap-4">
+              <div className="grid gap-4 lg:grid-cols-2">
+                <ChartPieDonut
+                  data={donoutChartData}
+                  title="User Distribution"
+                  footer="Showing Users distribution by role"
+                />
+                <ChartBarLabel {...userBarChartData} />
+              </div>
+              <AreaChartDefault />
+            </div>
+          ) : (
+            ""
+          )}
         </section>
       </div>
     </>

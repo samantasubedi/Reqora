@@ -1,6 +1,5 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis } from "recharts";
 
 import {
@@ -17,7 +16,6 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { FC } from "react";
 
 export const description = "A bar chart with a label";
 const chartColors = [
@@ -27,8 +25,6 @@ const chartColors = [
   "var(--chart-4)",
   "var(--chart-5)",
 ];
-export type countByTypeType = { _count: number; type: string }[];
-export type countByStatusType = { _count: number; status: string }[];
 
 const chartConfig = {
   desktop: {
@@ -37,31 +33,37 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
+export type chartPropsType = {
+  chartData: { label: string; value: number }[];
+  chartTitle: string;
+  chartDescription?: string;
+  chartFooter?: string;
+};
+export function ChartBarLabel({
+  chartData,
+  chartTitle,
+  chartDescription,
+  chartFooter,
+}: chartPropsType) {
   console.log(chartData);
   return (
-    <Card className="h-[390px]">
+    <Card className="h-[420px]">
       <CardHeader>
-        <CardTitle>Bar Chart - Label</CardTitle>
+        <CardTitle>{chartTitle}</CardTitle>
         <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="max-h-[250px]">
           <BarChart
             accessibilityLayer
-            data={chartData.map((curr) => {
-              return {
-                name: curr.type,
-                Count: curr._count,
-              };
-            })}
+            data={chartData}
             margin={{
               top: 20,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="name"
+              dataKey="label"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -71,7 +73,7 @@ export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="Count" radius={8}>
+            <Bar dataKey="value" radius={8}>
               {chartData.map((_, index) => (
                 <Cell
                   key={index}
@@ -88,9 +90,9 @@ export function ChartBarLabel({ chartData }: { chartData: countByTypeType }) {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 leading-none font-medium">
-          Showing resources by their type
+    <CardFooter className="flex-col gap-2 text-sm mt-8">
+        <div className="flex items-center gap-2 leading-none font-medium">
+          {chartFooter}
         </div>
       </CardFooter>
     </Card>

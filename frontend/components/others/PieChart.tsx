@@ -22,51 +22,20 @@ const chartConfig = {
   Resources: {
     label: "Resources",
   },
-  Available: {
-    label: "Available",
-    color: "var(--chart-1)",
-  },
-  InUse: {
-    label: "In Use",
-    color: "var(--chart-2)",
-  },
-  UnderMaintenance: {
-    label: "Under Maintenance",
-    color: "var(--chart-3)",
-  },
 } satisfies ChartConfig;
 interface propType {
   data: {
-    status: string;
-    Resources: number;
+    label: string;
+    value: number;
     fill: string;
   }[];
 }
 
 export function ChartPieLabel({ data }: propType) {
-  // const chartData = [
-  //   {
-  //     status: "Available",
-  //     Resources: availableResourceCount,
-  //     fill: "var(--color-Available)",
-  //   },
-  //   {
-  //     status: "In Use",
-  //     Resources: inUseResourceCount,
-  //     fill: "var(--color-InUse)",
-  //   },
-  //   {
-  //     status: "Under Maintenance",
-  //     Resources: underMaintainenceResourceCount,
-  //     fill: "var(--color-UnderMaintenance)",
-  //   },
-  // ];
   return (
-    <Card className="flex h-[390px] flex-col">
+    <Card className="flex h-[420px] flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle className="text-xl text-teal-800">
-          Resource distribution
-        </CardTitle>
+        <CardTitle>Resource distribution</CardTitle>
       </CardHeader>
       <CardContent className="flex-1  pb-0">
         <ChartContainer
@@ -75,13 +44,13 @@ export function ChartPieLabel({ data }: propType) {
         >
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <Pie data={data} dataKey="Resources" label nameKey="status" />
+            <Pie data={data} dataKey="value" label nameKey="label" />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          Showing total resources in the company
+          Showing resource distribution by status
         </div>
       </CardFooter>
     </Card>
