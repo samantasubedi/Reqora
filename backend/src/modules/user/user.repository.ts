@@ -16,14 +16,17 @@ export const findUsersByCompanyId = async ({
   companyId,
   skip,
   take,
+  search,
 }: {
   companyId: string;
   skip: number;
   take: number;
+  search: string;
 }) => {
   return prisma.user.findMany({
     where: {
       companyId,
+      username: { contains: search },
     },
     select: {
       id: true,

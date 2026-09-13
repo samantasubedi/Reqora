@@ -52,8 +52,8 @@ export const getAllUsers = async (
 ) => {
   try {
     const companyId = res.locals.user.companyId;
-    const { skip, take } = res.locals.query;
-    const users = await findUsersByCompanyId({ companyId, skip, take });
+    const { skip, take,search } = res.locals.query;
+    const users = await findUsersByCompanyId({ companyId, skip, take,search });
     const countsByRole = await prisma.user.groupBy({
       by: ["role"],
       _count: true,

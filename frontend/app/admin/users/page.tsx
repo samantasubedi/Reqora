@@ -1,31 +1,11 @@
 "use client";
-import EmployeeCount from "@/app/employee/components/EmployeeCount";
-import { EmployeeTable } from "@/app/employee/components/EmployeeTable";
-import { useQuery } from "@tanstack/react-query";
-import axios, { isAxiosError } from "axios";
-import React, { useEffect } from "react";
-import { toast } from "react-toastify";
+
 import { UserTable } from "../components/UserTable";
+import UserStats from "../components/UserStats";
+import { useAnalytics } from "../hooks/companyHooks";
 
 const Page = () => {
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const fetchApi = async () => {
-    const response = await axios.get(`${backendUrl}/users`);
-    return response.data;
-  };
-  const query = useQuery({
-    queryKey: ["companyUsers"],
-    queryFn: fetchApi,
-  });
-  useEffect(() => {
-    if (query.isError) {
-      if (isAxiosError(query.error)) {
-        toast.error("server error");
-      } else {
-        toast.error(query.error.message);
-      }
-    }
-  }, []);
+  const { data, isLoading, isSuccess } = useAnalytics();
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -41,9 +21,12 @@ const Page = () => {
         </button>
       </div>
 
-      <EmployeeCount />
+      <UserStats
+        countsByRole={data?.userStats.countsByRole}
+        isLoading={isLoading}
+      />
 
-     <UserTable/>
+      <UserTable />
     </div>
   );
 };
