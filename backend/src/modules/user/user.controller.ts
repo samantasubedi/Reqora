@@ -1,25 +1,23 @@
 import { prisma } from "../../lib/prisma";
-import { Request, Response } from "express";
-export const getProfileInfo = async (req: Request, res: Response) => {
-  const email = res.locals.user.email;
-
-  if (!email) {
-    throw new Error("authorization failed");
-  }
+import { NextFunction, Request, Response } from "express";
+import { appError } from "../../utils/appError";
+import {
+  findUserDetailsByEmail,
+  findUsersByCompanyId,
+} from "./user.repository";
+//Private routes, accessible by that specific user only
+export const getProfileInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userInfo = await prisma.user.findUnique({
-      where: { email },
-      select: {
-        username: true,
-        role: true,
-        description: true,
+    const email = res.locals.user.email;
 
-        company: { select: { companyName: true, email: true, address: true } },
-      },
-    });
+    const userInfo = await findUserDetailsByEmail({ email });
 
     if (!userInfo) {
-      throw new Error("user not found");
+      throw new appError(404, "NOT_FOUND", "user not found");
     }
     const { username, role, description } = userInfo;
     const {
@@ -38,35 +36,45 @@ export const getProfileInfo = async (req: Request, res: Response) => {
       description,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      code: "SERVER_ERROR",
-      message: "server error",
-    });
+    next(err);
   }
 };
-export const getAllUsers = async (req: Request, res: Response) => {
-  const companyId = res.locals.user.companyId;
-  let users;
+export const editUser = (req: Request, res: Response) => {
+  res.json({
+    message: "this edits the existing user info like name,personal details",
+  });
+};
+//general user routes, accessible by company
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    users = await prisma.user.findMany({
-      where: {
-        companyId,
-      },
+    const companyId = res.locals.user.companyId;
+    const { skip, take } = res.locals.query;
+    const users = await findUsersByCompanyId({ companyId, skip, take });
+    const countsByRole = await prisma.user.groupBy({
+      by: ["role"],
+      _count: true,
+      where: { companyId },
     });
-  } catch (err) {}
-  res.json({ message: ``, users });
+    return res.status(200).json({
+      success: true,
+      code: "USERS_RETRIVED",
+      data: users,
+      countsByRole,
+      message: "users retrived successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 export const getSpecificUser = (req: Request, res: Response) => {
   const id = req.params.id;
   res.send(`this gets user data for specific user with id ${id}`);
 };
 
-export const editUser = (req: Request, res: Response) => {
-  res.json({
-    message: "this edits the existing user info like name,personal details",
-  });
-};
 export const changeUserRole = (req: Request, res: Response) => {
   res.json({ message: "used to change the userroles by admin" });
 };

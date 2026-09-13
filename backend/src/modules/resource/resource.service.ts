@@ -33,11 +33,13 @@ export const findAllResourcesService = async ({
     availableQuantity,
   });
   const countsByStatus = await prisma.resource.groupBy({
+    where: { companyId },
     by: ["status"],
     _count: true,
   });
 
   const countsByType = await prisma.resource.groupBy({
+    where: { companyId },
     by: ["type"],
     _count: true,
   });
@@ -62,4 +64,3 @@ export const findAllResourcesService = async ({
     totalResources: totalCountWithoutFilters,
   };
 };
-

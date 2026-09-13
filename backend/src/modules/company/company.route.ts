@@ -36,4 +36,5 @@ router.post("/join/byEmail", validate(joinByEmailSchema), joinByEmail);
 router.post("/join/byCode", validate(joinByCodeSchema), joinByCode);
 router.post("/leave", leaveCompany);
 router.get("/analytics", roleMiddleware(["admin"]), getAnalytics);
+
 export default router;

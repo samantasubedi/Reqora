@@ -4,7 +4,7 @@ import { pageHelper } from "../utils/pageHelper";
 
 export type T_QueryFilters = {
   // Shared
-  search?: string;
+  search: string|undefined,
   skip: number;
   take: number;
   pageNumber: number;
@@ -13,9 +13,10 @@ export type T_QueryFilters = {
   // Resource
   resourceStatus: ResourceStatus | undefined;
   resourceTypeSearch: string | undefined;
-
   resourceAvailableQuantity: number | undefined;
   resourceDepartmentSearch: string | undefined;
+  //users
+  
 };
 
 export const parseQueryFilters = (
