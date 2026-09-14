@@ -132,7 +132,7 @@ export const UserTable = () => {
   const [filters, setFilters] = useState<FilterValues>({});
   const tableFilter: FilterConfig[] = [
     {
-      key: "role",
+      key: "userRole",
       title: "Role",
       type: "dropdown",
       options: [
@@ -142,7 +142,7 @@ export const UserTable = () => {
       ],
     },
     {
-      key: "department",
+      key: "userDepartmentSearch",
       title: "Department",
       type: "input",
       placeholder: "Search by user department",

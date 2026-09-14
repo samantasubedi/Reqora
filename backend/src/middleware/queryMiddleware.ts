@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { ResourceStatus } from "../generated/prisma/enums";
+import { ResourceStatus, Role } from "../generated/prisma/enums";
 import { pageHelper } from "../utils/pageHelper";
 
 export type T_QueryFilters = {
   // Shared
-  search: string|undefined,
+  search: string | undefined;
   skip: number;
   take: number;
   pageNumber: number;
@@ -16,7 +16,8 @@ export type T_QueryFilters = {
   resourceAvailableQuantity: number | undefined;
   resourceDepartmentSearch: string | undefined;
   //users
-  
+  userRole: string | undefined;
+  userDepartmentSearch: string | undefined;
 };
 
 export const parseQueryFilters = (
@@ -51,6 +52,12 @@ export const parseQueryFilters = (
       : undefined,
     resourceDepartmentSearch: query.resourceDepartmentSearch
       ? String(query.resourceDepartmentSearch)
+      : undefined,
+
+    //users
+    userRole: query.userRole ? String(query.userRole) : undefined,
+    userDepartmentSearch: query.userDepartmentSearch
+      ? String(query.userDepartmentSearch)
       : undefined,
   };
 

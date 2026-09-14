@@ -1,3 +1,4 @@
+import { Role } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 export const findUserDetailsByEmail = async ({ email }: { email: string }) => {
@@ -17,16 +18,22 @@ export const findUsersByCompanyId = async ({
   skip,
   take,
   search,
+  userRole,
+  userDepartmentSearch,
 }: {
   companyId: string;
   skip: number;
   take: number;
   search: string;
+  userRole: Role;
+  userDepartmentSearch: string;
 }) => {
   return prisma.user.findMany({
     where: {
       companyId,
+      role: userRole,
       username: { contains: search },
+      department: { contains: userDepartmentSearch },
     },
     select: {
       id: true,
