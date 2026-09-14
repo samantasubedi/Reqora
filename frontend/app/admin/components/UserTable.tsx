@@ -8,7 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Delete, Edit, EllipsisVertical, View } from "lucide-react";
+import {
+  Delete,
+  Edit,
+  EllipsisVertical,
+  Plus,
+  UserX,
+  View,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import TableEmpty from "./emptyStates/TableEmpty";
+import TableEmpty, { tableEmptyType } from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
 import { calculatePages } from "@/lib/HelperFunctions";
@@ -96,6 +103,17 @@ export const UserTable = () => {
       render: (user: userType) => React.ReactNode;
     }[]
   >(defaultTableFields);
+  const tableEmptyProps: tableEmptyType = {
+    colSpan: tableFields.length + 1,
+    header: "No users found !",
+    headerIcon: UserX,
+
+    button: {
+      buttonText: "Invite Users",
+      link: "admin/users/invite",
+      buttonIcon: Plus,
+    },
+  };
 
   const handleTableField = (fieldKey: string) => {
     let newFields;
@@ -295,11 +313,11 @@ export const UserTable = () => {
                           </DropdownMenuItem>
                           <DropdownMenuItem className="cursor-pointer">
                             <Edit className="text-yellow-500" />
-                            Edit
+                            Change roles
                           </DropdownMenuItem>
                           <DropdownMenuItem className="cursor-pointer">
                             <Delete className="text-red-500" />
-                            Delete
+                            Remove user
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -308,7 +326,7 @@ export const UserTable = () => {
                 );
               })
             ) : (
-              <TableEmpty colSpan={tableFields.length + 1} />
+              <TableEmpty {...tableEmptyProps} />
             )}
           </TableBody>
         )}

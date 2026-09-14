@@ -9,7 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Delete, Edit, EllipsisVertical, FilterIcon, View } from "lucide-react";
+import {
+  Delete,
+  Edit,
+  EllipsisVertical,
+  FilterIcon,
+  PackageX,
+  Plus,
+  View,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
@@ -26,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import TableEmpty from "./emptyStates/TableEmpty";
+import TableEmpty, { tableEmptyType } from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
@@ -102,6 +110,17 @@ export const ResourceTable = () => {
       render: (resource: resourceType) => React.ReactNode;
     }[]
   >(defaultTableFields);
+  const tableEmptyProps: tableEmptyType = {
+    colSpan: tableFields.length + 1,
+    header: "No resources found !",
+    headerIcon: PackageX,
+
+    button: {
+      buttonText: "Add Resource",
+      link: "/admin/resources/add",
+      buttonIcon: Plus,
+    },
+  };
 
   const handleTableField = (fieldKey: string) => {
     let newFields;
@@ -331,7 +350,7 @@ export const ResourceTable = () => {
                 );
               })
             ) : (
-              <TableEmpty colSpan={tableFields.length + 1} />
+              <TableEmpty {...tableEmptyProps} />
             )}
           </TableBody>
         )}
