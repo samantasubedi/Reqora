@@ -1,8 +1,10 @@
 "use client";
 
-import { UserTable } from "../components/UserTable";
-import UserStats from "../components/UserStats";
-import { useAnalytics } from "../hooks/companyHooks";
+import { UserTable } from "../../components/UserTable";
+import UserStats from "../../components/UserStats";
+import { useAnalytics } from "../../hooks/companyHooks";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Page = () => {
   const { data, isLoading, isSuccess } = useAnalytics();
@@ -16,9 +18,9 @@ const Page = () => {
           </p>
         </div>
 
-        <button className="rounded-lg bg-primary px-4 py-2 text-primary-foreground">
-          Invite Users
-        </button>
+        <Button className="cursor-pointer flex ">
+          Invite Users <Plus />
+        </Button>
       </div>
 
       <UserStats

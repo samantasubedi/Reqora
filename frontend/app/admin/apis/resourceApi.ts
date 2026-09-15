@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 
 import { FilterValues } from "@/components/global/Filter";
 import { ParamValue } from "next/dist/server/request/params";
-import { resourceType } from "../resources/page";
+import { resourceType } from "../resources/(with-sidebar)/page";
 import {
   countsByStatusType,
   countsByTypeType,

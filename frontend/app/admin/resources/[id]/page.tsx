@@ -194,21 +194,9 @@ const ResourceDetails = () => {
 
           <ResourceTabs />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Description</CardTitle>
-            </CardHeader>
-
-            <CardContent>
-              <p className="leading-7 text-muted-foreground">
-                {resourceDetail.description
-                  ? resourceDetail.description
-                  : "No description available "}
-              </p>
-            </CardContent>
-          </Card>
+     
         </div>
-        <div className="space-y-6">
+        <div className="space-y-6 ">
           <Card>
             <CardHeader>
               <CardTitle>Availability</CardTitle>
@@ -226,6 +214,19 @@ const ResourceDetails = () => {
 
                 <Progress value={percentage} />
               </div>
+            </CardContent>
+          </Card>
+               <Card>
+            <CardHeader>
+              <CardTitle>Description</CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <p className="leading-7 text-muted-foreground">
+                {resourceDetail.description
+                  ? resourceDetail.description
+                  : "No description available "}
+              </p>
             </CardContent>
           </Card>
         </div>

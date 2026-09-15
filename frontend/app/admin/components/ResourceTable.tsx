@@ -39,7 +39,7 @@ import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
 import { calculatePages } from "@/lib/HelperFunctions";
-import { ResourceStatus, resourceType } from "../resources/page";
+import { ResourceStatus, resourceType } from "../resources/(with-sidebar)/page";
 
 export const ResourceTable = () => {
   const router = useRouter();

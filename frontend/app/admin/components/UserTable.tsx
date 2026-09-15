@@ -35,7 +35,8 @@ import TableEmpty, { tableEmptyType } from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
 import { calculatePages } from "@/lib/HelperFunctions";
-import { useUserTable } from "../hooks/companyHooks";
+import { useUserTable } from "../hooks/userHooks";
+import { useRouter } from "next/navigation";
 
 export type userType = {
   id: string;
@@ -95,7 +96,7 @@ export const UserTable = () => {
       },
     },
   ];
-
+const router=useRouter()
   const [tableFields, setTableFields] = useState<
     {
       label: string;
@@ -293,7 +294,7 @@ export const UserTable = () => {
             {isSuccess && users?.length ? (
               users.map((user) => {
                 return (
-                  <TableRow key={user.id}>
+                  <TableRow key={user.id} onClick={()=>{router.push(`/admin/users/${user.id}`)}}>
                     {tableFields.map((field) => {
                       return (
                         <TableCell key={field.key}>
