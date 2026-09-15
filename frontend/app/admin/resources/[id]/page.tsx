@@ -88,7 +88,7 @@ const ResourceDetails = () => {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center justify-between sticky top-3 ">
         <Button
           variant="ghost"

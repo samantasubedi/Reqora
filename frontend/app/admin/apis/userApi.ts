@@ -21,6 +21,8 @@ export const getAllUsersApi = async ({
   return response.data;
 };
 export const getUserDetailsApi = async ({ id }: { id: string }) => {
-  const response = await axios.get(`${backendUrl}/user/${id}`);
+  const response = await axios.get(`${backendUrl}/users/${id}`, {
+    withCredentials: true,
+  });
   return response.data;
 };
