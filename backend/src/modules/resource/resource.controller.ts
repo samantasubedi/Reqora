@@ -1,7 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
-import { findAllResourcesService } from "./resource.service";
+import { ResourceStatus } from "../../generated/prisma/enums";
+import { appError } from "../../utils/appError";
+import {
+  addResourceService,
+  deleteResourceService,
+  editResourceService,
+  findAllResourcesService,
+  getSpecificResourceService,
+  releaseResourceService,
+} from "./resource.service";
 import { T_QueryFilters } from "../../middleware/queryMiddleware";
+
 export const getAllResources = async (
   req: Request,
   res: Response,
@@ -13,9 +22,7 @@ export const getAllResources = async (
       skip,
       take,
       pageNumber,
-      pageLimit,
       search,
-      resourceStatus,
       resourceTypeSearch,
       resourceDepartmentSearch,
       resourceAvailableQuantity,
@@ -29,28 +36,44 @@ export const getAllResources = async (
       totalResources,
     } = await findAllResourcesService({
       companyId,
-      status: resourceStatus,
+      search,
       resourceTypeSearch,
       resourceDepartmentSearch,
       availableQuantity: resourceAvailableQuantity,
-      search,
       skip,
       take,
     });
 
-    const allResources = resources.map((curr) => ({
-      id: curr.id,
-      name: curr.name,
-      location: curr.location,
-      department: curr.department,
-      type: curr.type,
-      availability: curr.availability,
-      status: curr.status,
-      totalQuantity: curr.totalQuantity,
-      availableQuantity: curr.availableQuantity,
-      createdAt: curr.createdAt,
-      updatedAt: curr.updatedAt,
-    }));
+    const allResources = resources.map((resource) => {
+      const totalQuantity = resource.resourceItems.length;
+      const availableQuantity = resource.resourceItems.filter(
+        (item) => item.status === ResourceStatus.available,
+      ).length;
+      const inUseQuantity = resource.resourceItems.filter(
+        (item) => item.status === ResourceStatus.inUse,
+      ).length;
+      const underMaintenanceQuantity = resource.resourceItems.filter(
+        (item) => item.status === ResourceStatus.underMaintenance,
+      ).length;
+      const locations = [
+        ...new Set(resource.resourceItems.map((item) => item.location)),
+      ];
+
+      return {
+        id: resource.id,
+        name: resource.name,
+        type: resource.type,
+        department: resource.department?.name ?? null,
+        location: locations.join(", "),
+        availability: availableQuantity > 0,
+        totalQuantity,
+        availableQuantity,
+        inUseQuantity,
+        underMaintenanceQuantity,
+        createdAt: resource.createdAt,
+        updatedAt: resource.updatedAt,
+      };
+    });
 
     res.json({
       success: true,
@@ -69,177 +92,132 @@ export const getAllResources = async (
   }
 };
 
-export const addResource = async (req: Request, res: Response) => {
-  const {
-    resourceName: name,
-    quantity: totalQuantity,
-    type,
-    status,
-    department,
-    location,
-    description,
-  } = req.body; // we are renaming resourceName from frontend as name and so on for other fields to match the naming for db
-  if (!name || !location || !department || !totalQuantity || !type || !status) {
-    res.json({ message: "please provide all fields" });
-  }
-
+export const addResource = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const { companyId } = res.locals.user;
-    console.log("this is companyId", companyId);
-
+    const companyId = res.locals.user.companyId;
     if (!companyId) {
-      return res.status(400).json({
-        success: false,
-        code: "USER_NOT_ENROLLED",
-        message: "User does not belong to a company",
-      });
+      throw new appError(
+        400,
+        "USER_NOT_ENROLLED",
+        "User does not belong to a company",
+      );
     }
-    await prisma.resource.create({
-      data: {
-        name,
-        location,
-        department,
-        type,
-        availability: true,
-        status,
-        totalQuantity,
-        availableQuantity: totalQuantity,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        companyId,
-      },
+    const { resourceName, quantity, type, status, locationAssignment, departmentId } =
+      req.body;
+    const resource = await addResourceService({
+      resourceName,
+      quantity,
+      type,
+      status,
+      locationAssignment,
+      departmentId,
+      companyId,
     });
 
     return res.status(201).json({
       success: true,
       code: "RESOURCE_ADDED",
       message: "resource added successfully",
+      data: resource,
     });
   } catch (err) {
-    console.log(err);
-    return res.status(400).json({
-      error: err,
-      success: false,
-      code: "SERVER_ERROR",
-      message: "server error",
-    });
+    next(err);
   }
-};
-type params = {
-  id: string;
-};
-export const getSpecificResource = async (
-  req: Request<params>,
-  res: Response,
-) => {
-  const id = req.params.id;
-  const companyId = res.locals.user.companyId;
-  if (!id) {
-    return res.status(400).json({
-      success: false,
-      code: "ID_NOT_FOUND",
-      message: "please provide an id",
-    });
-  }
-  const resourceDetail = await prisma.resource.findUnique({
-    where: { id, companyId },
-  });
-  if (!resourceDetail) {
-    return res.status(404).json({
-      success: false,
-      code: "INVALID_ID",
-      message: "invalid id ",
-    });
-  }
-  return res.status(200).json({
-    success: true,
-    code: "SUCCESSFULL",
-    message: "resource detail retrived successfully",
-    resourceDetail,
-  });
 };
 
-export const editResource = async (req: Request, res: Response) => {
-  const { id, name, location, department, totalQuantity } = req.body;
-  if (!id || !name || !location || !department || !totalQuantity) {
-    return res.status(400).json({
-      success: false,
-      message: "please provide all fields",
-      code: "MISSING_FIELDS",
-    });
-  }
-  const companyId = res.locals.user.companyId;
-  console.log("this is company id ", companyId);
-  const updatedAt = new Date();
-  if (!id) {
-    return res
-      .status(400)
-      .json({ message: "please provide an id", success: false });
-  }
+export const getSpecificResource = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const resourceData = await prisma.resource.findUnique({
-      where: { id, companyId },
-    });
-    if (!resourceData) {
-      return res.status(400).json({
-        success: false,
-        message: "resource not found",
-        code: "INVALID_ID",
-      });
+    const id = req.params.id as string;
+    if (!id) {
+      throw new appError(400, "ID_NOT_FOUND", "please provide an id");
     }
-    const editedResource = await prisma.resource.update({
-      where: { id },
-      data: {
-        name,
-        location,
-        department,
-        totalQuantity,
-        updatedAt,
-        companyId,
-      },
+    const companyId = res.locals.user.companyId;
+    const { resourceStatus } = res.locals.query as T_QueryFilters;
+    const resourceDetail = await getSpecificResourceService({
+      id,
+      companyId,
+      status: resourceStatus,
     });
-    res.status(201).json({
+
+    return res.status(200).json({
+      success: true,
+      code: "SUCCESSFULL",
+      message: "resource detail retrived successfully",
+      resourceDetail,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const editResource = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const companyId = res.locals.user.companyId;
+    const { id, name, type, departmentId, location, quantity } = req.body;
+    await editResourceService({
+      id,
+      name,
+      type,
+      departmentId,
+      location,
+      quantity,
+      companyId,
+    });
+    return res.status(201).json({
       message: "Resource updated successfully",
       code: "RESOURCE_UPDATED",
       success: true,
     });
   } catch (err) {
-    console.log(err);
-    return res.status(400).json({
-      error: err,
-      success: false,
-      code: "SERVER_ERROR",
-      message: "server error",
-    });
+    next(err);
   }
 };
-export const deleteResource = async (req: Request, res: Response) => {
-  const id = req.body.id;
-  const companyId = res.locals.companyId;
-  if (!id) {
-    return res.json({
-      message: "please provide an id",
-    });
-  }
+
+export const deleteResource = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    await prisma.resource.delete({
-      where: { id, companyId },
-    });
+    const { id } = req.body;
+    const companyId = res.locals.user.companyId;
+    if (!id) {
+      throw new appError(400, "ID_NOT_FOUND", "please provide an id");
+    }
+    await deleteResourceService({ id, companyId });
     res.json({ message: "resource deleted successfully", success: true });
   } catch (err) {
-    console.log(err);
-    return res.status(400).json({
-      error: err,
-      success: false,
-      code: "SERVER_ERROR",
-      message: "server error",
-    });
+    next(err);
   }
 };
-export const releaseResource = async (req: Request, res: Response) => {
-  const { resourceId } = req.body;
-  const { email, companyId } = res.locals.user;
+
+export const releaseResource = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-  } catch (err) {}
-  await prisma.user.findUnique({ where: email, select: {} });
+    const { resourceItemId } = req.body;
+    const { email, companyId } = res.locals.user;
+    await releaseResourceService({ resourceItemId, email, companyId });
+    return res.json({
+      success: true,
+      code: "RESOURCE_RELEASED",
+      message: "resource item released successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
 };

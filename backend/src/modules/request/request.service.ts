@@ -1,7 +1,11 @@
 import { appError } from "../../utils/appError";
+import { ResourceStatus } from "../../generated/prisma/enums";
 import { findByUsername } from "../auth/auth.repository";
 import { findUserByEmail } from "../company/company.repository";
-import { findResourceById } from "../resource/resource.repository";
+import {
+  findResourceById,
+  findResourceDetailsById,
+} from "../resource/resource.repository";
 import {
   createRequest,
   findRequestById,
@@ -82,11 +86,15 @@ export const createRequestService = async ({
   if (!userDetails) {
     throw new appError(400, "INVALID_EMAIL", "unable to retrive user details");
   }
-  const resourceDetails = await findResourceById({ id: resourceId });
+  const resourceDetails = await findResourceDetailsById({ id: resourceId });
   if (!resourceDetails) {
     throw new appError(400, "INVALID_ID", "unable to retrive resource details");
   }
-  const availableQuantity = resourceDetails.availableQuantity;
+
+  const availableQuantity = resourceDetails.resourceItems.filter(
+    (item) => item.status === ResourceStatus.available,
+  ).length;
+
   if (availableQuantity < requestedQuantity) {
     throw new appError(
       400,

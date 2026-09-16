@@ -30,3 +30,12 @@ export const joinByEmailSchema=z.object({
 export const joinByCodeSchema=z.object({
   joinCode:z.string().min(1,"join code is required")
 })
+
+export const addDepartmentSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "department name is required")
+    .min(3, "department name must be at least 3 characters"),
+});
+export type addDepartmentType = z.infer<typeof addDepartmentSchema>;

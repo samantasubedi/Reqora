@@ -24,16 +24,20 @@ export const findUsersByCompanyId = async ({
   companyId: string;
   skip: number;
   take: number;
-  search: string;
-  userRole: Role;
-  userDepartmentSearch: string;
+  search?: string;
+  userRole?: Role;
+  userDepartmentSearch?: string;
 }) => {
   return prisma.user.findMany({
     where: {
       companyId,
-      role: userRole,
-      username: { contains: search },
-      department: { contains: userDepartmentSearch },
+      role: userRole ?? undefined,
+      username: search ? { contains: search } : undefined,
+      department: userDepartmentSearch
+        ? {
+            is: { name: { contains: userDepartmentSearch } },
+          }
+        : undefined,
     },
     select: {
       id: true,

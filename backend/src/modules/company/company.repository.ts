@@ -197,6 +197,51 @@ export const updateUserAndJoinCode = async ({
     }),
   ]);
 };
+export const findDepartmentsByCompanyId = async ({
+  companyId,
+}: {
+  companyId: string;
+}) => {
+  return prisma.department.findMany({
+    where: { companyId },
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: { users: true, resources: true },
+      },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+};
+export const createDepartment = async ({
+  name,
+  companyId,
+}: {
+  name: string;
+  companyId: string;
+}) => {
+  return prisma.department.create({
+    data: {
+      name,
+      companyId,
+    },
+  });
+};
+export const findDepartmentByName = async ({
+  name,
+  companyId,
+}: {
+  name: string;
+  companyId: string;
+}) => {
+  return prisma.department.findFirst({
+    where: {
+      companyId,
+      name,
+    },
+  });
+};
 export const leaveCompanyRepo = async ({ email }: { email: string }) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {

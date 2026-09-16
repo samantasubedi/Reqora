@@ -8,6 +8,8 @@ import {
   joinByCodeService,
   joinByEmailService,
   leaveCompanyService,
+  getDepartmentsService,
+  addDepartmentService,
 } from "./company.service";
 import { setCookie } from "../../utils/setCookie";
 
@@ -199,6 +201,44 @@ export const leaveCompany = async (
     next(err);
   }
 };
+export const getDepartments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const companyId = res.locals.user.companyId;
+    const departments = await getDepartmentsService({ companyId });
+    res.json({
+      success: true,
+      message: "departments fetched successfully",
+      departments,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const addDepartment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const companyId = res.locals.user.companyId;
+    const { name } = req.body;
+    const department = await addDepartmentService({ name, companyId });
+    res.status(201).json({
+      success: true,
+      code: "DEPARTMENT_ADDED",
+      message: "department added successfully",
+      data: department,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getAnalytics = async (
   req: Request,
   res: Response,

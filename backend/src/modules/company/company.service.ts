@@ -14,6 +14,9 @@ import {
   leaveCompanyRepo,
   findDepartmentById,
   countAdminsInCompany,
+  findDepartmentsByCompanyId,
+  createDepartment,
+  findDepartmentByName,
 } from "./company.repository";
 import crypto from "crypto";
 import {
@@ -239,6 +242,44 @@ export const joinByCodeService = async ({
     departmentId: retrivedCode.departmentId,
   });
   return result;
+};
+export const getDepartmentsService = async ({
+  companyId,
+}: {
+  companyId: string;
+}) => {
+  if (!companyId) {
+    throw new appError(
+      400,
+      "USER_NOT_ENROLLED",
+      "User does not belong to a company",
+    );
+  }
+  return findDepartmentsByCompanyId({ companyId });
+};
+export const addDepartmentService = async ({
+  name,
+  companyId,
+}: {
+  name: string;
+  companyId: string;
+}) => {
+  if (!companyId) {
+    throw new appError(
+      400,
+      "USER_NOT_ENROLLED",
+      "User does not belong to a company",
+    );
+  }
+  const duplicate = await findDepartmentByName({ name, companyId });
+  if (duplicate) {
+    throw new appError(
+      400,
+      "DUPLICATE_DEPARTMENT",
+      "department already exists in this company",
+    );
+  }
+  return createDepartment({ name, companyId });
 };
 export const leaveCompanyService = async ({
   email,

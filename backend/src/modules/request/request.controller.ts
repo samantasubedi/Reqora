@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { ResourceStatus } from "../../generated/prisma/enums";
 import { findByUsername } from "../auth/auth.repository";
 import {
   createRequestService,
@@ -114,10 +115,30 @@ export const handleReview = async (req: Request, res: Response) => {
     where: { id: requestId },
     data: { reviewedById: idObj.id, status },
   });
-  await prisma.resource.update({
-    where: { id: requestDetails.resourceId },
+
+  const availableItems = await prisma.resourceItem.findMany({
+    where: {
+      resourceId: requestDetails.resourceId,
+      status: ResourceStatus.available,
+    },
+    orderBy: { createdAt: "asc" },
+    take: requestDetails.requestedQuantity,
+    select: { id: true },
+  });
+
+  if (availableItems.length < requestDetails.requestedQuantity) {
+    return res.status(400).json({
+      success: false,
+      code: "INSUFFICIENT_RESOURCE_ITEMS",
+      message: "not enough available resource items to fulfill this request",
+    });
+  }
+
+  await prisma.resourceItem.updateMany({
+    where: { id: { in: availableItems.map((item) => item.id) } },
     data: {
-      availableQuantity: { decrement: requestDetails.requestedQuantity },
+      status: ResourceStatus.inUse,
+      acquiredById: idObj.id,
     },
   });
 
