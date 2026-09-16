@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { T_MutaionError } from "@/types/global";
+import { T_MutationError } from "@/types/global";
 const schema = z.object({
   companyName: z
     .string({ message: "Name is required" })
@@ -70,7 +70,7 @@ const page = () => {
         toast.success(data.message);
       router.push("/admin/dashboard");
     },
-    onError: (error: T_MutaionError) => {
+    onError: (error: T_MutationError) => {
       if (error.response?.data.code == "DUPLICATE_EMAIL") {
         setError("email", { message: error.response.data.message });
       }

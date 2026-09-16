@@ -20,7 +20,7 @@ const Page = () => {
   useEffect(() => {
     const getUserStatus = async () => {
       try {
-        const userInfo = await axios.post(`${backendUrl}/isloggedIn`, null, {
+        const userInfo = await axios.post(`${backendUrl}/isloggedin`, null, {
           withCredentials: true,
         });
         const role = userInfo.data.role;

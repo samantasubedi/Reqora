@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { T_MutaionError } from "@/types/global";
+import { T_MutationError } from "@/types/global";
 import SelectBox from "@/components/others/SelectBox";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -112,7 +112,7 @@ const Page = () => {
         toast.success(data.message);
         setNewDepartmentName("");
       },
-      onError: (error: T_MutaionError) => {
+      onError: (error: T_MutationError) => {
         toast.error(error.response?.data?.message || error.message);
       },
     });
@@ -151,7 +151,7 @@ const Page = () => {
       setLocationGroups([{ location: "", quantity: "" }]);
       router.push("/admin/dashboard");
     },
-    onError: (error: T_MutaionError) => {
+    onError: (error: T_MutationError) => {
       toast.error(error.response?.data?.message || error.message);
     },
   });

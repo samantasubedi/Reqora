@@ -33,7 +33,7 @@ const Page = () => {
         try {
           const response = await axios.post(
             `${backendUrl}/join/byEmail`,
-            { code: token },
+            { joinToken: token },
             {
               withCredentials: true,
             },

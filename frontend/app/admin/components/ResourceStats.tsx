@@ -10,7 +10,7 @@ import {
 export interface statCardInterface {
   title: string;
   number: number;
-  statusKey?: "all" | "available" | "inUse" | "underMaintainence";
+  statusKey?: "all" | "available" | "inUse" | "underMaintenance";
   IconName?: LucideIcon;
   subtext?: string;
   bgColor: string;
@@ -57,7 +57,7 @@ const ResourceStats = ({
     },
     {
       title: "Under Maintenance",
-      statusKey: "underMaintainence",
+      statusKey: "underMaintenance",
       IconName: CircleAlert,
       bgColor: "bg-red-100",
       textColor: "text-red-800",

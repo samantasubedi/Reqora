@@ -5,6 +5,7 @@ import {
   getAnalyticsApi,
   fetchDepartmentsApi,
 } from "../apis/companyApi";
+import { T_MutationError } from "@/types/global";
 
 export const useAnalytics = () => {
   return useQuery({
@@ -22,7 +23,11 @@ export const useDepartments = () => {
 
 export const useAddDepartment = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<
+    Awaited<ReturnType<typeof addDepartmentApi>>,
+    T_MutationError,
+    string
+  >({
     mutationFn: addDepartmentApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["departments"] });

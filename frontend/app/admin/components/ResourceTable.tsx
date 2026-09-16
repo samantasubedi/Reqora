@@ -19,7 +19,6 @@ import {
   View,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -39,7 +38,8 @@ import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import { useTableResources } from "../hooks/resourceHooks";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
 import { calculatePages } from "@/lib/HelperFunctions";
-import { ResourceStatus, resourceType } from "../resources/(with-sidebar)/page";
+import { resourceType } from "../resources/(with-sidebar)/page";
+import { Progress } from "@/components/ui/progress";
 
 export const ResourceTable = () => {
   const router = useRouter();
@@ -70,13 +70,6 @@ export const ResourceTable = () => {
       },
     },
     {
-      label: "Status",
-      key: "status",
-      render: (resource) => {
-        return <Badge variant={"outline"}>{resource.status}</Badge>;
-      },
-    },
-    {
       label: "Department",
       key: "department",
       render: (resource) => {
@@ -94,10 +87,17 @@ export const ResourceTable = () => {
       label: "Availabitly",
       key: "availability",
       render: (resource) => {
+        const percentage =
+          resource.totalQuantity > 0
+            ? (resource.availableQuantity / resource.totalQuantity) * 100
+            : 0;
         return (
-          <span>
-            {(resource.availableQuantity / resource.totalQuantity) * 100}%
-          </span>
+          <div className="flex items-center gap-2 min-w-32">
+            <Progress value={percentage} className="flex-1" />
+            <span className="w-10 text-right text-xs text-muted-foreground">
+              {percentage.toFixed(0)}%
+            </span>
+          </div>
         );
       },
     },
@@ -156,16 +156,6 @@ export const ResourceTable = () => {
   }, [searchText]);
   const [filters, setFilters] = useState<FilterValues>({});
   const tableFilter: FilterConfig[] = [
-    {
-      key: "resourceStatus",
-      title: "Status",
-      type: "dropdown",
-      options: [
-        { label: "Available", value: "available" },
-        { label: "In use", value: "inUse" },
-        { label: "Under Maintenance", value: "underMaintainence" },
-      ],
-    },
     {
       key: "resourceTypeSearch",
       title: "Type",
@@ -305,7 +295,6 @@ export const ResourceTable = () => {
           <TableBody>
             {isSuccess && data.allResources.length ? (
               data.allResources.map((resource) => {
-                const statusDetails = getStatusDisaplay(resource.status);
                 return (
                   <TableRow
                     key={resource.id}
@@ -330,7 +319,7 @@ export const ResourceTable = () => {
                           <DropdownMenuItem
                             className="cursor-pointer"
                             onClick={() => {
-                              router.push(`/resources/${resource.id}`);
+                              router.push(`/admin/resources/${resource.id}`);
                             }}
                           >
                             <View className="text-blue-500" /> view Details
@@ -380,17 +369,4 @@ export const ResourceTable = () => {
       </Table>
     </div>
   );
-};
-
-export const getStatusDisaplay = (status: ResourceStatus) => {
-  switch (status) {
-    case ResourceStatus.available:
-      return { display: "Available", color: "bg-green-200" };
-    case ResourceStatus.inUse:
-      return { display: "In Use", color: "bg-yellow-200" };
-    case ResourceStatus.underMaintainence:
-      return { display: "Under Maintainence", color: "bg-red-200" };
-    default:
-      return { display: status, color: "bg-red-200" };
-  }
 };

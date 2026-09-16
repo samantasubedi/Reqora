@@ -6,15 +6,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Building2, Mail, User as UserIcon } from "lucide-react";
+import { userType } from "./UserTable";
 
-type UserData = {
-  username: string;
-  email: string;
-  role: string | null;
-  department: string | null;
-  description: string | null;
-  company: { companyName: string } | null;
-};
 
 const roleBadgeStyle: Record<string, string> = {
   admin: "bg-red-100 text-red-700 border-red-200",
@@ -22,7 +15,7 @@ const roleBadgeStyle: Record<string, string> = {
   employee: "bg-green-100 text-green-700 border-green-200",
 };
 
-export default function UserDetailsCard({ user }: { user: UserData }) {
+export default function UserDetailsCard({ user }: { user: userType }) {
   const initials = user.username
     .split(" ")
     .map((w) => w[0])
@@ -61,7 +54,7 @@ export default function UserDetailsCard({ user }: { user: UserData }) {
             <p className="text-sm font-medium text-muted-foreground">
               Department
             </p>
-            <p className="text-sm">{user.department ?? "N/A"}</p>
+            <p className="text-sm">{user.department?.name?? "N/A"}</p>
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">Company</p>

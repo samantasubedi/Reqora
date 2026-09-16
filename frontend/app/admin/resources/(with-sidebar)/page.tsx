@@ -8,30 +8,33 @@ import { Plus } from "lucide-react";
 export enum ResourceStatus {
   available = "available",
   inUse = "inUse",
-  underMaintainence = "underMaintainence",
+  underMaintenance = "underMaintenance",
 }
 export type resourceType = {
   id: string;
   name: string;
   location: string;
-  department: string;
+  department: string | null;
   type: string;
   availability: boolean;
-  status: ResourceStatus;
   totalQuantity: number;
   availableQuantity: number;
+  inUseQuantity: number;
+  underMaintenanceQuantity: number;
   createdAt: string;
   updatedAt: string;
 };
 export type tableResourceType = {
   id: string;
   name: string;
-  status: ResourceStatus;
   type: string;
-  department: string;
+  department: string | null;
   location: string;
   availability: boolean;
-  availabilityPercentage?: number;
+  totalQuantity: number;
+  availableQuantity: number;
+  inUseQuantity: number;
+  underMaintenanceQuantity: number;
 };
 const Page = () => {
   const router = useRouter();

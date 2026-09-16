@@ -17,11 +17,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { T_MutaionError } from "@/types/global";
+import { T_MutationError } from "@/types/global";
 import { CopyButton } from "@/components/animate-ui/components/buttons/copy";
 const schema = z.object({
   role: z.string().min(1, "please select a role"),
   expiryTime: z.coerce.number().min(1, "please select an expiry time"),
+  departmentId: z.string().min(1, "please select a department"),
 });
 export type codeInviteFormType = z.infer<typeof schema>;
 
@@ -52,7 +53,7 @@ const InviteCodeGenerator = () => {
         toast.success(data.message);
       }
     },
-    onError: (error: T_MutaionError) => {
+    onError: (error: T_MutationError) => {
       if (error.response) {
         toast.error(error.response.data.message);
       } else {
@@ -85,14 +86,21 @@ const InviteCodeGenerator = () => {
                   if (values.role) {
                     form.clearErrors("role");
                   }
+                  setValue("departmentId", values.departmentId);
+                  if (values.departmentId) {
+                    form.clearErrors("departmentId");
+                  }
                 }}
                 values={{
                   expiryTime: Number(watch("expiryTime")),
                   role: watch("role"),
+                  departmentId: watch("departmentId"),
                 }}
                 errors={{
                   roleError: form.formState.errors.role?.message,
                   expiryTimeError: form.formState.errors.expiryTime?.message,
+                  departmentIdError:
+                    form.formState.errors.departmentId?.message,
                 }}
               />
 

@@ -8,16 +8,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { T_MutaionError } from "@/types/global";
+import { T_MutationError } from "@/types/global";
 import RoleAndExpiryTime from "./RoleAndExpiryTime";
 import RoleSelector from "./RoleSelector";
 const schema = z.object({
   email: z.email("Please enter an email").min(1, "Please enter an email"),
   role: z.string("Please select a role").min(1, "Please select a role"),
-  description: z.string().optional(),
+  message: z.string().optional(),
   expiryTime: z.coerce
     .number()
     .min(1, "please provide an invitation expiry time"),
+  departmentId: z
+    .string("Please select a department")
+    .min(1, "Please select a department"),
 });
 export type emailInviteFormType = z.infer<typeof schema>;
 
@@ -54,7 +57,7 @@ const EmailInviteForm = () => {
         toast.success(data.message);
       }
     },
-    onError: (Error: T_MutaionError) => {
+    onError: (Error: T_MutationError) => {
       if (Error.response) {
         toast.error(Error.response?.data.message);
       } else {
@@ -93,16 +96,20 @@ const EmailInviteForm = () => {
                 errors={{
                   roleError: errors.role?.message,
                   expiryTimeError: errors.expiryTime?.message,
+                  departmentIdError: errors.departmentId?.message,
                 }}
                 values={{
                   expiryTime: Number(watch("expiryTime")),
                   role: watch("role"),
+                  departmentId: watch("departmentId"),
                 }}
                 onChange={(values) => {
                   setValue("role", values.role);
                   if (values.role) form.clearErrors("role");
                   setValue("expiryTime", values.expiryTime);
                   if (values.expiryTime) form.clearErrors("expiryTime");
+                  setValue("departmentId", values.departmentId);
+                  if (values.departmentId) form.clearErrors("departmentId");
                 }}
               />
 
@@ -111,7 +118,7 @@ const EmailInviteForm = () => {
                   Message
                 </label>
                 <textarea
-                  {...register("description")}
+                  {...register("message")}
                   rows={3}
                   placeholder="Write a message (optional)"
                   className="border border-border rounded-xl p-3 text-sm

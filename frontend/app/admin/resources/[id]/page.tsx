@@ -18,7 +18,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Progress } from "@/components/ui/progress";
-import { ResourceTabs } from "@/components/others/ResourceTabs";
+import {
+  ResourceTabs,
+  ResourceItemDetail,
+} from "@/components/others/ResourceTabs";
 import { useRouter } from "next/navigation";
 
 import { useResource } from "../../hooks/resourceHooks";
@@ -27,10 +30,9 @@ type ResourceDetail = {
   id: string;
   name: string;
   location: string;
-  department: string;
+  department: string | null;
   type: string;
   availability: boolean;
-  status: string;
   totalQuantity: number;
   inUseQuantity: number;
   underMaintenanceQuantity: number;
@@ -38,7 +40,7 @@ type ResourceDetail = {
   createdAt: string;
   updatedAt: string;
   companyId: string;
-  description?: string;
+  resourceItems: ResourceItemDetail[];
 };
 const ResourceDetails = () => {
   const router = useRouter();
@@ -129,7 +131,15 @@ const ResourceDetails = () => {
               </div>
             </div>
 
-            <Badge>{resourceDetail.status}</Badge>
+            <Badge
+              className={
+                resourceDetail.availability
+                  ? "border-green-500 text-green-700 bg-green-100"
+                  : "border-red-500 text-red-700 bg-red-100"
+              }
+            >
+              {resourceDetail.availability ? "Available" : "Not Available"}
+            </Badge>
           </div>
 
           <div className="grid grid-cols-4 gap-4">
@@ -192,9 +202,8 @@ const ResourceDetails = () => {
             </CardContent>
           </Card>
 
-          <ResourceTabs />
+          <ResourceTabs resourceItems={resourceDetail.resourceItems} />
 
-     
         </div>
         <div className="space-y-6 ">
           <Card>
@@ -214,19 +223,6 @@ const ResourceDetails = () => {
 
                 <Progress value={percentage} />
               </div>
-            </CardContent>
-          </Card>
-               <Card>
-            <CardHeader>
-              <CardTitle>Description</CardTitle>
-            </CardHeader>
-
-            <CardContent>
-              <p className="leading-7 text-muted-foreground">
-                {resourceDetail.description
-                  ? resourceDetail.description
-                  : "No description available "}
-              </p>
             </CardContent>
           </Card>
         </div>

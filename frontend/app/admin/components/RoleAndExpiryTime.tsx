@@ -1,17 +1,12 @@
 import React from "react";
-import {
-  FieldErrors,
-  useForm,
-  useFormContext,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormWatch,
-} from "react-hook-form";
-import { emailInviteFormType } from "./EmailInviteForm";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import SelectBox from "@/components/others/SelectBox";
+import { useDepartments } from "@/app/admin/hooks/companyHooks";
+
 type valuesType = {
   role: string;
   expiryTime: number;
+  departmentId: string;
 };
 type propType = {
   onChange: (values: valuesType) => void;
@@ -19,9 +14,17 @@ type propType = {
   errors: {
     roleError?: string;
     expiryTimeError?: string;
+    departmentIdError?: string;
   };
 };
 const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
+  const { data: departmentsData, isLoading: departmentsLoading } =
+    useDepartments();
+  const departmentOptions =
+    departmentsData?.departments.map((dept) => ({
+      label: dept.name,
+      value: dept.id,
+    })) ?? [];
   const roleArray = [
     {
       role: "Employee",
@@ -55,8 +58,7 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
                             : "bg-card border-border hover:bg-accent hover:border-primary"
                         }`}
                 onClick={() => {
-                  values.role = curr.role.toLowerCase();
-                  onChange(values);
+                  onChange({ ...values, role: curr.role.toLowerCase() });
                 }}
               >
                 <div>
@@ -79,12 +81,13 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-md font-medium text-card-foreground">Expiry Time</label>
+        <label className="text-md font-medium text-card-foreground">
+          Expiry Time
+        </label>
         <div>
           <RadioGroup
             onValueChange={(value) => {
-              values.expiryTime = Number(value);
-              onChange(values);
+              onChange({ ...values, expiryTime: Number(value) });
             }}
             className="flex w-full justify-between bg-card p-2 rounded-lg"
           >
@@ -126,6 +129,26 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
           </RadioGroup>
         </div>
         <p className="text-sm text-destructive">{errors?.expiryTimeError}</p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="text-md font-medium text-card-foreground">
+          Department
+        </label>
+        <SelectBox
+          label="department"
+          options={departmentOptions}
+          value={values.departmentId}
+          onChange={(v) => {
+            onChange({ ...values, departmentId: v });
+          }}
+        />
+        {departmentsLoading && (
+          <p className="text-sm text-muted-foreground">
+            Loading departments...
+          </p>
+        )}
+        <p className="text-sm text-destructive">{errors?.departmentIdError}</p>
       </div>
     </div>
   );

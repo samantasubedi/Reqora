@@ -43,7 +43,14 @@ export type userType = {
   username: string;
   email: string;
   role: string | null;
-  department: string | null;
+  department: {
+    name: string;
+    id: string;
+    companyId: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+  ,company:{ companyName: string } | null,
   description: string | null;
 };
 
@@ -85,18 +92,18 @@ export const UserTable = () => {
       label: "Department",
       key: "department",
       render: (user) => {
-        return user.department;
+        return user.department?.name ?? "N/A";
       },
     },
     {
       label: "Description",
       key: "description",
       render: (user) => {
-        return user.description;
+        return user.description??"N/A"
       },
     },
   ];
-const router=useRouter()
+  const router = useRouter();
   const [tableFields, setTableFields] = useState<
     {
       label: string;
@@ -294,7 +301,12 @@ const router=useRouter()
             {isSuccess && users?.length ? (
               users.map((user) => {
                 return (
-                  <TableRow key={user.id} onClick={()=>{router.push(`/admin/users/${user.id}`)}}>
+                  <TableRow
+                    key={user.id}
+                    onClick={() => {
+                      router.push(`/admin/users/${user.id}`);
+                    }}
+                  >
                     {tableFields.map((field) => {
                       return (
                         <TableCell key={field.key}>

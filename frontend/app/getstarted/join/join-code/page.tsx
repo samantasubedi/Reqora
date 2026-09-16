@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { T_MutaionError } from "@/types/global";
+import { T_MutationError } from "@/types/global";
 import { Icon } from "@iconify/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -23,7 +23,7 @@ const Page = () => {
   const postApi = async (code: string) => {
     const response = await axios.post(
       `${backendUrl}/join/byCode`,
-      { code },
+      { joinCode: code },
       {
         withCredentials: true,
       },
@@ -38,7 +38,7 @@ const Page = () => {
         router.push(`/${data.role}/dashboard`);
       }
     },
-    onError: (error: T_MutaionError) => {
+    onError: (error: T_MutationError) => {
       if (error.response) {
         toast.error(error.response?.data.message);
       } else {
