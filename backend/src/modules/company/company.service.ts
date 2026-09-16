@@ -1,18 +1,19 @@
 import { appError } from "../../utils/appError";
 import { findByUsername } from "../auth/auth.repository";
 import {
-  createCompanyRepo,
+  createCompanyWithAdminRepo,
   storeJoinToken,
   findCompanyByEmail,
   findCompanyByUsername,
   findUserByEmail,
-  updateUser,
   storeJoinCode,
   findJoinToken,
   updateUserAndJoinToken,
   findJoinCode,
   updateUserAndJoinCode,
   leaveCompanyRepo,
+  findDepartmentById,
+  countAdminsInCompany,
 } from "./company.repository";
 import crypto from "crypto";
 import {
@@ -40,34 +41,33 @@ export const createCompanyService = async ({
   }
 
   const userData = await findByUsername({ username });
-  if (userData?.enrolled) {
+    if (!userData) {
+    throw new appError(
+      404,
+      "USER_NOT_FOUND",
+      "User not found",
+    );}
+  if (userData.companyId) {
     throw new appError(
       400,
       "USER_ENROLLED",
       "user is already enrolled in a company,leave the current company to join new one",
     );
   }
-  const createdCompany = await createCompanyRepo({
+  return createCompanyWithAdminRepo({
     companyName,
     email,
     address,
     size,
-  });
-
-  const updatedUser = await updateUser({
-    role: "admin",
-    enrolled: true,
-    companyId: createdCompany.id,
     username,
   });
-
-  return { createdCompany, updatedUser };
 };
 export const emailInviteService = async ({
   email,
   role,
   message,
   expiryTime,
+  departmentId,
   adminUsername,
 }: emailInviteType & { adminUsername: string }) => {
   const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL!;
@@ -77,7 +77,7 @@ export const emailInviteService = async ({
   const companyEmail = process.env.COMPANY_EMAIL!;
   const invitedUser = await findUserByEmail({ email });
 
-  if (invitedUser?.enrolled === true) {
+  if (invitedUser?.companyId) {
     throw new appError(
       409,
       "ENROLLED",
@@ -91,10 +91,20 @@ export const emailInviteService = async ({
     return console.log("authentication failed!");
   }
 
+  const department = await findDepartmentById({ id: departmentId });
+  if (!department || department.companyId !== companyInfo.company.id) {
+    throw new appError(
+      400,
+      "INVALID_DEPARTMENT",
+      "department does not belong to this company",
+    );
+  }
+
   const createdToken = await storeJoinToken({
     email,
     token: hashedToken,
     companyId: companyInfo?.company?.id,
+    departmentId,
     role,
     expiresAt: new Date(Date.now() + expiryTime),
   });
@@ -110,6 +120,7 @@ export const emailInviteService = async ({
 export const generateCodeService = async ({
   role,
   expiryTime,
+  departmentId,
   email,
 }: generateCodeType & { email: string }) => {
   const joinCode = cryptoRandomString({ length: 10, type: "alphanumeric" });
@@ -122,10 +133,20 @@ export const generateCodeService = async ({
   if (!userInfo?.companyId) {
     throw new appError(500, "SERVER_ERROR", "unable to retrive user info");
   }
+
+  const department = await findDepartmentById({ id: departmentId });
+  if (!department || department.companyId !== userInfo.companyId) {
+    throw new appError(
+      400,
+      "INVALID_DEPARTMENT",
+      "department does not belong to your company",
+    );
+  }
   const expiresAt = new Date(Date.now() + expiryTime);
   const storedCode = await storeJoinCode({
     code: hashedJoinCode,
     companyId: userInfo.companyId,
+    departmentId,
     role,
     expiresAt,
   });
@@ -139,7 +160,12 @@ export const joinByEmailService = async ({
   joinToken: string;
 }) => {
   const userInfo = await findUserByEmail({ email });
-  if (userInfo?.enrolled) {
+
+  if (!userInfo) {
+    throw new appError(404, "USER_NOT_FOUND", "user not found");
+  }
+
+  if (userInfo.companyId) {
     throw new appError(
       409,
       "ENROLLED",
@@ -167,6 +193,7 @@ export const joinByEmailService = async ({
     email,
     role: retrivedToken.role,
     companyId: retrivedToken.companyId,
+    departmentId: retrivedToken.departmentId,
     token: hashedToken,
   });
 
@@ -194,7 +221,10 @@ export const joinByCodeService = async ({
     throw new appError(400, "CODE_EXPIRED", "Code has been expried");
   }
   const userInfo = await findUserByEmail({ email });
-  if (userInfo?.enrolled) {
+  if (!userInfo) {
+    throw new appError(404, "USER_NOT_FOUND", "user not found");
+  }
+  if (userInfo.companyId) {
     throw new appError(
       409,
       "ENROLLED",
@@ -206,25 +236,34 @@ export const joinByCodeService = async ({
     email,
     role: retrivedCode.role,
     companyId: retrivedCode.companyId,
+    departmentId: retrivedCode.departmentId,
   });
   return result;
 };
 export const leaveCompanyService = async ({
   email,
   role,
+  companyId,
 }: {
   email: string;
   role: string;
+  companyId: string;
 }) => {
-  if (role == "admin") {
-    throw new appError(
-      400,
-      "EXIT_FAILED",
-      "admin cannot leave thier own company",
-    );
-  }
-  if (!role) {
+  if (!companyId || !role) {
     throw new appError(400, "EXIT_FAILED", "user is not enrolled in company");
+  }
+  if (role == "admin") {
+    const adminCount = await countAdminsInCompany({
+      companyId,
+      excludeEmail: email,
+    });
+    if (adminCount === 0) {
+      throw new appError(
+        400,
+        "EXIT_FAILED",
+        "admin cannot leave their own company",
+      );
+    }
   }
   const result = await leaveCompanyRepo({ email });
   return result;
@@ -234,26 +273,36 @@ export const dashabordAnalyticsService = async ({
 }: {
   companyId: string;
 }) => {
-  const resourceCountsByStatus = await prisma.resource.groupBy({
+  const resourceCountsByStatus = await prisma.resourceItem.groupBy({
     by: ["status"],
     _count: true,
-    where: { companyId },
+    where: { resource: { companyId } },
   });
   const resourceCountsByType = await prisma.resource.groupBy({
     by: ["type"],
     _count: true,
     where: { companyId },
   });
-  const totalResourceCount = await prisma.resource.count();
+  const totalResourceCount = await prisma.resourceItem.count({
+    where: { resource: { companyId } },
+  });
   const userCountsByRole = await prisma.user.groupBy({
     by: ["role"],
     _count: true,
     where: { companyId },
   });
-  const userCountsByDepartment = await prisma.user.groupBy({
-    by: ["department"],
-    _count: true,
-    where: { companyId },
+  const userCountsByDepartments = await prisma.department.findMany({
+    where: {
+      companyId,
+    },
+    select: {
+      name: true,
+      _count: {
+        select: {
+          users: true,
+        },
+      },
+    },
   });
   return {
     resourceStats: {
@@ -265,7 +314,7 @@ export const dashabordAnalyticsService = async ({
     },
     userStats: {
       countsByRole: userCountsByRole,
-      countsByDepartment: userCountsByDepartment,
+      countsByDepartment: userCountsByDepartments,
     },
   };
 };

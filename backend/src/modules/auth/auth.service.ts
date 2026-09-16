@@ -32,7 +32,7 @@ export const loginUser = async ({ username, password }: loginType) => {
       "Incorrect username or password",
     );
   }
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  const isPasswordCorrect = await bcrypt.compare(password, user.passwordHash);
   if (!isPasswordCorrect) {
     throw new appError(
       401,
@@ -45,16 +45,18 @@ export const loginUser = async ({ username, password }: loginType) => {
       email: string;
       role?: string;
       companyId?: string | null;
+      departmentId?: string | null;
     } = {
       username,
       email: user.email,
     };
-    if (user.enrolled && user.role) {
+    if (user.companyId && user.role) {
       tokenData = {
         username,
         email: user.email,
         role: user.role,
         companyId: user.companyId,
+        departmentId: user.departmentId,
       };
     }
     const accessSecret = process.env.ACCESS_SECRET!;
@@ -94,22 +96,26 @@ export const refresh = async ({
     throw new appError(400, "USER_NOT_FOUND", "invalid token, user not found");
   }
 
-  let data;
-  if (userData?.enrolled) {
+  let data: {
+    username: string;
+    email: string;
+    role?: string | null;
+    companyId?: string | null;
+    departmentId?: string | null;
+  };
+  if (userData?.companyId && userData?.role) {
     data = {
       username: userData.username,
       email: userData.email,
       role: userData.role,
       companyId: userData.companyId,
+      departmentId: userData.departmentId,
     };
-  } else if (!userData?.enrolled) {
+  } else {
     data = {
       username: userData.username,
       email: userData.email,
     };
-  }
-  if (!data) {
-    throw new appError(400, "USER_NOT_FOUND", "invalid token, user not found");
   }
 
   const accessToken = jwt.sign(data, accessSecret, {

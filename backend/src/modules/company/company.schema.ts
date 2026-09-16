@@ -15,11 +15,13 @@ export const emailInviteSchema = z.object({
   role: z.enum(["admin", "manager", "employee"]),
   expiryTime: z.number(),
   message: z.string(),
+  departmentId: z.string().min(1, "department is required"),
 });
 export type emailInviteType = z.infer<typeof emailInviteSchema>;
 export const generateCodeSchema = z.object({
   role: z.enum(["admin", "manager", "employee"]),
   expiryTime: z.number().min(1, "expiry time is required"),
+  departmentId: z.string().min(1, "department is required"),
 });
 export type generateCodeType = z.infer<typeof generateCodeSchema>;
 export const joinByEmailSchema=z.object({

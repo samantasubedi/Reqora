@@ -1,4 +1,4 @@
-import { Role } from "../../generated/prisma/enums";
+import { ResourceStatus, Role } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 export const findCompanyByEmail = async ({email}:{email:string}) => {
@@ -6,45 +6,68 @@ export const findCompanyByEmail = async ({email}:{email:string}) => {
     where: { email },
   });
 };
-export const createCompanyRepo = async ({
+export const createCompanyWithAdminRepo = async ({
   companyName,
   email,
   address,
   size,
+  username,
 }: {
   companyName: string;
   email: string;
   address: string;
   size: number;
-}) => {
-  return await prisma.company.create({
-    data: {
-      companyName,
-      email,
-      address,
-      size,
-    },
-  });
-};
-export const updateUser = async ({
-  role,
-  enrolled,
-  companyId,
-  username,
-}: {
-  role: Role;
-  enrolled: boolean;
-  companyId: string;
   username: string;
 }) => {
-  return await prisma.user.updateMany({
-    data: {
-      role,
-      enrolled,
-      companyId,
-    },
+  return prisma.$transaction(async (tx) => {
+    const createdCompany = await tx.company.create({
+      data: {
+        companyName,
+        email,
+        address,
+        size,
+      },
+    });
+
+    const defaultDepartment = await tx.department.create({
+      data: {
+        name: "General",
+        companyId: createdCompany.id,
+      },
+    });
+
+    const updatedUser = await tx.user.update({
+      where: {
+        username,
+      },
+      data: {
+        role: Role.admin,
+        companyId: createdCompany.id,
+        departmentId: defaultDepartment.id,
+      },
+    });
+
+    return {
+      createdCompany,
+      updatedUser,
+    };
+  });
+};
+export const findDepartmentById = async ({ id }: { id: string }) => {
+  return prisma.department.findUnique({ where: { id } });
+};
+export const countAdminsInCompany = async ({
+  companyId,
+  excludeEmail,
+}: {
+  companyId: string;
+  excludeEmail: string;
+}) => {
+  return prisma.user.count({
     where: {
-      username,
+      companyId,
+      role: Role.admin,
+      email: { not: excludeEmail },
     },
   });
 };
@@ -61,12 +84,14 @@ export const storeJoinToken = async ({
   email,
   token,
   companyId,
+  departmentId,
   role,
   expiresAt,
 }: {
   email: string;
   token: string;
   companyId: string;
+  departmentId: string;
   role: Role;
   expiresAt: string | Date;
 }) => {
@@ -75,6 +100,7 @@ export const storeJoinToken = async ({
       email,
       token,
       companyId,
+      departmentId,
       role,
       expiresAt,
     },
@@ -89,20 +115,22 @@ export const updateUserAndJoinToken = async ({
   email,
   role,
   companyId,
+  departmentId,
   token,
 }: {
   email: string;
   role: Role;
   companyId: string;
+  departmentId: string;
   token: string;
 }) => {
   return await prisma.$transaction([
     prisma.user.update({
       where: { email },
       data: {
-        enrolled: true,
         role,
         companyId,
+        departmentId,
       },
     }),
     prisma.joinToken.update({
@@ -116,11 +144,13 @@ export const updateUserAndJoinToken = async ({
 export const storeJoinCode = async ({
   code,
   companyId,
+  departmentId,
   role,
   expiresAt,
 }: {
   code: string;
   companyId: string;
+  departmentId: string;
   role: Role;
   expiresAt: Date | string;
 }) => {
@@ -128,6 +158,7 @@ export const storeJoinCode = async ({
     data: {
       code,
       companyId,
+      departmentId,
       role,
       expiresAt,
     },
@@ -143,11 +174,13 @@ export const updateUserAndJoinCode = async ({
   email,
   role,
   companyId,
+  departmentId,
 }: {
   hashedJoinCode: string;
   email: string;
   role: Role;
   companyId: string;
+  departmentId: string;
 }) => {
   return await prisma.$transaction([
     prisma.joinCode.update({
@@ -158,20 +191,32 @@ export const updateUserAndJoinCode = async ({
       where: { email },
       data: {
         role,
-        enrolled: true,
         companyId,
+        departmentId,
       },
     }),
   ]);
 };
-export const leaveCompanyRepo=async({email}:{email:string})=>{
-  return  await prisma.user.update({
+export const leaveCompanyRepo = async ({ email }: { email: string }) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    return null;
+  }
+  return prisma.$transaction([
+    prisma.resourceItem.updateMany({
+      where: { acquiredById: user.id },
+      data: {
+        acquiredById: null,
+        status: ResourceStatus.available,
+      },
+    }),
+    prisma.user.update({
       data: {
         role: null,
         companyId: null,
-        enrolled: false,
+        departmentId: null,
       },
       where: { email },
-    });
-
-}
+    }),
+  ]);
+};

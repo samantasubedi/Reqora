@@ -48,7 +48,7 @@ export const inviteToCompany = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email: userEmail, role, message, expiryTime } = req.body;
+  const { email: userEmail, role, message, expiryTime, departmentId } = req.body;
   try {
     const username = res.locals.user.username;
     await emailInviteService({
@@ -56,6 +56,7 @@ export const inviteToCompany = async (
       role,
       message,
       expiryTime,
+      departmentId,
       adminUsername: username,
     });
     return res.status(200).json({
@@ -110,11 +111,12 @@ export const generateCode = async (
   next: NextFunction,
 ) => {
   try {
-    const { role, expiryTime } = req.body;
+    const { role, expiryTime, departmentId } = req.body;
     const email = res.locals.user.email;
     const joinCode = await generateCodeService({
       role,
       expiryTime,
+      departmentId,
       email,
     });
     res.status(201).json({
@@ -170,8 +172,8 @@ export const leaveCompany = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, role } = res.locals.user;
-    const result = await leaveCompanyService({ email, role });
+    const { email, role, companyId } = res.locals.user;
+    const result = await leaveCompanyService({ email, role, companyId });
     const refreshToken: string = req.cookies.refreshToken;
     if (refreshToken) {
       try {
