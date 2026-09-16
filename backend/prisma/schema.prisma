@@ -29,81 +29,122 @@ enum RequestStatus {
 enum ResourceStatus {
   available
   inUse
-  underMaintainence
+  underMaintenance
 }
 
-model user {
-  username         String    @unique
-  id               String    @id @default(cuid())
-  email            String    @unique
-  password         String
+model User {
+  username         String         @unique
+  id               String         @id @default(cuid())
+  email            String         @unique
+  passwordHash     String
   description      String?
-  enrolled         Boolean   @default(false)
   companyId        String?
   role             Role?
-  department       String?
-  company          company?  @relation(fields: [companyId], references: [id])
-  createdRequests  request[] @relation("requestedByUser")
-  reviewedRequests request[] @relation("reviewedByUser")
+  departmentId     String?
+  resourceItems    ResourceItem[]
+  department       Department?    @relation(fields: [departmentId], references: [id])
+  company          Company?       @relation(fields: [companyId], references: [id])
+  createdRequests  request[]      @relation("requestedByUser")
+  reviewedRequests request[]      @relation("reviewedByUser")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
-model company {
-  id          String     @unique @default(cuid())
+model Company {
+  id          String       @id @default(cuid())
   companyName String
-  email       String     @unique
+  email       String       @unique
   address     String
   size        Int
-  users       user[]
-  resources   resource[]
+  users       User[]
+  resources   Resource[]
   requests    request[]
+  departments Department[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  joinTokens  joinToken[]
+  joinCodes   joinCode[]
 }
 
-model resource {
-  id                       String         @unique @default(cuid())
-  name                     String
-  location                 String
-  department               String
-  type                     String
-  availability             Boolean
-  status                   ResourceStatus
-  totalQuantity            Int
-  inUseQuantity            Int            @default(0)
-  underMaintenanceQuantity Int            @default(0)
-  availableQuantity        Int
-  createdAt                DateTime
-  updatedAt                DateTime
-  companyId                String
-  company                  company        @relation(fields: [companyId], references: [id])
-  requests                 request[]
+model Department {
+  id         String      @id @default(cuid())
+  name       String
+  companyId  String
+  company    Company     @relation(fields: [companyId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  users      User[]
+  resources  Resource[]
+  joinTokens joinToken[]
+  joinCodes  joinCode[]
+
+  @@unique([companyId, name])
+}
+
+model Resource {
+  id            String         @id @default(cuid())
+  name          String
+  type          String
+  companyId     String
+  resourceItems ResourceItem[]
+  company       Company        @relation(fields: [companyId], references: [id])
+  requests      request[]
+  departmentId  String
+  department    Department     @relation(fields: [departmentId], references: [id])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model ResourceItem {
+  id           String         @id @default(cuid())
+  status       ResourceStatus
+  location     String
+  resourceId   String
+  acquiredById String?
+  acquiredBy   User?          @relation(fields: [acquiredById], references: [id])
+  resource     Resource       @relation(fields: [resourceId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 }
 
 model request {
-  id                String        @unique @default(cuid())
+  id                String        @id @default(cuid())
   requestedById     String
   reviewedById      String?
   requestedQuantity Int
   status            RequestStatus
   companyId         String
   resourceId        String
-  resource          resource      @relation(fields: [resourceId], references: [id])
-  company           company       @relation(fields: [companyId], references: [id])
-  requestedBy       user          @relation("requestedByUser", fields: [requestedById], references: [id])
-  reviewedBy        user?         @relation("reviewedByUser", fields: [reviewedById], references: [id])
+  resource          Resource      @relation(fields: [resourceId], references: [id])
+  company           Company       @relation(fields: [companyId], references: [id])
+  requestedBy       User          @relation("requestedByUser", fields: [requestedById], references: [id])
+  reviewedBy        User?         @relation("reviewedByUser", fields: [reviewedById], references: [id])
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }
 
 model joinToken {
-  email     String
-  token     String   @unique
-  companyId String
-  role      Role
-  expiresAt DateTime
-  used      Boolean  @default(false)
+  id           String     @id @default(cuid())
+  email        String
+  token        String     @unique
+  companyId    String
+  departmentId String
+  company      Company    @relation(fields: [companyId], references: [id])
+  department   Department @relation(fields: [departmentId], references: [id])
+  role         Role
+  expiresAt    DateTime
+  used         Boolean    @default(false)
+  createdAt    DateTime   @default(now())
 }
 
 model joinCode {
-  code      String   @unique
-  companyId String
-  role      Role
-  expiresAt DateTime
-  used      Boolean  @default(false)
+  id           String     @id @default(cuid())
+  code         String     @unique
+  companyId    String
+  departmentId String
+  company      Company    @relation(fields: [companyId], references: [id])
+  department   Department @relation(fields: [departmentId], references: [id])
+  role         Role
+  expiresAt    DateTime
+  used         Boolean    @default(false)
 }

@@ -42,10 +42,27 @@ export const findUsersByCompanyId = async ({
       description: true,
       role: true,
       department: true,
+      createdRequests: { include: { resource: true } },
+      reviewedRequests: { include: { resource: true } },
+    },
+
+    skip,
+    take,
+  });
+};
+export const findUserById = async ({ id }: { id: string }) => {
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      username: true,
+      email: true,
+      description: true,
+      companyId: true,
+      role: true,
+      department: true,
+      company: true,
       createdRequests: true,
       reviewedRequests: true,
     },
-    skip,
-    take,
   });
 };

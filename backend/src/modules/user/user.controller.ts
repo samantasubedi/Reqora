@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma";
 import { NextFunction, Request, Response } from "express";
 import { appError } from "../../utils/appError";
 import {
+  findUserById,
   findUserDetailsByEmail,
   findUsersByCompanyId,
 } from "./user.repository";
@@ -78,9 +79,26 @@ export const getAllUsers = async (
     next(err);
   }
 };
-export const getSpecificUser = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.send(`this gets user data for specific user with id ${id}`);
+export const getSpecificUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id: string = String(req.params.id);
+    if (!id) {
+      throw new appError(400, "INVALID_ID", "invalid user id");
+    }
+    const userDetails = await findUserById({ id });
+    return res.status(200).json({
+      success: true,
+      code: "USER_DETAILS_FETCHED",
+      message: "user details fetched successfully",
+      data: userDetails,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const changeUserRole = (req: Request, res: Response) => {
