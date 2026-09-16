@@ -8,6 +8,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "../ui/combobox";
+import { cn } from "@/lib/utils";
 type statusOptionsType = { label: string; value: string }[];
 
 const SelectBox = ({
@@ -15,11 +16,13 @@ const SelectBox = ({
   value,
   onChange,
   options,
+  className,
 }: {
   label: string;
   value: string;
   onChange: (val: string) => void;
   options: statusOptionsType;
+  className?: string;
 }) => {
   const labelFor = (itemValue: unknown) => {
     if (itemValue && typeof itemValue === "object") {
@@ -44,8 +47,11 @@ const SelectBox = ({
       itemToStringLabel={labelFor}
     >
       <ComboboxInput
-        placeholder={`select a ${label}`}
-        className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
+        placeholder={`Select a ${label}`}
+        className={cn(
+          "h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition",
+          className,
+        )}
       ></ComboboxInput>
       <ComboboxContent>
         <ComboboxEmpty>{label=="status"?"No such status":label=="type"?"No such type":label=="department"?"No such department":"No results"}</ComboboxEmpty>
