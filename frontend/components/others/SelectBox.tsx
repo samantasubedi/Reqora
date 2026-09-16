@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import {
   Combobox,
   ComboboxContent,
@@ -8,7 +8,6 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "../ui/combobox";
-import { useForm } from "react-hook-form";
 type statusOptionsType = { label: string; value: string }[];
 
 const SelectBox = ({
@@ -17,11 +16,24 @@ const SelectBox = ({
   onChange,
   options,
 }: {
-  label:string,
+  label: string;
   value: string;
   onChange: (val: string) => void;
   options: statusOptionsType;
 }) => {
+  const labelFor = (itemValue: unknown) => {
+    if (itemValue && typeof itemValue === "object") {
+      const item = itemValue as { label?: unknown; value?: unknown };
+      return item.label != null
+        ? String(item.label)
+        : item.value != null
+          ? String(item.value)
+          : "";
+    }
+    const id = String(itemValue ?? "");
+    return options.find((o) => o.value === id)?.label ?? id;
+  };
+
   return (
     <Combobox
       onValueChange={(v) => {
@@ -29,13 +41,14 @@ const SelectBox = ({
       }}
       items={options}
       value={value}
+      itemToStringLabel={labelFor}
     >
       <ComboboxInput
         placeholder={`select a ${label}`}
         className="h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition"
       ></ComboboxInput>
       <ComboboxContent>
-        <ComboboxEmpty>{label=="status"?"No such status":label=="type"?"No such type":label=="department"?"No such department":""}</ComboboxEmpty>
+        <ComboboxEmpty>{label=="status"?"No such status":label=="type"?"No such type":label=="department"?"No such department":"No results"}</ComboboxEmpty>
         <ComboboxList className="text-gray-600">
           {(item) => {
             return (
