@@ -1,4 +1,4 @@
-import { ResourceStatus, Role } from "../../generated/prisma/enums";
+import { CompanyIndustry, ResourceStatus, Role } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 export const findCompanyByEmail = async ({email}:{email:string}) => {
@@ -11,12 +11,18 @@ export const createCompanyWithAdminRepo = async ({
   email,
   address,
   size,
+  industry,
+  website,
+  phoneNumber,
   username,
 }: {
   companyName: string;
   email: string;
   address: string;
   size: number;
+  industry: string;
+  website?: string;
+  phoneNumber?: string;
   username: string;
 }) => {
   return prisma.$transaction(async (tx) => {
@@ -26,6 +32,9 @@ export const createCompanyWithAdminRepo = async ({
         email,
         address,
         size,
+        industry: industry as CompanyIndustry,
+        website: website || null,
+        phoneNumber: phoneNumber || null,
       },
     });
 

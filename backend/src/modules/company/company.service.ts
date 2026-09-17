@@ -32,6 +32,9 @@ export const createCompanyService = async ({
   email,
   address,
   size,
+  industry,
+  website,
+  phoneNumber,
   username,
 }: createCompanyType & { username: string }) => {
   const duplicateEmail = await findCompanyByEmail({ email });
@@ -62,6 +65,9 @@ export const createCompanyService = async ({
     email,
     address,
     size,
+    industry,
+    website,
+    phoneNumber,
     username,
   });
 };

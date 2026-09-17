@@ -32,6 +32,19 @@ enum ResourceStatus {
   underMaintenance
 }
 
+enum CompanyIndustry {
+  technology
+  finance
+  healthcare
+  education
+  retail
+  manufacturing
+  construction
+  hospitality
+  legal
+  other
+}
+
 model User {
   username         String         @unique
   id               String         @id @default(cuid())
@@ -51,11 +64,14 @@ model User {
 }
 
 model Company {
-  id          String       @id @default(cuid())
+  id          String           @id @default(cuid())
   companyName String
-  email       String       @unique
+  email       String           @unique
   address     String
   size        Int
+  website     String?
+  phoneNumber String?
+  industry    CompanyIndustry?
   users       User[]
   resources   Resource[]
   requests    request[]

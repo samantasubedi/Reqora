@@ -18,7 +18,8 @@ export const createCompany = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { companyName, email, address, size } = req.body;
+  const { companyName, email, address, size, industry, website, phoneNumber } =
+    req.body;
   try {
     const username = res.locals.user.username;
     const { createdCompany } = await createCompanyService({
@@ -26,6 +27,9 @@ export const createCompany = async (
       email,
       address,
       size,
+      industry,
+      website,
+      phoneNumber,
       username,
     });
     const refreshToken: string = req.cookies.refreshToken;

@@ -8,6 +8,27 @@ export const createCompanySchema = z.object({
   email: z.string().email("Invalid email address"),
   size: z.number().min(1, "company size is required"),
   address: z.string(),
+  industry: z.enum([
+    "technology",
+    "finance",
+    "healthcare",
+    "education",
+    "retail",
+    "manufacturing",
+    "construction",
+    "hospitality",
+    "legal",
+    "other",
+  ]).default("other"),
+  website: z
+    .union([z.string().url("Invalid website URL"), z.literal("")])
+    .optional(),
+  phoneNumber: z
+    .union([
+      z.string().regex(/^\+?[0-9()\s\-]{7,20}$/, "Invalid phone number"),
+      z.literal(""),
+    ])
+    .optional(),
 });
 export type createCompanyType = z.infer<typeof createCompanySchema>;
 export const emailInviteSchema = z.object({
