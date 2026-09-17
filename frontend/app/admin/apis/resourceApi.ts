@@ -2,28 +2,37 @@ import axios, { AxiosResponse } from "axios";
 
 import { FilterValues } from "@/components/global/Filter";
 import { ParamValue } from "next/dist/server/request/params";
-import { resourceType } from "../resources/(with-sidebar)/page";
+import { ResourceStatus, resourceType } from "../resources/(with-sidebar)/page";
 import { ResourceItemDetail } from "@/components/others/ResourceTabs";
 import {
   countsByStatusType,
   countsByTypeType,
 } from "../components/AdminDashboard";
 export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+export type requestType = {
+  id: string;
+  requestedQuantity: number;
+  requestedBy: { username: string; id: string };
+  reviewedBy: { username: string; id: string };
+  status: ResourceStatus;
+  createdAt: string;
+  updatedAt: string;
+};
 export type resourceDetailType = {
   id: string;
   name: string;
-  type: string;
-  companyId: string;
-  departmentId: string;
-  department: string | null;
   location: string;
+  department: string | null;
+  type: string;
   availability: boolean;
   totalQuantity: number;
-  availableQuantity: number;
   inUseQuantity: number;
   underMaintenanceQuantity: number;
+  availableQuantity: number;
   createdAt: string;
   updatedAt: string;
+  companyId: string;
+  requests: requestType[];
   resourceItems: ResourceItemDetail[];
 };
 export const fetchResourcesApi = async ({

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { MapPin, User } from "lucide-react";
 import { ResourceStatus } from "@/app/admin/resources/(with-sidebar)/page";
+import { requestType } from "@/app/admin/apis/resourceApi";
 
 export type ResourceItemDetail = {
   id: string;
@@ -44,12 +45,12 @@ export const getItemStatusDisplay = (status: ResourceStatus) => {
 
 export const ResourceTabs = ({
   resourceItems = [],
+  requests,
 }: {
   resourceItems?: ResourceItemDetail[];
+  requests?: requestType[];
 }) => {
-  const holders = resourceItems.filter(
-    (item) => item.status === ResourceStatus.inUse,
-  );
+  const holdResources = resourceItems.filter((item) => item.acquiredById);
 
   return (
     <div>
@@ -70,22 +71,30 @@ export const ResourceTabs = ({
 
             <CardContent>
               <div className="space-y-3">
-                {[1, 2, 3].map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center justify-between rounded-lg border p-4"
-                  >
-                    <div>
-                      <p className="font-medium">John Doe</p>
+                {requests && requests.length ? (
+                  requests.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between rounded-lg border p-4"
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {item.requestedBy.username}
+                        </p>
 
-                      <p className="text-sm text-muted-foreground">
-                        Requested 2 units
-                      </p>
+                        <p className="text-sm text-muted-foreground">
+                          Requested {item.requestedQuantity} unit/s
+                        </p>
+                      </div>
+
+                      <Badge>{item.status}</Badge>
                     </div>
-
-                    <Badge>Approved</Badge>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No request for this resource yet.
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -98,13 +107,13 @@ export const ResourceTabs = ({
             </CardHeader>
 
             <CardContent>
-              {holders.length === 0 ? (
+              {holdResources.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No items are currently in use.
+                  Resource dont have any holders yet.
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {holders.map((item) => (
+                  {holdResources.map((item) => (
                     <div
                       key={item.id}
                       className="flex items-center justify-between rounded-lg border p-4"
@@ -125,9 +134,7 @@ export const ResourceTabs = ({
                       </div>
 
                       <Badge
-                        className={
-                          getItemStatusDisplay(item.status).badgeClass
-                        }
+                        className={getItemStatusDisplay(item.status).badgeClass}
                       >
                         {getItemStatusDisplay(item.status).display}
                       </Badge>

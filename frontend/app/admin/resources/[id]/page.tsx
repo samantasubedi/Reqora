@@ -26,22 +26,9 @@ import { useRouter } from "next/navigation";
 
 import { useResource } from "../../hooks/resourceHooks";
 import ResourceDetailsSkeleton from "../../components/skeletonLoaders/resourceDetailsSkeleton";
-type ResourceDetail = {
-  id: string;
-  name: string;
-  location: string;
-  department: string | null;
-  type: string;
-  availability: boolean;
-  totalQuantity: number;
-  inUseQuantity: number;
-  underMaintenanceQuantity: number;
-  availableQuantity: number;
-  createdAt: string;
-  updatedAt: string;
-  companyId: string;
-  resourceItems: ResourceItemDetail[];
-};
+import { ResourceStatus } from "../(with-sidebar)/page";
+import { resourceDetailType } from "../../apis/resourceApi";
+
 const ResourceDetails = () => {
   const router = useRouter();
 
@@ -67,7 +54,8 @@ const ResourceDetails = () => {
     return null;
   }
 
-  const resourceDetail: ResourceDetail = data.resourceDetail;
+  const resourceDetail: resourceDetailType = data.resourceDetail;
+  const requests = resourceDetail.requests;
   const percentage =
     (resourceDetail.availableQuantity / resourceDetail.totalQuantity) * 100;
   const cardData = [
@@ -202,8 +190,10 @@ const ResourceDetails = () => {
             </CardContent>
           </Card>
 
-          <ResourceTabs resourceItems={resourceDetail.resourceItems} />
-
+          <ResourceTabs
+            resourceItems={resourceDetail.resourceItems}
+            requests={requests}
+          />
         </div>
         <div className="space-y-6 ">
           <Card>
