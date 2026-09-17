@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -13,13 +12,17 @@ import { T_MutationError } from "@/types/global";
 import { Icon } from "@iconify/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 const Page = () => {
   const router = useRouter();
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const [joinCode, setJoinCode] = useState("");
+
   const postApi = async (code: string) => {
     const response = await axios.post(
       `${backendUrl}/join/byCode`,
@@ -39,54 +42,62 @@ const Page = () => {
       }
     },
     onError: (error: T_MutationError) => {
-      if (error.response) {
-        toast.error(error.response?.data.message);
-      } else {
-        toast.error(error.message);
-      }
+      toast.error(error.response?.data.message || error.message);
     },
   });
-  const [joinCode, setJoinCode] = useState("");
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (joinCode.trim()) {
+      mutation.mutate(joinCode.trim());
+    }
+  };
+
   return (
-    <div className="flex justify-center min-h-screen bg-background">
-      <Card className="md:w-[30%] md:mt-[10%] bg-card h-fit">
-        <CardHeader className="p-4 bg-primary rounded-b-2xl">
-          <CardTitle className="flex gap-5 text-2xl justify-center items-center">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background p-4">
+      <Card className="w-full max-w-md overflow-hidden rounded-2xl border-border shadow-xl">
+        <CardHeader className="rounded-b-2xl bg-primary p-4 text-center">
+          <CardTitle className="flex items-center justify-center gap-4 text-2xl">
             <Icon
               icon="mdi:people"
-              className="text-5xl! bg-card rounded-full p-2 text-primary"
+              className="size-12 rounded-full bg-card p-2 text-primary"
             />
             <span className="text-primary-foreground">Join a Company</span>
           </CardTitle>
-          <CardDescription className="text-foreground font-semibold text-center">
+          <CardDescription className="font-semibold text-primary-foreground/80">
             Enter the company code shared by your administrator.
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <label className="text-xl font-semibold text-secondary-foreground">
-            Join Code
-          </label>
-          <Input
-            onChange={(e) => {
-              setJoinCode(e.target.value);
-            }}
-            placeholder="eg: H3E0klMT3f"
-            className="bg-card mt-2 h-14! text-2xl! font-semibold text-foreground border-border"
-          ></Input>
+        <CardContent className="pt-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <label className="text-sm font-semibold uppercase tracking-wide text-card-foreground">
+              Join Code
+            </label>
+            <Input
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value)}
+              placeholder="e.g. H3E0klMT3f"
+              autoFocus
+              className="h-12 rounded-lg border-border bg-background text-center font-mono text-lg font-semibold tracking-widest transition focus:border-transparent focus:ring-2 focus:ring-primary"
+            />
+            <Button
+              type="submit"
+              disabled={!joinCode.trim() || mutation.isPending}
+              className="h-11 w-full cursor-pointer rounded-lg bg-primary font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {mutation.isPending ? "Joining..." : "Join"}
+            </Button>
+          </form>
         </CardContent>
-        <CardFooter>
-          <Button
-            onClick={() => {
-              console.log(joinCode);
-              mutation.mutate(joinCode);
-            }}
-            className="bg-primary w-full! font-extrabold text-lg mt-5 hover:bg-primary/90 cursor-pointer text-primary-foreground"
-          >
-            Join
-          </Button>
-        </CardFooter>
       </Card>
+
+      <Link
+        href="/getstarted"
+        className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" /> Back
+      </Link>
     </div>
   );
 };

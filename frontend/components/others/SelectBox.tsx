@@ -47,7 +47,7 @@ const SelectBox = ({
       itemToStringLabel={labelFor}
     >
       <ComboboxInput
-        placeholder={`Select a ${label}`}
+        placeholder={`Select ${label}`}
         className={cn(
           "h-11 rounded-lg border-slate-200 bg-white focus:ring-2 focus:ring-violet-400 focus:border-transparent transition",
           className,

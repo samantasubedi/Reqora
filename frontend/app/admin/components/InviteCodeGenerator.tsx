@@ -1,15 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Icon } from "@iconify/react";
 import RoleAndExpiryTime from "./RoleAndExpiryTime";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -19,6 +18,10 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutationError } from "@/types/global";
 import { CopyButton } from "@/components/animate-ui/components/buttons/copy";
+
+const fieldLabel =
+  "text-sm font-semibold uppercase tracking-wide text-card-foreground";
+
 const schema = z.object({
   role: z.string().min(1, "please select a role"),
   expiryTime: z.coerce.number().min(1, "please select an expiry time"),
@@ -29,7 +32,7 @@ export type codeInviteFormType = z.infer<typeof schema>;
 const InviteCodeGenerator = () => {
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { role: "", expiryTime: 0 },
+    defaultValues: { role: "", expiryTime: 0, departmentId: "" },
   });
   const {
     setValue,
@@ -63,91 +66,95 @@ const InviteCodeGenerator = () => {
   });
 
   const handleFormSubmit = (data: codeInviteFormType) => {
-    console.log(data);
     mutation.mutate(data);
   };
 
   return (
-    <div className="flex justify-center ">
-      <Card className="md:w-[40%] w-[90%] mx-auto shadow-sm border border-border bg-card  rounded-2xl mt-5">
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
-          <CardHeader>
-            <CardTitle className="text-center text-2xl text-primary">
-              Generate Invite code
-            </CardTitle>
-            <CardContent className="p-6">
-              <RoleAndExpiryTime
-                onChange={(values) => {
-                  setValue("expiryTime", values.expiryTime);
-                  if (values.expiryTime) {
-                    form.clearErrors("expiryTime");
-                  }
-                  setValue("role", values.role);
-                  if (values.role) {
-                    form.clearErrors("role");
-                  }
-                  setValue("departmentId", values.departmentId);
-                  if (values.departmentId) {
-                    form.clearErrors("departmentId");
-                  }
-                }}
-                values={{
-                  expiryTime: Number(watch("expiryTime")),
-                  role: watch("role"),
-                  departmentId: watch("departmentId"),
-                }}
-                errors={{
-                  roleError: form.formState.errors.role?.message,
-                  expiryTimeError: form.formState.errors.expiryTime?.message,
-                  departmentIdError:
-                    form.formState.errors.departmentId?.message,
-                }}
-              />
+    <Card className="w-full max-w-2xl mx-auto mt-6 shadow-sm border border-border bg-card rounded-2xl">
+      <CardHeader>
+        <CardTitle className="text-center text-2xl text-primary font-bold">
+          Generate Invite Code
+        </CardTitle>
+        <CardDescription className="text-center">
+          Create a one-time code a teammate can use to join your workspace.
+        </CardDescription>
+      </CardHeader>
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
+        <CardContent className="flex flex-col gap-6">
+          <RoleAndExpiryTime
+            onChange={(values) => {
+              setValue("expiryTime", values.expiryTime);
+              if (values.expiryTime) {
+                form.clearErrors("expiryTime");
+              }
+              setValue("role", values.role);
+              if (values.role) {
+                form.clearErrors("role");
+              }
+              setValue("departmentId", values.departmentId);
+              if (values.departmentId) {
+                form.clearErrors("departmentId");
+              }
+            }}
+            values={{
+              expiryTime: Number(watch("expiryTime")),
+              role: watch("role"),
+              departmentId: watch("departmentId"),
+            }}
+            errors={{
+              roleError: errors.role?.message,
+              expiryTimeError: errors.expiryTime?.message,
+              departmentIdError: errors.departmentId?.message,
+            }}
+          />
 
-              <div className="flex justify-center items-center gap-5">
-                <Input
-                  value={joinCode}
-                  className="h-20 mt-5 text-3xl! bg-muted! text-center"
-                  disabled
-                  placeholder="Your code"
-                ></Input>
-                {joinCode && (
+          <div className="flex flex-col gap-2">
+            <label className={fieldLabel}>Your Invite Code</label>
+            <div className="flex min-h-16 items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-muted/50 px-4 py-3">
+              {joinCode ? (
+                <>
+                  <span className="truncate font-mono text-2xl font-bold tracking-[0.25em] text-card-foreground">
+                    {joinCode}
+                  </span>
                   <CopyButton
-                    className="size-12 text-3xl bg-primary hover:bg-primary/90"
+                    className="size-10 shrink-0 bg-primary text-primary-foreground hover:bg-primary/90"
                     content={joinCode}
                   />
-                )}
-              </div>
-            </CardContent>
-          </CardHeader>
-          <CardFooter className="flex flex-col">
-            <div className="w-full flex justify-center">
-              <Button
-                type="submit"
-                className="h-12 w-50! text-xl! cursor-pointer bg-primary hover:bg-primary/90"
-              >
-                Generate Code
-              </Button>
+                </>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  Your code will appear here
+                </span>
+              )}
             </div>
+          </div>
+        </CardContent>
 
-            <div className="w-full bg-accent p-3 mt-5 rounded-lg">
-              <span className="font-bold text-foreground">Note :</span>
+        <CardFooter className="flex flex-col gap-5">
+          <Button
+            type="submit"
+            disabled={mutation.isPending}
+            className="w-full h-11 mt-6 cursor-pointer rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {mutation.isPending ? "Generating..." : "Generate Code"}
+          </Button>
 
-              <ol className="list-disc">
-                <li className="text-muted-foreground">
-                  This code can be used only <strong>once</strong> and will{" "}
-                  <strong>expire</strong> after the specified time.
-                </li>
-                <li className="text-destructive">
-                  Do not share this code with anyone except the intended
-                  recipient.
-                </li>
-              </ol>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+          <div className="w-full bg-accent p-3 rounded-lg">
+            <span className="font-bold text-foreground">Note :</span>
+            <ol className="list-disc pl-5 mt-1 space-y-1">
+              <li className="text-muted-foreground">
+                This code can be used only <strong>once</strong> and will{" "}
+                <strong>expire</strong> after the specified time.
+              </li>
+              <li className="text-destructive">
+                Do not share this code with anyone except the intended
+                recipient.
+              </li>
+            </ol>
+          </div>
+        </CardFooter>
+      </form>
+    </Card>
   );
 };
 

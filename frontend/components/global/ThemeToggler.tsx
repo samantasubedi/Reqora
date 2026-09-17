@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
@@ -19,48 +18,52 @@ const ThemeToggler = () => {
     setMounted(true);
   }, []);
   if (!mounted) {
-    return null;
+    return <div className="h-7 w-14" />;
   }
   const isDark = theme === "dark";
   return (
-    <div className="m-5">
-      <button
-        role="switch"
-        onClick={handleThemeChange}
-        className={cn(
-          "relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300 ease-in-out",
+    <button
+      role="switch"
+      aria-checked={isDark}
+      onClick={handleThemeChange}
+      className={cn(
+        "relative inline-flex h-7 w-14 items-center rounded-full bg-muted transition-colors duration-300",
 
-          isDark ? "bg-slate-900 " : "bg-green-100 ",
-        )}
-      >
-        <Icon
-          icon="ant-design:moon-filled"
-          className={cn(
-            "absolute right-1.5 transition-opacity duration-300",
-            isDark ? "opacity-40 text-[#2DD4A7]" : "opacity-0",
-          )}
-        ></Icon>
+        isDark && "bg-foreground/15",
+      )}
+    >
+      <span className="pointer-events-none absolute inset-0 flex items-center justify-between px-1.5">
         <Icon
           icon="akar-icons:sun-fill"
           className={cn(
-            "absolute left-1.5 transition-opacity duration-300",
-            isDark ? "opacity-0" : "opacity-40 text-[#0F766E]",
+            "size-3 transition-opacity duration-300",
+            isDark ? "opacity-0" : "opacity-40 text-primary",
           )}
-        ></Icon>
-        <span
+        />
+        <Icon
+          icon="ant-design:moon-filled"
           className={cn(
-            "inline-flex h-6 w-6 transform items-center justify-center rounded-full shadow-md transition-transform duration-300 ease-in-out",
-            isDark ? "translate-x-9 bg-[#0F241F]" : "translate-x-1 bg-white",
+            "size-3 transition-opacity duration-300",
+            isDark ? "opacity-60 text-primary" : "opacity-0",
           )}
-        >
-          {isDark ? (
-            <Icon icon="ant-design:moon-filled" className="text-[#0F766E]" />
-          ) : (
-            <Icon icon="akar-icons:sun-fill" className="text-[#2DD4A7]" />
-          )}
-        </span>
-      </button>
-    </div>
+        />
+      </span>
+      <span
+        className={cn(
+          "inline-flex size-6 transform items-center justify-center rounded-full bg-background shadow-md transition-transform duration-300",
+          isDark ? "translate-x-9" : "translate-x-1",
+        )}
+      >
+        {isDark ? (
+          <Icon icon="ant-design:moon-filled" className="size-3.5 text-primary" />
+        ) : (
+          <Icon
+            icon="akar-icons:sun-fill"
+            className="size-3.5 text-primary"
+          />
+        )}
+      </span>
+    </button>
   );
 };
 

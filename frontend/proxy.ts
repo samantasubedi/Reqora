@@ -8,7 +8,7 @@ const routeRoles: { [key: string]: string[] } = {
   "/employee": ["employee", "admin"],
   "/admin": ["admin"],
   "/manager": ["manager", "admin"],
-  "/resources": ["employee","manager","admin"],
+  "/resources": ["employee", "manager", "admin"],
 };
 
 export async function proxy(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function proxy(request: NextRequest) {
     }>(accessToken);
     const userRole = decodedToken.role;
     if (!userRole) {
-      return NextResponse.redirect(new URL("/getstarted", request.url)); //this means user is not enrolled in the company so we redirect them to getstarted page
+      return NextResponse.redirect(new URL("/", request.url)); //this means user is not enrolled in the company so we redirect them to getstarted page
     }
 
     if (allowedRoles.includes(userRole)) {

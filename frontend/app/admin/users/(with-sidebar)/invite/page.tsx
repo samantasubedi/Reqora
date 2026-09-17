@@ -4,14 +4,23 @@ import InviteCodeGenerator from "@/app/admin/components/InviteCodeGenerator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const Page = () => {
   return (
-    <div className="p-4">
+    <div className="mx-auto w-full max-w-4xl space-y-6 p-4 sm:p-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight text-card-foreground">
+          Invite Users
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Invite teammates to your workspace by email or with a one-time code.
+        </p>
+      </div>
+
       <Tabs defaultValue="emailInvite">
         <div className="w-full flex justify-center">
-          <TabsList className="w-[30%] h-12!">
-            <TabsTrigger className="font-bold" value="emailInvite">
+          <TabsList className="w-full max-w-md h-11!">
+            <TabsTrigger className="font-semibold" value="emailInvite">
               Email Invite
             </TabsTrigger>
-            <TabsTrigger className="font-bold" value="codeInvite">
+            <TabsTrigger className="font-semibold" value="codeInvite">
               Code Invite
             </TabsTrigger>
           </TabsList>
