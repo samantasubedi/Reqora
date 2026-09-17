@@ -160,7 +160,7 @@ export const joinByCode = async (
 
     return res.status(201).json({
       role: result[1].role,
-      success: "true",
+      success: true,
       code: "JOIN_SUCCESSFULL",
       message: "You have been joined to the company",
     });

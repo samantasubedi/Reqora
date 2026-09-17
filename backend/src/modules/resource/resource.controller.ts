@@ -106,13 +106,19 @@ export const addResource = async (
         "User does not belong to a company",
       );
     }
-    const { resourceName, quantity, type, status, locationAssignment, departmentId } =
-      req.body;
+    const {
+      resourceName,
+      quantity,
+      type,
+      statusAssignment,
+      locationAssignment,
+      departmentId,
+    } = req.body;
     const resource = await addResourceService({
       resourceName,
       quantity,
       type,
-      status,
+      statusAssignment,
       locationAssignment,
       departmentId,
       companyId,

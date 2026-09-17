@@ -37,6 +37,33 @@ export const locationAssignmentSchema = z.discriminatedUnion("mode", [
 ]);
 export type locationAssignmentType = z.infer<typeof locationAssignmentSchema>;
 
+export const statusAssignmentSchema = z.discriminatedUnion("mode", [
+  z.object({
+    mode: z.literal("same"),
+    status: z.nativeEnum(ResourceStatus),
+  }),
+  z.object({
+    mode: z.literal("different"),
+    statuses: z
+      .array(
+        z.object({
+          status: z.nativeEnum(ResourceStatus),
+          quantity: z.coerce
+            .number()
+            .int("quantity must be a whole number")
+            .positive("quantity must be a positive integer"),
+        }),
+      )
+      .min(1, "at least one status is required")
+      .refine(
+        (statuses) =>
+          new Set(statuses.map((s) => s.status)).size === statuses.length,
+        "duplicate statuses are not allowed",
+      ),
+  }),
+]);
+export type statusAssignmentType = z.infer<typeof statusAssignmentSchema>;
+
 export const addResourceSchema = z
   .object({
     resourceName: z
@@ -49,7 +76,7 @@ export const addResourceSchema = z
       .int("quantity must be a whole number")
       .min(1, "quantity must be at least 1"),
     type: z.string().min(1, "type is required"),
-    status: z.nativeEnum(ResourceStatus),
+    statusAssignment: statusAssignmentSchema,
     locationAssignment: locationAssignmentSchema,
     departmentId: z.string().min(1, "department is required"),
     description: z.string().trim().optional(),
@@ -65,6 +92,19 @@ export const addResourceSchema = z
           code: z.ZodIssueCode.custom,
           path: ["locationAssignment", "locations"],
           message: `sum of location quantities (${assigned}) must equal total quantity (${data.quantity})`,
+        });
+      }
+    }
+    if (data.statusAssignment.mode === "different") {
+      const assigned = data.statusAssignment.statuses.reduce(
+        (sum, s) => sum + s.quantity,
+        0,
+      );
+      if (assigned !== data.quantity) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["statusAssignment", "statuses"],
+          message: `sum of status quantities (${assigned}) must equal total quantity (${data.quantity})`,
         });
       }
     }

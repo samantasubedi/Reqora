@@ -92,7 +92,11 @@ export const countResources = async ({
   });
 };
 
-export const countAllResources = async ({ companyId }: { companyId: string }) => {
+export const countAllResources = async ({
+  companyId,
+}: {
+  companyId: string;
+}) => {
   return prisma.resource.count({ where: { companyId } });
 };
 
@@ -108,7 +112,11 @@ export const countResourceItemsByStatus = async ({
   });
 };
 
-export const countResourcesByType = async ({ companyId }: { companyId: string }) => {
+export const countResourcesByType = async ({
+  companyId,
+}: {
+  companyId: string;
+}) => {
   return prisma.resource.groupBy({
     by: ["type"],
     _count: true,
@@ -121,14 +129,14 @@ export const createResourceWithItems = async ({
   type,
   companyId,
   departmentId,
-  status,
+  statuses,
   locations,
 }: {
   name: string;
   type: string;
   companyId: string;
   departmentId: string;
-  status: ResourceStatus;
+  statuses: { status: ResourceStatus; quantity: number }[];
   locations: { name: string; quantity: number }[];
 }) => {
   return prisma.$transaction(async (tx) => {
@@ -141,13 +149,19 @@ export const createResourceWithItems = async ({
       },
     });
 
-    const items = locations.flatMap(({ name: loc, quantity: qty }) =>
-      Array.from({ length: qty }, () => ({
-        status,
-        location: loc,
-        resourceId: resource.id,
-      })),
+    const statusSlots = statuses.flatMap(({ status, quantity: qty }) =>
+      Array.from({ length: qty }, () => status),
     );
+
+    const locationSlots = locations.flatMap(({ name: loc, quantity: qty }) =>
+      Array.from({ length: qty }, () => loc),
+    );
+
+    const items = statusSlots.map((status, index) => ({
+      status,
+      location: locationSlots[index] ?? "Unknown",
+      resourceId: resource.id,
+    }));
 
     await tx.resourceItem.createMany({ data: items });
 
@@ -162,6 +176,20 @@ export const findResourceDetailsById = async ({ id }: { id: string }) => {
       department: { select: { name: true } },
       resourceItems: {
         orderBy: { createdAt: "desc" },
+        include: {
+          acquiredBy: { select: { username: true } },
+        },
+      },
+      requests: {
+        select: {
+          id: true,
+          requestedQuantity:true,
+          requestedBy: true,
+          reviewedBy: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       },
     },
   });

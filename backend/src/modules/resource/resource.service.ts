@@ -1,6 +1,9 @@
 import { appError } from "../../utils/appError";
 import { ResourceStatus } from "../../generated/prisma/enums";
-import { locationAssignmentType } from "./resource.schema";
+import {
+  locationAssignmentType,
+  statusAssignmentType,
+} from "./resource.schema";
 import {
   findDepartmentById,
   findUserByEmail,
@@ -70,14 +73,20 @@ export const findAllResourcesService = async ({
     ]);
 
   const totalPages = Math.ceil(totalCount / take);
-  return { resources, countsByStatus, countsByType, totalPages, totalResources };
+  return {
+    resources,
+    countsByStatus,
+    countsByType,
+    totalPages,
+    totalResources,
+  };
 };
 
 export const addResourceService = async ({
   resourceName,
   quantity,
   type,
-  status,
+  statusAssignment,
   locationAssignment,
   departmentId,
   companyId,
@@ -85,7 +94,7 @@ export const addResourceService = async ({
   resourceName: string;
   quantity: number;
   type: string;
-  status: ResourceStatus;
+  statusAssignment: statusAssignmentType;
   locationAssignment: locationAssignmentType;
   departmentId: string;
   companyId: string;
@@ -107,12 +116,20 @@ export const addResourceService = async ({
           quantity: l.quantity,
         }));
 
+  const statuses =
+    statusAssignment.mode === "same"
+      ? [{ status: statusAssignment.status, quantity }]
+      : statusAssignment.statuses.map((s) => ({
+          status: s.status,
+          quantity: s.quantity,
+        }));
+
   return createResourceWithItems({
     name: resourceName,
     type,
     companyId,
     departmentId,
-    status,
+    statuses,
     locations,
   });
 };
@@ -163,6 +180,7 @@ export const getSpecificResourceService = async ({
     underMaintenanceQuantity,
     createdAt: resource.createdAt,
     updatedAt: resource.updatedAt,
+    requests: resource.requests,
     resourceItems,
   };
 };
