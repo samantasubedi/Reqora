@@ -1,8 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchResourceApi, fetchResourcesApi } from "../apis/resourceApi";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+} from "@tanstack/react-query";
+import {
+  addResourceApi,
+  editResourceApi,
+  fetchResourceApi,
+  fetchResourcesApi,
+} from "../apis/resourceApi";
 import { ParamValue } from "next/dist/server/request/params";
 import { T_MutationError } from "@/types/global";
 import { FilterValues } from "@/components/global/Filter";
+import { formDataType } from "../components/ResourceForm";
 
 export const useResources = () => {
   return useQuery({
@@ -33,4 +43,61 @@ export const useTableResources = ({
     queryFn: () => fetchResourcesApi({ searchText, filters, page: pageNumber }),
     queryKey: ["tableResourceData", searchText, filters, page],
   });
+};
+export type resourceDataType = formDataType & {
+  statusAssignment:
+    | {
+        mode: "same";
+        status: string;
+      }
+    | {
+        mode: "different";
+        statuses: {
+          status: string;
+          quantity: number;
+        }[];
+      };
+  locationAssignment:
+    | {
+        mode: "single";
+        location: {
+          name: string;
+        };
+      }
+    | {
+        mode: "multiple";
+        locations: {
+          location: {
+            name: string;
+          };
+          quantity: number;
+        }[];
+      };
+};
+export const useAddResource = (
+
+  options: UseMutationOptions<any, T_MutationError, resourceDataType>
+) => {
+  {
+    return useMutation({
+      mutationFn: addResourceApi,
+      ...options,
+    });
+  }
+};
+export const useEditResource = ({
+  options,
+}: {
+  options: UseMutationOptions<
+    unknown,
+    T_MutationError,
+    { data: resourceDataType; id: string }
+  >;
+}) => {
+  {
+    return useMutation({
+      mutationFn: editResourceApi,
+      ...options,
+    });
+  }
 };

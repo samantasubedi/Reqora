@@ -92,7 +92,10 @@ const ResourceDetails = () => {
         </Button>
 
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/admin/resources/edit/${id}`)}
+          >
             <Edit className="h-4 w-4" />
             Edit
           </Button>

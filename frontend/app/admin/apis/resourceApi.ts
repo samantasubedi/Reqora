@@ -8,6 +8,7 @@ import {
   countsByStatusType,
   countsByTypeType,
 } from "../components/AdminDashboard";
+import { resourceDataType } from "../hooks/resourceHooks";
 export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 export type requestType = {
   id: string;
@@ -71,3 +72,15 @@ export const fetchResourceApi = async (id: ParamValue) => {
   });
   return response.data;
 };
+export  const addResourceApi = async (data:resourceDataType) => {
+    const response = await axios.post(`${backendUrl}/resources`, data, {
+      withCredentials: true,
+    });
+    return response.data;
+  };
+  export  const editResourceApi = async ({data,id}:{data:resourceDataType,id:string}) => {
+    const response = await axios.patch(`${backendUrl}/resources/${id}`, data, {
+      withCredentials: true,
+    });
+    return response.data;
+  };

@@ -84,7 +84,7 @@ export const ResourceTable = () => {
       },
     },
     {
-      label: "Availabitly",
+      label: "Availability",
       key: "availability",
       render: (resource) => {
         const percentage =
@@ -324,7 +324,12 @@ export const ResourceTable = () => {
                           >
                             <View className="text-blue-500" /> view Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer">
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() =>
+                              router.push(`/admin/resources/edit/${resource.id}`)
+                            }
+                          >
                             <Edit className="text-yellow-500" />
                             Edit
                           </DropdownMenuItem>
