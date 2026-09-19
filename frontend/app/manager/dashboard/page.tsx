@@ -1,33 +1,5 @@
-"use client";
-import { handleLogout } from "@/app/admin/components/AdminDashboard";
 import ManagerDashboard from "@/app/manager/components/ManagerDashboard";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React from "react";
 
-const page = () => {
-  const router = useRouter();
-  return (
-    <>
-      <Button
-        onClick={() => {
-          handleLogout(router);
-        }}
-      >
-        Logout
-      </Button>
-      <ManagerDashboard />
-    </>
-  );
-};
-
-export default page;
+export default function DashboardPage() {
+  return <ManagerDashboard />;
+}
