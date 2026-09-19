@@ -24,6 +24,8 @@ export type resourceDetailType = {
   name: string;
   location: string;
   department: string | null;
+  departmentId:string,
+  description:string|null,
   type: string;
   availability: boolean;
   totalQuantity: number;
@@ -78,7 +80,7 @@ export  const addResourceApi = async (data:resourceDataType) => {
     });
     return response.data;
   };
-  export  const editResourceApi = async ({data,id}:{data:resourceDataType,id:string}) => {
+  export  const editResourceApi = async ({data,id}:{data:resourceDataType,id:ParamValue}) => {
     const response = await axios.patch(`${backendUrl}/resources/${id}`, data, {
       withCredentials: true,
     });

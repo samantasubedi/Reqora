@@ -75,8 +75,7 @@ export type resourceDataType = formDataType & {
       };
 };
 export const useAddResource = (
-
-  options: UseMutationOptions<any, T_MutationError, resourceDataType>
+  options: UseMutationOptions<any, T_MutationError, resourceDataType>,
 ) => {
   {
     return useMutation({
@@ -85,15 +84,13 @@ export const useAddResource = (
     });
   }
 };
-export const useEditResource = ({
-  options,
-}: {
+export const useEditResource = (
   options: UseMutationOptions<
-    unknown,
+    any,
     T_MutationError,
-    { data: resourceDataType; id: string }
-  >;
-}) => {
+    { data: resourceDataType; id: ParamValue }
+  >,
+) => {
   {
     return useMutation({
       mutationFn: editResourceApi,

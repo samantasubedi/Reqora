@@ -25,7 +25,8 @@ import {
   useDepartments,
 } from "@/app/admin/hooks/companyHooks";
 import { Plus, X } from "lucide-react";
-import { useAddResource } from "../hooks/resourceHooks";
+import { useAddResource, useEditResource } from "../hooks/resourceHooks";
+import { ParamValue } from "next/dist/server/request/params";
 type formInputType = z.input<typeof schema>;
 
 export const schema = z.object({
@@ -180,8 +181,8 @@ export const ResourceForm = ({
   formType,
   resourceId,
 }: {
-  formType: "add"|"edit"
-  resourceId?: string;
+  formType: "add" | "edit";
+  resourceId?: ParamValue
 }) => {
   const {
     control,
@@ -280,7 +281,21 @@ export const ResourceForm = ({
       setStatusMode("same");
       setSingleStatus("");
       setStatusGroups([{ status: "", quantity: "" }]);
-      router.push("/admin/dashboard");
+    },
+    onError: (error: T_MutationError) => {
+      toast.error(error.response?.data?.message || error.message);
+    },
+  });
+  const editMutation = useEditResource({
+    onSuccess: (data) => {
+      toast.success(data.message);
+      reset();
+      setLocationMode("single");
+      setSingleLocation("");
+      setLocationGroups([{ location: "", quantity: "" }]);
+      setStatusMode("same");
+      setSingleStatus("");
+      setStatusGroups([{ status: "", quantity: "" }]);
     },
     onError: (error: T_MutationError) => {
       toast.error(error.response?.data?.message || error.message);
@@ -354,12 +369,25 @@ export const ResourceForm = ({
         return;
       }
     }
-if(formType=="add")
-   { addMutation.mutate({
-      ...data,
-      statusAssignment: parsedStatus.data,
-      locationAssignment: parsed.data,
-    });}
+    if (formType == "add") {
+      addMutation.mutate({
+        ...data,
+        statusAssignment: parsedStatus.data,
+        locationAssignment: parsed.data,
+      });
+    } else if (formType == "edit") {
+      if (!resourceId) {
+        return;
+      }
+      editMutation.mutate({
+        data: {
+          ...data,
+          statusAssignment: parsedStatus.data,
+          locationAssignment: parsed.data,
+        },
+        id: resourceId,
+      });
+    }
   };
 
   const statusOptions = [
@@ -406,11 +434,7 @@ if(formType=="add")
                 : ""}
           </CardTitle>
           <CardDescription className="text-base text-muted-foreground mt-1">
-            {formType == "add"
-              ? "Fill"
-              : formType == "edit"
-                ? "Edit"
-                : ""}
+            {formType == "add" ? "Fill" : formType == "edit" ? "Edit " : ""}
             the resource details below
           </CardDescription>
         </CardHeader>
