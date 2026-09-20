@@ -1,6 +1,8 @@
 import { FilterValues } from "@/components/global/Filter";
 import axios from "axios";
 import { backendUrl } from "./resourceApi";
+import { emailInviteFormType } from "../components/EmailInviteForm";
+import { codeInviteFormType } from "../components/InviteCodeGenerator";
 
 export const getAllUsersApi = async ({
   searchText,
@@ -26,3 +28,19 @@ export const getUserDetailsApi = async ({ id }: { id: string }) => {
   });
   return response.data;
 };
+export const inviteByEmailApi=async(data:emailInviteFormType)=>{
+ const response = await axios.post(
+      `${backendUrl}/invite/emailInvite`,
+      data,
+      {
+        withCredentials: true,
+      },
+    );
+    return response.data;
+}
+  export const inviteByCodeApi = async (data: codeInviteFormType) => {
+    const response = await axios.post(`${backendUrl}/invite/codeInvite`, data, {
+      withCredentials: true,
+    });
+    return response.data;
+  };

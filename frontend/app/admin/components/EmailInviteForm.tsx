@@ -18,6 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutationError } from "@/types/global";
 import RoleAndExpiryTime from "./RoleAndExpiryTime";
+import { useEmailInvite } from "../hooks/userHooks";
 
 const fieldLabel =
   "text-sm font-semibold uppercase tracking-wide text-card-foreground";
@@ -55,19 +56,9 @@ const EmailInviteForm = () => {
     reset,
   } = form;
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-  const postApi = async (data: emailInviteFormType) => {
-    const response = await axios.post(
-      `${backendUrl}/invite/emailInvite`,
-      data,
-      {
-        withCredentials: true,
-      },
-    );
-    return response.data;
-  };
-  const mutation = useMutation({
-    mutationFn: postApi,
+
+  const inviteMutation = useEmailInvite({
+ 
     onSuccess: (data) => {
       if (data.success) {
         toast.success(data.message);
@@ -80,7 +71,7 @@ const EmailInviteForm = () => {
   });
 
   const handleFormSubmit: SubmitHandler<emailInviteFormType> = (data) => {
-    mutation.mutate(data);
+    inviteMutation.mutate(data);
   };
 
   return (
@@ -143,10 +134,10 @@ const EmailInviteForm = () => {
         <CardFooter>
           <Button
             type="submit"
-            disabled={mutation.isPending}
+            disabled={inviteMutation.isPending}
             className="w-full h-11 cursor-pointer mt-6 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {mutation.isPending ? "Sending..." : "Send Invitation"}
+            {inviteMutation.isPending ? "Sending..." : "Send Invitation"}
           </Button>
         </CardFooter>
       </form>

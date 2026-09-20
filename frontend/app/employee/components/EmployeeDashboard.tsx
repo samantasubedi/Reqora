@@ -32,9 +32,6 @@ import { handleLogout } from "@/app/admin/components/AdminDashboard";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { ActiveGear } from "./ActiveGear";
-import { RecentRequests } from "./RecentRequests";
-import { ResourceCard } from "./ResourceCard";
 
 export default function EmployeeDashboard() {
   const router = useRouter();
@@ -87,13 +84,6 @@ export default function EmployeeDashboard() {
             <Plus className="mr-2 h-4 w-4" /> New Request
           </Button>
         </div>
-      </div>
-
-      <ResourceCard />
-
-      <div className="grid grid-cols-2 gap-20">
-        <RecentRequests />
-        <ActiveGear />
       </div>
     </div>
   );

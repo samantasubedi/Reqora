@@ -1,5 +1,10 @@
 import axios from "axios";
 import { backendUrl } from "./resourceApi";
+export type Department = {
+  id: string;
+  name: string;
+  _count: { users: number; resources: number };
+};
 
 export const getAnalyticsApi = async () => {
   const response = await axios.get(`${backendUrl}/analytics`, {
@@ -8,11 +13,6 @@ export const getAnalyticsApi = async () => {
   return response.data;
 };
 
-export type Department = {
-  id: string;
-  name: string;
-  _count: { users: number; resources: number };
-};
 
 export const fetchDepartmentsApi = async (): Promise<{
   success: boolean;
