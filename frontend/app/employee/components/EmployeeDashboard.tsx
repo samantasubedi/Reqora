@@ -170,7 +170,7 @@ const EmployeeDashboard = () => {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button className="text-white! text-bold! bg-purple-900 hover:bg-purple-700 duration-300 transition-all cursor-pointer">
+          <Button className=" text-bold!  duration-300 bg-primary transition-all cursor-pointer">
             <Plus className="mr-2 h-4 w-4" /> New Request
           </Button>
         </div>
@@ -196,9 +196,7 @@ const EmployeeDashboard = () => {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <div>
               <CardTitle className="text-xl">Recent Requests</CardTitle>
-              <CardDescription>
-                Your latest resource requests.
-              </CardDescription>
+              <CardDescription>Your latest resource requests.</CardDescription>
             </div>
             <Button
               variant="ghost"
