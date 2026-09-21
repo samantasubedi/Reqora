@@ -141,6 +141,21 @@
     --landing-gradient-start: oklch(0.92 0.06 170);
     --landing-gradient-mid: oklch(0.88 0.04 300);
     --landing-gradient-end: oklch(0.85 0.12 155);
+
+    /* Status colors (badges, banners) */
+    --destructive-foreground: oklch(0.98 0.015 165);
+
+    --status-pending-bg: oklch(0.97 0.045 90);
+    --status-pending-text: oklch(0.55 0.13 50);
+    --status-pending-border: oklch(0.88 0.1 70);
+
+    --status-success-bg: oklch(0.96 0.05 155);
+    --status-success-text: oklch(0.5 0.16 155);
+    --status-success-border: oklch(0.86 0.09 155);
+
+    --status-danger-bg: oklch(0.96 0.04 25);
+    --status-danger-text: oklch(0.55 0.22 27);
+    --status-danger-border: oklch(0.86 0.14 25);
 }
 
 .dark {
@@ -231,6 +246,21 @@
     --landing-gradient-start: oklch(0.25 0.06 170);
     --landing-gradient-mid: oklch(0.22 0.04 300);
     --landing-gradient-end: oklch(0.28 0.1 155);
+
+    /* Status colors (badges, banners) */
+    --destructive-foreground: oklch(0.28 0.08 27);
+
+    --status-pending-bg: oklch(0.3 0.06 85);
+    --status-pending-text: oklch(0.85 0.13 85);
+    --status-pending-border: oklch(0.42 0.09 85);
+
+    --status-success-bg: oklch(0.27 0.07 155);
+    --status-success-text: oklch(0.78 0.16 155);
+    --status-success-border: oklch(0.4 0.1 155);
+
+    --status-danger-bg: oklch(0.28 0.07 27);
+    --status-danger-text: oklch(0.82 0.17 27);
+    --status-danger-border: oklch(0.42 0.13 27);
 }
 @theme inline {
     /* Reqora brand */
@@ -318,6 +348,18 @@
     --color-landing-gradient-start: var(--landing-gradient-start);
     --color-landing-gradient-mid: var(--landing-gradient-mid);
     --color-landing-gradient-end: var(--landing-gradient-end);
+
+    /* Status color tokens */
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-status-pending-bg: var(--status-pending-bg);
+    --color-status-pending-text: var(--status-pending-text);
+    --color-status-pending-border: var(--status-pending-border);
+    --color-status-success-bg: var(--status-success-bg);
+    --color-status-success-text: var(--status-success-text);
+    --color-status-success-border: var(--status-success-border);
+    --color-status-danger-bg: var(--status-danger-bg);
+    --color-status-danger-text: var(--status-danger-text);
+    --color-status-danger-border: var(--status-danger-border);
 }
 
 @layer base {
