@@ -102,3 +102,30 @@ export const itemStatusBadgeClass: Record<string, string> = {
   inUse: "bg-sky-500/10 text-sky-700 dark:text-sky-400",
   underMaintenance: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
 };
+
+export const ItemStatusPill = ({
+  status,
+  className,
+}: {
+  status: string;
+  className?: string;
+}) => {
+  const label =
+    status === "underMaintenance"
+      ? "Under maintenance"
+      : status === "inUse"
+        ? "In use"
+        : "Available";
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold capitalize",
+        itemStatusBadgeClass[status] ?? "",
+        className,
+      )}
+    >
+      <span className="size-1.5 rounded-full bg-current" />
+      {label}
+    </span>
+  );
+};
