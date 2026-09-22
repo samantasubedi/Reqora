@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { T_MutationError } from "@/types/global";
 import SelectBox from "@/components/others/SelectBox";
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   useAddDepartment,
   useDepartments,
@@ -180,9 +180,21 @@ const AssignmentProgress = ({
 export const ResourceForm = ({
   formType,
   resourceId,
+  defaultValues,
+  locationData,
+  statusData,
 }: {
   formType: "add" | "edit";
-  resourceId?: ParamValue
+  resourceId?: ParamValue;
+  defaultValues?: {
+    resourceName: string;
+    quantity: number;
+    type: string;
+    departmentId: string;
+    description?: string;
+  };
+  locationData?: LocationGroup[];
+  statusData?: StatusGroup[];
 }) => {
   const {
     control,
@@ -194,21 +206,34 @@ export const ResourceForm = ({
     getValues,
   } = useForm<formInputType, any, formDataType>({
     resolver: zodResolver(schema),
+    defaultValues,
   });
 
   const quantityValue = useWatch({ control, name: "quantity" });
   const totalQuantity = Number(quantityValue) || 0;
 
-  const [locationMode, setLocationMode] = useState<LocationMode>("single");
-  const [singleLocation, setSingleLocation] = useState("");
-  const [locationGroups, setLocationGroups] = useState<LocationGroup[]>([
-    { location: "", quantity: "" },
-  ]);
-  const [statusMode, setStatusMode] = useState<StatusMode>("same");
-  const [singleStatus, setSingleStatus] = useState("");
-  const [statusGroups, setStatusGroups] = useState<StatusGroup[]>([
-    { status: "", quantity: "" },
-  ]);
+  const [locationMode, setLocationMode] = useState<LocationMode>(
+    locationData && locationData?.length == 1 ? "single" : "multiple",
+  );
+  const [singleLocation, setSingleLocation] = useState(
+    locationData?.length == 1 ? locationData[0].location : "",
+  );
+  const [locationGroups, setLocationGroups] = useState<LocationGroup[]>(
+    locationData && locationData?.length > 1
+      ? locationData
+      : [{ location: "", quantity: "" }],
+  );
+  const [statusMode, setStatusMode] = useState<StatusMode>(
+    statusData?.length == 1 ? "same" : "different",
+  );
+  const [singleStatus, setSingleStatus] = useState(
+    statusData?.length == 1 ? statusData[0].status : "",
+  );
+  const [statusGroups, setStatusGroups] = useState<StatusGroup[]>(
+    statusData && statusData?.length > 1
+      ? statusData
+      : [{ status: "", quantity: "" }],
+  );
   const [newDepartmentName, setNewDepartmentName] = useState("");
 
   const { data: departmentsData, isLoading: departmentsLoading } =

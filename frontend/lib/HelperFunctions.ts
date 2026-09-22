@@ -35,8 +35,30 @@ export const calculatePages = ({
     totalPages,
   ];
 };
-export const camelToSentence=(str: string): string=>{
+export const camelToSentence = (str: string): string => {
   return str
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (char) => char.toUpperCase());
-}
+};
+export const groupItems = ({
+  resourceItems,
+  key,
+}: {
+  resourceItems: { location: string; status: string }[];
+  key: "location" | "status";
+}) => {
+  const counts = new Map<string, number>();
+  for (const item of resourceItems) {
+    const value = item[key];
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  if (key == "location") {
+    return Array.from(counts, ([value, quantity]) => {
+      return { location: value, quantity };
+    });
+  } else if (key == "status") {
+    return Array.from(counts, ([value, quantity]) => {
+      return { status: value, quantity };
+    });
+  }
+};
