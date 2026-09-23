@@ -1,8 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   Building2,
@@ -16,6 +17,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { Progress } from "@/components/ui/progress";
 import {
@@ -24,28 +35,31 @@ import {
 } from "@/components/others/ResourceTabs";
 import { useRouter } from "next/navigation";
 
-import { useResource } from "../../hooks/resourceHooks";
+import { useResource, useDeleteResource } from "../../hooks/resourceHooks";
 import ResourceDetailsSkeleton from "../../components/skeletonLoaders/resourceDetailsSkeleton";
 import { ResourceStatus } from "../(with-sidebar)/page";
 import { resourceDetailType } from "../../apis/resourceApi";
 
 const ResourceDetails = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const params = useParams();
   const id = params.id;
 
-  const { isError, error, isSuccess, isLoading, data } = useResource(id);
+  const { isSuccess, isLoading, data } = useResource(id);
 
-  useEffect(() => {
-    if (isError) {
-      if (error.response) {
-        toast.error(error.response?.data.message);
-      } else {
-        toast.error(error.message);
-      }
-    }
-  }, [error, isError]);
+  const deleteMutation = useDeleteResource({
+    onSuccess: (res) => {
+      toast.success(res.message || "Resource deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["resourceData"] });
+      router.replace("/admin/resources");
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || err.message);
+    },
+  });
   if (isLoading) {
     return <ResourceDetailsSkeleton />;
   }
@@ -100,12 +114,49 @@ const ResourceDetails = () => {
             Edit
           </Button>
 
-          <Button variant="destructive">
+          <Button
+            variant="destructive"
+            onClick={() => setDeleteDialogOpen(true)}
+            disabled={deleteMutation.isPending}
+          >
             <Trash2 className="h-4 w-4" />
-            Delete
+            {deleteMutation.isPending ? "Deleting..." : "Delete"}
           </Button>
         </div>
       </div>
+
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this resource?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-semibold text-foreground">
+                {resourceDetail.name}
+              </span>{" "}
+              and all its items will be permanently removed. This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={deleteMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                deleteMutation.mutate(id);
+              }}
+            >
+              Delete resource
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Card>
         <CardContent className="flex flex-col gap-6 p-6 lg:flex-row lg:items-center lg:justify-between">

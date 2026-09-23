@@ -86,3 +86,9 @@ export  const addResourceApi = async (data:resourceDataType) => {
     });
     return response.data;
   };
+  export const deleteResourceApi = async (id: ParamValue) => {
+    const response = await axios.delete(`${backendUrl}/resources/${id}`, {
+      withCredentials: true,
+    });
+    return response.data;
+  };

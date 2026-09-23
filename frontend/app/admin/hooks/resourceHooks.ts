@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import {
   addResourceApi,
+  deleteResourceApi,
   editResourceApi,
   fetchResourceApi,
   fetchResourcesApi,
@@ -97,4 +98,12 @@ export const useEditResource = (
       ...options,
     });
   }
+};
+export const useDeleteResource = (
+  options: UseMutationOptions<any, T_MutationError, ParamValue>,
+) => {
+  return useMutation({
+    mutationFn: deleteResourceApi,
+    ...options,
+  });
 };

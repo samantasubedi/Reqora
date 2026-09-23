@@ -32,6 +32,6 @@ router.patch(
   validate(ResourceSchema),
   editResource,
 );
-router.delete("/resources", roleMiddleware(["admin"]), deleteResource);
+router.delete("/resources/:id", roleMiddleware(["admin"]), deleteResource);
 
 export default router;

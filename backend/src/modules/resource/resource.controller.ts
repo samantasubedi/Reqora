@@ -210,7 +210,7 @@ export const deleteResource = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.body;
+    const id = req.params.id as string;
     const companyId = res.locals.user.companyId;
     if (!id) {
       throw new appError(400, "ID_NOT_FOUND", "please provide an id");
