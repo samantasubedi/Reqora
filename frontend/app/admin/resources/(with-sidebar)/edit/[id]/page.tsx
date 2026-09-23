@@ -23,16 +23,25 @@ const Page = () => {
     description: resourceDetail.description ?? "",
   };
 
-  const locationData = groupItems({
-    resourceItems: resourceDetail.resourceItems,
-    key: "location",
-  });
-  console.log("this is the location data", locationData);
-  const statusData = groupItems({
-    resourceItems: resourceDetail.resourceItems,
-    key: "status",
-  });
-  console.log("this is the status data", statusData);
+  const locationData =
+    groupItems({
+      resourceItems: resourceDetail.resourceItems,
+      key: "location",
+    })?.map((group) => ({
+      location: group.location,
+      quantity: String(group.quantity),
+    })) ?? undefined;
+  const statusData =
+    groupItems({
+      resourceItems: resourceDetail.resourceItems,
+      key: "status",
+    })?.map((group) => ({
+      status: group.status,
+      quantity: String(group.quantity),
+    })) ?? undefined;
+  const lockedQuantity = resourceDetail.resourceItems.filter(
+    (item) => item.acquiredById || item.status === "inUse",
+  ).length;
 
   return (
     <ResourceForm
@@ -41,6 +50,7 @@ const Page = () => {
       defaultValues={initialData}
       locationData={locationData}
       statusData={statusData}
+      lockedQuantity={lockedQuantity}
     />
   );
 };

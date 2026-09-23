@@ -190,6 +190,17 @@ const ResourceDetails = () => {
                   <p>{resourceDetail.createdAt}</p>
                 </div>
               </div>
+
+              {resourceDetail.description && (
+                <div className="flex gap-3 md:col-span-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Description</p>
+                    <p className="whitespace-pre-line">
+                      {resourceDetail.description}
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

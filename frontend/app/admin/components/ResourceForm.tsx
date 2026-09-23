@@ -183,6 +183,7 @@ export const ResourceForm = ({
   defaultValues,
   locationData,
   statusData,
+  lockedQuantity = 0,
 }: {
   formType: "add" | "edit";
   resourceId?: ParamValue;
@@ -195,6 +196,7 @@ export const ResourceForm = ({
   };
   locationData?: LocationGroup[];
   statusData?: StatusGroup[];
+  lockedQuantity?: number;
 }) => {
   const {
     control,
@@ -321,6 +323,7 @@ export const ResourceForm = ({
       setStatusMode("same");
       setSingleStatus("");
       setStatusGroups([{ status: "", quantity: "" }]);
+      router.back();
     },
     onError: (error: T_MutationError) => {
       toast.error(error.response?.data?.message || error.message);
@@ -390,6 +393,35 @@ export const ResourceForm = ({
           `Remaining ${total - statusAssignedTotal} item${
             total - statusAssignedTotal === 1 ? "" : "s"
           } unassigned`,
+        );
+        return;
+      }
+    }
+    if (formType == "edit") {
+      const totalQuantityValue = Number(data.quantity);
+      if (totalQuantityValue < lockedQuantity) {
+        toast.error(
+          `Cannot reduce quantity below ${lockedQuantity}: ${lockedQuantity} item${
+            lockedQuantity === 1 ? " is" : "s are"
+          } currently acquired/in use.`,
+        );
+        return;
+      }
+      const requestedInUse =
+        statusAssignment.mode === "same"
+          ? statusAssignment.status === "inUse"
+            ? totalQuantityValue
+            : 0
+          : statusAssignment.statuses
+              .filter((s) => s.status === "inUse")
+              .reduce((sum, s) => sum + s.quantity, 0);
+      if (requestedInUse < lockedQuantity) {
+        toast.error(
+          `Cannot set only ${requestedInUse} in-use item${
+            requestedInUse === 1 ? "" : "s"
+          }: ${lockedQuantity} item${
+            lockedQuantity === 1 ? " is" : "s are"
+          } currently acquired/in use. Reduce the available count instead.`,
         );
         return;
       }

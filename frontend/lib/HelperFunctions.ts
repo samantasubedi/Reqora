@@ -40,13 +40,29 @@ export const camelToSentence = (str: string): string => {
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (char) => char.toUpperCase());
 };
-export const groupItems = ({
+export function groupItems({
+  resourceItems,
+  key,
+}: {
+  resourceItems: { location: string; status: string }[];
+  key: "location";
+}): { location: string; quantity: number }[];
+export function groupItems({
+  resourceItems,
+  key,
+}: {
+  resourceItems: { location: string; status: string }[];
+  key: "status";
+}): { status: string; quantity: number }[];
+export function groupItems({
   resourceItems,
   key,
 }: {
   resourceItems: { location: string; status: string }[];
   key: "location" | "status";
-}) => {
+}):
+  | { location: string; quantity: number }[]
+  | { status: string; quantity: number }[] {
   const counts = new Map<string, number>();
   for (const item of resourceItems) {
     const value = item[key];
@@ -56,9 +72,9 @@ export const groupItems = ({
     return Array.from(counts, ([value, quantity]) => {
       return { location: value, quantity };
     });
-  } else if (key == "status") {
+  } else {
     return Array.from(counts, ([value, quantity]) => {
       return { status: value, quantity };
     });
   }
-};
+}
