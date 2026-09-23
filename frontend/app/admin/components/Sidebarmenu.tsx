@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +38,14 @@ const Sidebarmenu = () => {
   const pathname = usePathname();
   const { state, setOpen } = useSidebar();
   const isActive = (path: string) => pathname === path;
+  const isResourcesSection = pathname.startsWith("/admin/resources");
+  const isUsersSection = pathname.startsWith("/admin/users");
+  const [openResources, setOpenResources] = useState(isResourcesSection);
+  const [openUsers, setOpenUsers] = useState(isUsersSection);
+  useEffect(() => {
+    setOpenResources(pathname.startsWith("/admin/resources"));
+    setOpenUsers(pathname.startsWith("/admin/users"));
+  }, [pathname]);
   const handleSidebarNavigation = (pathName: string) => {
     if (pathName == "none") {
       setOpen(true);
@@ -52,6 +61,7 @@ const Sidebarmenu = () => {
           onClick={() => {
             router.push("/");
           }}
+          className="cursor-pointer"
         >
           {state == "expanded" ? (
             <Image
@@ -94,11 +104,12 @@ const Sidebarmenu = () => {
           </SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
-              <Collapsible>
+              <Collapsible open={openResources} onOpenChange={setOpenResources}>
                 <CollapsibleTrigger asChild className="w-full">
                   <SidebarMenuButton
                     tooltip="Resources"
                     suppressHydrationWarning
+                    isActive={!openResources && isResourcesSection}
                     className="flex justify-between font-bold w-full"
                     onClick={() => handleSidebarNavigation("none")}
                   >
@@ -144,11 +155,12 @@ const Sidebarmenu = () => {
             </SidebarMenuItem>
 
             <SidebarMenuItem>
-              <Collapsible>
+              <Collapsible open={openUsers} onOpenChange={setOpenUsers}>
                 <CollapsibleTrigger asChild className="w-full">
                   <SidebarMenuButton
                     tooltip="Users"
                     suppressHydrationWarning
+                    isActive={!openUsers && isUsersSection}
                     className="flex justify-between font-bold w-full"
                     onClick={() => handleSidebarNavigation("none")}
                   >

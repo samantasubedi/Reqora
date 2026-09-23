@@ -242,7 +242,7 @@ export const UserTable = () => {
                         tableFields.length === defaultTableFields.length
                       }
                       onClick={() => setTableFields(defaultTableFields)}
-                      className="flex text-text-danger  items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+                      className="flex text-text-danger cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
                     >
                       <Icon
                         icon="eva:refresh-outline"

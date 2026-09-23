@@ -32,7 +32,7 @@ export default function TableEmpty({
           <p className="m-4 font-semibold text-muted-foreground">{subText}</p>
           <button
             onClick={() => router.push(button.link)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors duration-200 shadow-sm bg-secondary"
+            className="inline-flex cursor-pointer items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors duration-200 shadow-sm bg-secondary"
           >
             <ButtonIcon className="size-5 cursor-pointer" />
             {button.buttonText}

@@ -6,7 +6,7 @@ export const PendingRequest = () => {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-semibold">Pending Requests</h2>
 
-            <button className="text-sm font-medium text-blue-600">
+            <button className="cursor-pointer text-sm font-medium text-blue-600">
               View All
             </button>
           </div>
@@ -36,11 +36,11 @@ export const PendingRequest = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <button className="rounded-md bg-green-500 px-3 py-1 text-sm text-white">
+                  <button className="cursor-pointer rounded-md bg-green-500 px-3 py-1 text-sm text-white">
                     Approve
                   </button>
 
-                  <button className="rounded-md bg-red-500 px-3 py-1 text-sm text-white">
+                  <button className="cursor-pointer rounded-md bg-red-500 px-3 py-1 text-sm text-white">
                     Reject
                   </button>
                 </div>

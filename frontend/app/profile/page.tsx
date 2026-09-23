@@ -120,7 +120,7 @@ const page = () => {
 
                 <button
                   type="button"
-                  className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+                  className="cursor-pointer rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
                 >
                   Add Description
                 </button>

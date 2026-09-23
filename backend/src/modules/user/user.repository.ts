@@ -58,6 +58,7 @@ export const findUserById = async ({ id }: { id: string }) => {
   return prisma.user.findUnique({
     where: { id },
     select: {
+      id: true,
       username: true,
       email: true,
       description: true,
@@ -65,8 +66,19 @@ export const findUserById = async ({ id }: { id: string }) => {
       role: true,
       department: true,
       company: true,
-      createdRequests: true,
-      reviewedRequests: true,
+      resourceItems: { include: { resource: true } },
+      createdRequests: {
+        include: {
+          resource: true,
+          reviewedBy: { select: { username: true } },
+        },
+      },
+      reviewedRequests: {
+        include: {
+          resource: true,
+          requestedBy: { select: { username: true } },
+        },
+      },
     },
   });
 };

@@ -27,7 +27,7 @@ const ThemeToggler = () => {
       aria-checked={isDark}
       onClick={handleThemeChange}
       className={cn(
-        "relative inline-flex h-7 w-14 items-center rounded-full bg-muted transition-colors duration-300",
+        "relative inline-flex h-7 w-14 cursor-pointer items-center rounded-full bg-muted transition-colors duration-300",
 
         isDark && "bg-foreground/15",
       )}
