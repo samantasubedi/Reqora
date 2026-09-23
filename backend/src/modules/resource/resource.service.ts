@@ -89,6 +89,7 @@ export const addResourceService = async ({
   statusAssignment,
   locationAssignment,
   departmentId,
+  description,
   companyId,
 }: {
   resourceName: string;
@@ -97,15 +98,12 @@ export const addResourceService = async ({
   statusAssignment: statusAssignmentType;
   locationAssignment: locationAssignmentType;
   departmentId: string;
+  description?: string | null;
   companyId: string;
 }) => {
   const department = await findDepartmentById({ id: departmentId });
   if (!department || department.companyId !== companyId) {
-    throw new appError(
-      400,
-      "INVALID_DEPARTMENT",
-      "department does not belong to this company",
-    );
+    throw new appError(400, "INVALID_DEPARTMENT", "department does not exist");
   }
 
   const locations =
@@ -129,6 +127,7 @@ export const addResourceService = async ({
     type,
     companyId,
     departmentId,
+    description,
     statuses,
     locations,
   });
@@ -173,6 +172,7 @@ export const getSpecificResourceService = async ({
     departmentId: resource.departmentId,
     department: resource.department?.name ?? null,
     location: locations.join(", "),
+    description: resource.description,
     availability: availableQuantity > 0,
     totalQuantity,
     availableQuantity,
@@ -186,78 +186,141 @@ export const getSpecificResourceService = async ({
 };
 
 export const editResourceService = async ({
-  id,
-  name,
+  resourceId,
+  resourceName,
   type,
   departmentId,
-  location,
+  statusAssignment,
+  locationAssignment,
   quantity,
+  description,
   companyId,
 }: {
-  id: string;
-  name: string;
+  resourceId: string;
+  resourceName: string;
+  quantity: number;
   type: string;
   departmentId: string;
-  location?: string;
-  quantity?: number;
+  description?: string | null;
+  statusAssignment: statusAssignmentType;
+  locationAssignment: locationAssignmentType;
   companyId: string;
 }) => {
-  const resource = await findResourceById({ id });
+  const resource = await findResourceById({ id: resourceId });
   if (!resource || resource.companyId !== companyId) {
     throw new appError(400, "INVALID_ID", "resource not found");
   }
 
   const department = await findDepartmentById({ id: departmentId });
   if (!department || department.companyId !== companyId) {
+    throw new appError(400, "INVALID_DEPARTMENT", "department does not exist");
+  }
+
+  const locations =
+    locationAssignment.mode === "single"
+      ? [{ name: locationAssignment.location.name, quantity }]
+      : locationAssignment.locations.map((l) => ({
+          name: l.location.name,
+          quantity: l.quantity,
+        }));
+
+  const statuses =
+    statusAssignment.mode === "same"
+      ? [{ status: statusAssignment.status, quantity }]
+      : statusAssignment.statuses.map((s) => ({
+          status: s.status,
+          quantity: s.quantity,
+        }));
+
+  const existing = await findResourceDetailsById({ id: resourceId });
+  const existingItems = existing?.resourceItems ?? [];
+  const existingCount = existingItems.length;
+  const diff = quantity - existingCount;
+  const keepCount = Math.min(quantity, existingCount);
+
+  const locationSlots = locations.flatMap(({ name, quantity: qty }) =>
+    Array.from({ length: qty }, () => name),
+  );
+
+  const requestedInUse =
+    statuses.find((s) => s.status === ResourceStatus.inUse)?.quantity ?? 0;
+
+  const keptItems = existingItems.slice(0, keepCount);
+  const locked = keptItems.filter(
+    (item) => item.acquiredById || item.status === ResourceStatus.inUse,
+  ).length;
+  if (requestedInUse < locked) {
     throw new appError(
       400,
-      "INVALID_DEPARTMENT",
-      "department does not belong to this company",
+      "IN_USE_ITEMS",
+      `cannot set ${requestedInUse} in-use: ${locked} item(s) are acquired/in use`,
     );
   }
+
+  const freePool = statuses.flatMap(({ status, quantity: qty }) =>
+    Array.from(
+      { length: status === ResourceStatus.inUse ? qty - locked : qty },
+      () => status,
+    ),
+  );
+
+  const updatedItems = keptItems.map((item, i) => {
+    const lockedItem =
+      item.acquiredById || item.status === ResourceStatus.inUse;
+    return {
+      id: item.id,
+      status: lockedItem
+        ? ResourceStatus.inUse
+        : (freePool.shift() ?? ResourceStatus.available),
+      location: locationSlots[i] ?? item.location,
+    };
+  });
 
   let newItems: { status: ResourceStatus; location: string }[] | undefined;
   let deleteItemIds: string[] | undefined;
 
-  if (quantity !== undefined) {
-    const currentDetails = await findResourceDetailsById({ id });
-    const currentItems = currentDetails?.resourceItems ?? [];
-    const currentCount = currentItems.length;
+  if (diff > 0) {
+    newItems = Array.from({ length: diff }, (_, i) => ({
+      status: freePool.shift() ?? ResourceStatus.available,
+      location: locationSlots[keepCount + i] ?? "unknown",
+    }));
+  }
 
-    if (quantity > currentCount) {
-      const extra = quantity - currentCount;
-      const fallbackLocation =
-        location ?? currentItems[0]?.location ?? "Unknown";
-      newItems = Array.from({ length: extra }, () => ({
-        status: ResourceStatus.available,
-        location: fallbackLocation,
-      }));
-    } else if (quantity < currentCount) {
-      const toRemove = currentCount - quantity;
-      const removable = currentItems
-        .filter(
-          (item) =>
-            item.status === ResourceStatus.available &&
-            item.acquiredById === null,
-        )
-        .slice(0, toRemove);
-      if (removable.length < toRemove) {
-        throw new appError(
-          400,
-          "QUANTITY_REDUCE_FAILED",
-          "cannot reduce quantity, not enough available items",
-        );
-      }
-      deleteItemIds = removable.map((item) => item.id);
+  if (diff < 0) {
+    const candidates = existingItems.slice(keepCount);
+    const sorted = [...candidates].sort((a, b) => {
+      const score = (item: (typeof candidates)[number]) =>
+        item.acquiredById
+          ? 3
+          : item.status === ResourceStatus.inUse
+            ? 2
+            : item.status === ResourceStatus.underMaintenance
+              ? 1
+              : 0; // available first
+      return score(a) - score(b);
+    });
+
+    const protectedCount = sorted.filter(
+      (item) => item.acquiredById || item.status === ResourceStatus.inUse,
+    ).length;
+    if (Math.abs(diff) > sorted.length - protectedCount) {
+      throw new appError(
+        400,
+        "IN_USE_ITEMS",
+        "cannot reduce quantity: would need to delete acquired or in-use items",
+      );
     }
+
+    deleteItemIds = sorted.slice(0, Math.abs(diff)).map((i) => i.id);
   }
 
   return editResource({
-    id,
-    name,
+    resourceId,
+    resourceName,
     type,
     departmentId,
-    location,
+    description,
+    updatedItems,
     newItems,
     deleteItemIds,
   });

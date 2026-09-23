@@ -64,7 +64,7 @@ export const statusAssignmentSchema = z.discriminatedUnion("mode", [
 ]);
 export type statusAssignmentType = z.infer<typeof statusAssignmentSchema>;
 
-export const addResourceSchema = z
+export const ResourceSchema = z
   .object({
     resourceName: z
       .string()
@@ -109,17 +109,17 @@ export const addResourceSchema = z
       }
     }
   });
-export type addResourceType = z.infer<typeof addResourceSchema>;
+export type addResourceType = z.infer<typeof ResourceSchema>;
 
-export const editResourceSchema = z.object({
-  id: z.string().min(1, "resource id is required"),
-  name: z.string().trim().min(1, "resource name is required"),
-  type: z.string().min(1, "type is required"),
-  departmentId: z.string().min(1, "department is required"),
-  location: z.string().min(1).optional(),
-  quantity: z.coerce.number().min(1).optional(),
-});
-export type editResourceType = z.infer<typeof editResourceSchema>;
+// export const editResourceSchema = z.object({
+//   id: z.string().min(1, "resource id is required"),
+//   name: z.string().trim().min(1, "resource name is required"),
+//   type: z.string().min(1, "type is required"),
+//   departmentId: z.string().min(1, "department is required"),
+//   location: z.string().min(1).optional(),
+//   quantity: z.coerce.number().min(1).optional(),
+// });
+// export type editResourceType = z.infer<typeof editResourceSchema>;
 
 export const releaseResourceSchema = z.object({
   resourceItemId: z.string().min(1, "resource item id is required"),

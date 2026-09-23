@@ -137,6 +137,7 @@ export const isLoggedIn = async (req: Request, res: Response) => {
     code: "LOGGEDIN",
     role: userData.role,
     username: userData.username,
+    email: userData.email,
     message: "user is logged in ",
   });
 };

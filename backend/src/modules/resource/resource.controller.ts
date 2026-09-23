@@ -113,6 +113,7 @@ export const addResource = async (
       statusAssignment,
       locationAssignment,
       departmentId,
+      description,
     } = req.body;
     const resource = await addResourceService({
       resourceName,
@@ -121,6 +122,7 @@ export const addResource = async (
       statusAssignment,
       locationAssignment,
       departmentId,
+      description,
       companyId,
     });
 
@@ -171,14 +173,25 @@ export const editResource = async (
 ) => {
   try {
     const companyId = res.locals.user.companyId;
-    const { id, name, type, departmentId, location, quantity } = req.body;
+    const resourceId = req.params.id as string;
+    const {
+      resourceName,
+      quantity,
+      type,
+      statusAssignment,
+      locationAssignment,
+      departmentId,
+      description,
+    } = req.body;
     await editResourceService({
-      id,
-      name,
+      resourceName,
+      resourceId,
+      quantity,
       type,
       departmentId,
-      location,
-      quantity,
+      description,
+      locationAssignment,
+      statusAssignment,
       companyId,
     });
     return res.status(201).json({

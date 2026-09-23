@@ -10,11 +10,7 @@ import {
 import { roleMiddleware } from "../../middleware/roleMIddleware";
 import { parseQueryFilters } from "../../middleware/queryMiddleware";
 import { validate } from "../../middleware/validationMiddleware";
-import {
-  addResourceSchema,
-  editResourceSchema,
-  releaseResourceSchema,
-} from "./resource.schema";
+import { releaseResourceSchema, ResourceSchema } from "./resource.schema";
 
 const router = Router();
 router.get("/resources", parseQueryFilters, getAllResources);
@@ -27,13 +23,13 @@ router.post(
 router.post(
   "/resources",
   roleMiddleware(["admin"]),
-  validate(addResourceSchema),
+  validate(ResourceSchema),
   addResource,
 );
 router.patch(
-  "/resources",
+  "/resources/:id",
   roleMiddleware(["admin"]),
-  validate(editResourceSchema),
+  validate(ResourceSchema),
   editResource,
 );
 router.delete("/resources", roleMiddleware(["admin"]), deleteResource);

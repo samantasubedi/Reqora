@@ -129,6 +129,7 @@ export const createResourceWithItems = async ({
   type,
   companyId,
   departmentId,
+  description,
   statuses,
   locations,
 }: {
@@ -136,6 +137,7 @@ export const createResourceWithItems = async ({
   type: string;
   companyId: string;
   departmentId: string;
+  description?: string | null;
   statuses: { status: ResourceStatus; quantity: number }[];
   locations: { name: string; quantity: number }[];
 }) => {
@@ -146,10 +148,12 @@ export const createResourceWithItems = async ({
         type,
         companyId,
         departmentId,
+        description,
       },
     });
 
     const statusSlots = statuses.flatMap(({ status, quantity: qty }) =>
+      //flatMap removes the nested array, if we use map it would produce array of arrays because Array.from runs for each element of statuses array.
       Array.from({ length: qty }, () => status),
     );
 
@@ -183,7 +187,7 @@ export const findResourceDetailsById = async ({ id }: { id: string }) => {
       requests: {
         select: {
           id: true,
-          requestedQuantity:true,
+          requestedQuantity: true,
           requestedBy: true,
           reviewedBy: true,
           status: true,
@@ -196,19 +200,21 @@ export const findResourceDetailsById = async ({ id }: { id: string }) => {
 };
 
 export const editResource = async ({
-  id,
-  name,
+  resourceId,
+  resourceName,
   type,
   departmentId,
-  location,
+  description,
+  updatedItems,
   newItems,
   deleteItemIds,
 }: {
-  id: string;
-  name: string;
+  resourceId: string;
+  resourceName: string;
   type: string;
   departmentId: string;
-  location?: string;
+  description?: string | null;
+  updatedItems?: { id: string; status: ResourceStatus; location: string }[];
   newItems?: { status: ResourceStatus; location: string }[];
   deleteItemIds?: string[];
 }) => {
@@ -219,26 +225,30 @@ export const editResource = async ({
       });
     }
 
+    if (updatedItems && updatedItems.length > 0) {
+      await Promise.all(
+        updatedItems.map((item) =>
+          tx.resourceItem.update({
+            where: { id: item.id },
+            data: { status: item.status, location: item.location },
+          }),
+        ),
+      );
+    }
+
     if (newItems && newItems.length > 0) {
       await tx.resourceItem.createMany({
         data: newItems.map((item) => ({
           status: item.status,
           location: item.location,
-          resourceId: id,
+          resourceId,
         })),
       });
     }
 
-    if (location) {
-      await tx.resourceItem.updateMany({
-        where: { resourceId: id },
-        data: { location },
-      });
-    }
-
     return tx.resource.update({
-      where: { id },
-      data: { name, type, departmentId },
+      where: { id: resourceId },
+      data: { name: resourceName, type, departmentId, description },
     });
   });
 };
