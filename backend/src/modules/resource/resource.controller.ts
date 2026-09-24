@@ -124,6 +124,7 @@ export const addResource = async (
       departmentId,
       description,
       companyId,
+      createdById: res.locals.user.id,
     });
 
     return res.status(201).json({

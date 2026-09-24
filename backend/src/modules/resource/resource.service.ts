@@ -91,6 +91,7 @@ export const addResourceService = async ({
   departmentId,
   description,
   companyId,
+  createdById,
 }: {
   resourceName: string;
   quantity: number;
@@ -100,6 +101,7 @@ export const addResourceService = async ({
   departmentId: string;
   description?: string | null;
   companyId: string;
+  createdById?: string;
 }) => {
   const department = await findDepartmentById({ id: departmentId });
   if (!department || department.companyId !== companyId) {
@@ -130,6 +132,7 @@ export const addResourceService = async ({
     description,
     statuses,
     locations,
+    createdById,
   });
 };
 

@@ -132,6 +132,7 @@ export const createResourceWithItems = async ({
   description,
   statuses,
   locations,
+  createdById,
 }: {
   name: string;
   type: string;
@@ -140,6 +141,7 @@ export const createResourceWithItems = async ({
   description?: string | null;
   statuses: { status: ResourceStatus; quantity: number }[];
   locations: { name: string; quantity: number }[];
+  createdById?: string;
 }) => {
   return prisma.$transaction(async (tx) => {
     const resource = await tx.resource.create({
@@ -149,6 +151,7 @@ export const createResourceWithItems = async ({
         companyId,
         departmentId,
         description,
+        createdById,
       },
     });
 

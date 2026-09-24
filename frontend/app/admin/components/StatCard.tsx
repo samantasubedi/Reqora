@@ -41,19 +41,20 @@ const StatCard = ({
     bgRadialMap[bgColor] || "from-blue-200/40 dark:from-blue-500/15";
 
   return (
-    <Card className="relative h-[180px] w-full overflow-hidden border-none transition-all duration-300 ease-in-out cursor-pointer hover:translate-1">
+    <Card className="relative h-[180px] w-full overflow-hidden border-none transition-all duration-300 ease-in-out">
       <div
         className={`absolute inset-0 bg-radial ${centerGlow} via-transparent to-transparent pointer-events-none`}
       />
-
       <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0">
         <div className="space-y-1">
           <CardTitle className={`text-xl leading-none font-bold ${textColor}`}>
             {title}
           </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
-            {subtext}
-          </CardDescription>
+          {subtext && (
+            <CardDescription className="text-sm text-muted-foreground">
+              {subtext}
+            </CardDescription>
+          )}
         </div>
         {IconName && (
           <div className="flex items-center justify-center rounded-lg p-3">

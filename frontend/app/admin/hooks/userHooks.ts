@@ -5,10 +5,12 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import {
+  deleteUserApi,
   getAllUsersApi,
   getUserDetailsApi,
   inviteByCodeApi,
   inviteByEmailApi,
+  updateUserByAdminApi,
 } from "../apis/userApi";
 import { ParamValue } from "next/dist/server/request/params";
 import { T_MutationError } from "@/types/global";
@@ -24,7 +26,7 @@ export const useUsers = () => {
 export const useUser = ({ id }: { id: ParamValue }) => {
   return useQuery({
     queryFn: () => getUserDetailsApi({ id: String(id) }),
-    queryKey: ["users"],
+    queryKey: ["users", id],
   });
 };
 export const useUserTable = ({
@@ -55,6 +57,26 @@ export const useCodeInvite = (
 ) => {
   return useMutation({
     mutationFn: inviteByCodeApi,
+    ...options,
+  });
+};
+export const useUpdateUserByAdmin = (
+  options: UseMutationOptions<
+    any,
+    T_MutationError,
+    { id: string; role?: string; departmentId?: string }
+  >,
+) => {
+  return useMutation({
+    mutationFn: updateUserByAdminApi,
+    ...options,
+  });
+};
+export const useDeleteUser = (
+  options: UseMutationOptions<any, T_MutationError, { id: string }>,
+) => {
+  return useMutation({
+    mutationFn: deleteUserApi,
     ...options,
   });
 };

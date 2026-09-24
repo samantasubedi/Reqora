@@ -28,6 +28,30 @@ export const getUserDetailsApi = async ({ id }: { id: string }) => {
   });
   return response.data;
 };
+export const updateUserByAdminApi = async ({
+  id,
+  role,
+  departmentId,
+}: {
+  id: string;
+  role?: string;
+  departmentId?: string;
+}) => {
+  const response = await axios.patch(
+    `${backendUrl}/users/${id}`,
+    { role, departmentId },
+    {
+      withCredentials: true,
+    },
+  );
+  return response.data;
+};
+export const deleteUserApi = async ({ id }: { id: string }) => {
+  const response = await axios.delete(`${backendUrl}/users/${id}`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
 export const inviteByEmailApi=async(data:emailInviteFormType)=>{
  const response = await axios.post(
       `${backendUrl}/invite/emailInvite`,

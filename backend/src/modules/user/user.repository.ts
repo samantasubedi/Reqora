@@ -67,6 +67,7 @@ export const findUserById = async ({ id }: { id: string }) => {
       department: true,
       company: true,
       resourceItems: { include: { resource: true } },
+      addedResources: { include: { department: true } },
       createdRequests: {
         include: {
           resource: true,

@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   getAllUsers,
   getSpecificUser,
-  changeUserRole,
+  updateUserByAdmin,
+  deleteUser,
   deleteAllusers,
   getProfileInfo,
 } from "./user.controller";
@@ -12,6 +13,7 @@ const router = Router();
 router.get("/profile",parseQueryFilters, getProfileInfo);
 router.get("/users", parseQueryFilters, getAllUsers);
 router.get("/users/:id", getSpecificUser);
-router.patch("/users/:id", roleMiddleware(["admin"]), changeUserRole);
+router.patch("/users/:id", roleMiddleware(["admin"]), updateUserByAdmin);
+router.delete("/users/:id", roleMiddleware(["admin"]), deleteUser);
 router.delete("/users", deleteAllusers);
 export default router;

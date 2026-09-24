@@ -22,7 +22,7 @@ router.get(
 );
 router.post(
   "/requests",
-  roleMiddleware(["employee", "admin"]),
+  roleMiddleware(["employee", "manager"]),
   validate(createRequestSchema),
   createRequest,
 );
@@ -37,5 +37,5 @@ router.post(
   roleMiddleware(["manager"]),
   handleForward,
 );
-router.post("/requests/:id/cancel", roleMiddleware(["employee"]), handleCancel);
+router.post("/requests/:id/cancel", roleMiddleware(["employee", "manager"]), handleCancel);
 export default router;

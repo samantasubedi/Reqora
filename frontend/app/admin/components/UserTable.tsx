@@ -52,6 +52,7 @@ export type userType = {
   }
   ,company:{ companyName: string } | null,
   description: string | null;
+  resourceItems?: { id: string }[];
 };
 
 export const UserTable = () => {
