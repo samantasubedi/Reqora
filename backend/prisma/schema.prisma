@@ -62,6 +62,8 @@ model User {
   createdRequests  request[]      @relation("requestedByUser")
   reviewedRequests request[]      @relation("reviewedByUser")
   addedResources   Resource[]     @relation("addedByUser")
+  joinedAt         DateTime?
+  leftAt           DateTime?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 }

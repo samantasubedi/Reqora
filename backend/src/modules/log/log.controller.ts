@@ -8,12 +8,14 @@ export const getLogs = async (
 ) => {
   try {
     const companyId = res.locals.user.companyId;
-    const logs = await getLogsService({ companyId });
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 10;
+    const data = await getLogsService({ companyId, page, pageSize });
     return res.status(200).json({
       success: true,
       code: "LOGS_RETRIEVED",
       message: "logs retrieved successfully",
-      data: logs,
+      data,
     });
   } catch (err) {
     next(err);

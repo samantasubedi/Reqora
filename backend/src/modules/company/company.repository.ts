@@ -53,6 +53,7 @@ export const createCompanyWithAdminRepo = async ({
         role: Role.admin,
         companyId: createdCompany.id,
         departmentId: defaultDepartment.id,
+        joinedAt: new Date(),
       },
     });
 
@@ -140,6 +141,7 @@ export const updateUserAndJoinToken = async ({
         role,
         companyId,
         departmentId,
+        joinedAt: new Date(),
       },
     }),
     prisma.joinToken.update({
@@ -202,6 +204,7 @@ export const updateUserAndJoinCode = async ({
         role,
         companyId,
         departmentId,
+        joinedAt: new Date(),
       },
     }),
   ]);
@@ -269,6 +272,7 @@ export const leaveCompanyRepo = async ({ email }: { email: string }) => {
         role: null,
         companyId: null,
         departmentId: null,
+        leftAt: new Date(),
       },
       where: { email },
     }),

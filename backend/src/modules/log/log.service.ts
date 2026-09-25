@@ -1,7 +1,19 @@
 import { prisma } from "../../lib/prisma";
-import { RequestStatus, ResourceStatus, Role } from "../../generated/prisma/enums";
+import {
+  RequestStatus,
+  ResourceStatus,
+  Role,
+} from "../../generated/prisma/enums";
 
-export const getLogsService = async ({ companyId }: { companyId: string }) => {
+export const getLogsService = async ({
+  companyId,
+  page = 1,
+  pageSize = 10,
+}: {
+  companyId: string;
+  page?: number;
+  pageSize?: number;
+}) => {
   const [
     resources,
     resourceItems,
@@ -38,6 +50,7 @@ export const getLogsService = async ({ companyId }: { companyId: string }) => {
         username: true,
         role: true,
         createdAt: true,
+        joinedAt: true,
         department: { select: { name: true } },
       },
     }),
@@ -129,7 +142,7 @@ export const getLogsService = async ({ companyId }: { companyId: string }) => {
         user.department ? ` in ${user.department.name}` : ""
       }`,
       actor: user.username,
-      timestamp: user.createdAt.toISOString(),
+      timestamp: (user.joinedAt ?? user.createdAt).toISOString(),
     });
   }
 
@@ -147,7 +160,23 @@ export const getLogsService = async ({ companyId }: { companyId: string }) => {
     });
   }
 
-  return logs.sort(
+  const sortedLogs = logs.sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
   );
+
+  const totalItems = sortedLogs.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const safePage = Math.min(Math.max(1, page), totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const paginatedLogs = sortedLogs.slice(startIndex, startIndex + pageSize);
+
+  return {
+    logs: paginatedLogs,
+    pagination: {
+      totalItems,
+      totalPages,
+      currentPage: safePage,
+      pageSize,
+    },
+  };
 };
