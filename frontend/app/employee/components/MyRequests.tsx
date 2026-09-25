@@ -55,8 +55,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
-import { calculatePages } from "@/lib/HelperFunctions";
 import StatCard from "@/app/admin/components/StatCard";
+import PaginationControls from "@/app/admin/components/PaginationControls";
 import type { statCardInterface } from "@/app/admin/components/ResourceStats";
 import InitialsAvatar from "@/app/manager/components/InitialsAvatar";
 import { toast } from "react-toastify";
@@ -511,7 +511,6 @@ const MyRequests = () => {
     (safePage - 1) * PAGE_SIZE,
     safePage * PAGE_SIZE,
   );
-  const mappingPages = calculatePages({ currentPage: safePage, totalPages });
 
   const handleSort = (key: SortKey) => {
     setSort((prev) =>
@@ -938,23 +937,11 @@ const MyRequests = () => {
             )}
 
             {totalPages > 1 && (
-              <div className="flex w-full justify-center gap-5 border-t border-border p-3">
-                {mappingPages.map((pageNumber, index) => (
-                  <Button
-                    key={index}
-                    className={cn(
-                      pageNumber === safePage && "border-2! border-foreground!",
-                    )}
-                    onClick={() => {
-                      if (typeof pageNumber === "number") {
-                        setPage(pageNumber);
-                      }
-                    }}
-                  >
-                    {pageNumber}
-                  </Button>
-                ))}
-              </div>
+              <PaginationControls
+                currentPage={safePage}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
             )}
           </Card>
         </TabsContent>

@@ -12,9 +12,10 @@ export type logEntryType = {
   timestamp: string;
 };
 
-export const getLogsApi = async () => {
+export const getLogsApi = async ({ page, pageSize }: { page?: number; pageSize?: number } = {}) => {
   const response = await axios.get(`${backendUrl}/logs`, {
     withCredentials: true,
+    params: { page, pageSize },
   });
   return response.data;
 };

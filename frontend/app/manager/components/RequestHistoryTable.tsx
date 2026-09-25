@@ -6,7 +6,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -21,9 +20,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
-import { calculatePages } from "@/lib/HelperFunctions";
 import InitialsAvatar from "./InitialsAvatar";
 import { formatDate, ResourceRequest } from "./requestsDummyData";
+import TablePaginationFooter from "@/app/admin/components/TablePaginationFooter";
 
 type RequestHistoryTableProps = {
   requests: ResourceRequest[];
@@ -99,10 +98,6 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
     (safePage - 1) * PAGE_SIZE,
     safePage * PAGE_SIZE,
   );
-  const mappingPages = calculatePages({
-    totalPages,
-    currentPage: safePage,
-  });
 
   const handleFilterChange = (values: FilterValues) => {
     setFilters(values);
@@ -241,37 +236,13 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
           )}
         </TableBody>
 
-        {filtered.length > PAGE_SIZE && (
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={7}>
-                <div className="flex w-full justify-center gap-2">
-                  {mappingPages.map((pageNumber, index) => {
-                    if (typeof pageNumber === "string") {
-                      return (
-                        <span
-                          key={`${pageNumber}-${index}`}
-                          className="flex h-9 items-center px-2 text-sm text-muted-foreground"
-                        >
-                          {pageNumber}
-                        </span>
-                      );
-                    }
-                    return (
-                      <Button
-                        key={pageNumber}
-                        size="sm"
-                        variant={safePage === pageNumber ? "default" : "ghost"}
-                        onClick={() => setCurrentPage(pageNumber)}
-                      >
-                        {pageNumber}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
+        {totalPages > 1 && (
+          <TablePaginationFooter
+            colSpan={7}
+            currentPage={safePage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         )}
       </Table>
     </section>

@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
 import { cn } from "@/lib/utils";
-import { calculatePages } from "@/lib/HelperFunctions";
 import ResourceStats from "@/app/admin/components/ResourceStats";
+import PaginationControls from "@/app/admin/components/PaginationControls";
 import { useTableResources } from "@/app/admin/hooks/resourceHooks";
 import { resourceType } from "@/app/admin/resources/(with-sidebar)/page";
 import EmployeeResourceGrid from "../components/EmployeeResourceGrid";
@@ -87,12 +87,6 @@ const Page = () => {
 
   const totalPages = data?.totalPages ?? 1;
   const safePage = Math.min(data?.currentPage ?? 1, totalPages);
-  const mappingPages = isSuccess
-    ? calculatePages({
-        totalPages,
-        currentPage: safePage,
-      })
-    : [];
 
   return (
     <div className="p-8 space-y-6">
@@ -175,25 +169,13 @@ const Page = () => {
           )
         ) : null}
 
-        {totalPages > 1 && (
-          <div className="flex w-full justify-center gap-5 border-t border-border p-3">
-            {mappingPages.map((pageNumber, index) => (
-              <Button
-                key={index}
-                className={cn(
-                  pageNumber === safePage && "border-2! border-foreground!",
-                )}
-                onClick={() => {
-                  if (typeof pageNumber === "number") {
-                    setCurrentPage(pageNumber);
-                  }
-                }}
-              >
-                {pageNumber}
-              </Button>
-            ))}
-          </div>
-        )}
+        {totalPages > 1 && data?.allResources?.length ? (
+          <PaginationControls
+            currentPage={safePage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        ) : null}
       </Card>
 
       <ResourceDetailDialog

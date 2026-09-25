@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { logCategory, logEntryType } from "../apis/logApi";
 import TableEmpty from "./emptyStates/TableEmpty";
+import PaginationControls from "./PaginationControls";
 
 const categoryIcon: Record<
   string,
@@ -59,9 +60,15 @@ const tabConfig: { value: "all" | logCategory; label: string }[] = [
 const LogsTable = ({
   logs,
   isLoading,
+  totalPages,
+  currentPage,
+  onPageChange,
 }: {
   logs?: logEntryType[];
   isLoading: boolean;
+  totalPages: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
 }) => {
   const [activeTab, setActiveTab] = useState<"all" | logCategory>("all");
 
@@ -85,7 +92,7 @@ const LogsTable = ({
 
       {isLoading ? (
         <div className="space-y-3">
-          {[...Array(6)].map((_, index) => (
+          {[...Array(5)].map((_, index) => (
             <div
               key={index}
               className="h-16 animate-pulse rounded-xl border bg-card"
@@ -153,6 +160,14 @@ const LogsTable = ({
             </table>
           </CardContent>
         </Card>
+      )}
+
+      {!isLoading && filteredLogs && filteredLogs.length > 0 && totalPages > 1 && (
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
       )}
     </div>
   );

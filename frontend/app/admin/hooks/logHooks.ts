@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { getLogsApi } from "../apis/logApi";
 
-export const useLogs = () => {
+export const useLogs = ({ page, pageSize }: { page: number; pageSize: number }) => {
   return useQuery({
-    queryFn: () => getLogsApi(),
-    queryKey: ["logs"],
+    queryFn: () => getLogsApi({ page, pageSize }),
+    queryKey: ["logs", page, pageSize],
   });
 };

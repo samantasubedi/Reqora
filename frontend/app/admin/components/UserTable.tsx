@@ -3,7 +3,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -34,9 +33,9 @@ import { Input } from "@/components/ui/input";
 import TableEmpty, { tableEmptyType } from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
-import { calculatePages } from "@/lib/HelperFunctions";
 import { useUserTable } from "../hooks/userHooks";
 import { useRouter } from "next/navigation";
+import TablePaginationFooter from "./TablePaginationFooter";
 
 export type userType = {
   id: string;
@@ -185,17 +184,6 @@ export const UserTable = () => {
 
   const users: userType[] = data?.data;
 
-  let mappingPages;
-  if (
-    data?.success &&
-    typeof data?.totalPages === "number" &&
-    typeof data?.currentPage === "number"
-  ) {
-    mappingPages = calculatePages({
-      totalPages: data?.totalPages,
-      currentPage: data?.currentPage,
-    });
-  }
   return (
     <div className="mt-5 mb-5 px-3">
       <Table>
@@ -344,30 +332,13 @@ export const UserTable = () => {
             )}
           </TableBody>
         )}
-        {mappingPages && (
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={tableFields.length + 1}>
-                <div className="flex w-full justify-center gap-5">
-                  {mappingPages.map((pageNumber, index) => {
-                    return (
-                      <Button
-                        className={`${pageNumber == data?.currentPage ? "border-2! border-foreground!" : ""}`}
-                        key={index}
-                        onClick={() => {
-                          if (typeof pageNumber === "number") {
-                            setCurrentPage(pageNumber);
-                          }
-                        }}
-                      >
-                        {pageNumber}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
+        {isSuccess && users?.length && data?.totalPages > 1 && (
+          <TablePaginationFooter
+            colSpan={tableFields.length + 1}
+            currentPage={data?.currentPage}
+            totalPages={data?.totalPages}
+            onPageChange={setCurrentPage}
+          />
         )}
       </Table>
     </div>
