@@ -232,8 +232,10 @@ const Sidebarmenu = () => {
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Logs"
+                isActive={isActive("/admin/logs")}
                 suppressHydrationWarning
                 className="cursor-pointer font-bold"
+                onClick={() => handleSidebarNavigation("/admin/logs")}
               >
                 <Icon icon="tabler:logs" className="size-5!" />
                 <span>Logs</span>
