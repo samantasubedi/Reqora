@@ -9,10 +9,11 @@ export const findRequestsByCompanyId = async ({
     where: { companyId },
     include: {
       company: true,
-      requestedBy: true,
-      reviewedBy: true,
+      requestedBy: { include: { department: true } },
+      reviewedBy: { include: { department: true } },
       resource: true,
     },
+    orderBy: { createdAt: "desc" },
   });
 };
 export const findRequestsByUserId = async ({

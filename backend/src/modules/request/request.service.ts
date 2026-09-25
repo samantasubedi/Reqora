@@ -27,10 +27,16 @@ export const getAllRequestService = async ({
       status: curr.status,
       requestedQuantity: curr.requestedQuantity,
       resourceId: curr.resourceId,
-      reviewedBy: curr.reviewedBy?.username,
-      requestedBy: curr.requestedBy.username,
-      companyName: curr.company.companyName,
       resourceName: curr.resource.name,
+      resourceType: curr.resource.type,
+      reviewedBy: curr.reviewedBy?.username,
+      reviewedById: curr.reviewedBy?.id,
+      requestedBy: curr.requestedBy.username,
+      requestedById: curr.requestedBy.id,
+      requestedByDepartment: curr.requestedBy.department?.name ?? null,
+      companyName: curr.company.companyName,
+      createdAt: curr.createdAt,
+      updatedAt: curr.updatedAt,
     };
   });
   return allRequests;
