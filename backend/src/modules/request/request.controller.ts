@@ -76,7 +76,7 @@ export const createRequest = async (
   try {
     const { companyId, email } = res.locals.user;
     const { requestedQuantity, resourceId } = req.body;
-    const createdRequest = createRequestService({
+    const createdRequest = await createRequestService({
       companyId,
       email,
       requestedQuantity,
@@ -109,20 +109,35 @@ export const handleReview = async (
     }
     const reviewer = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, role: true, departmentId: true },
+      select: {
+        id: true,
+        role: true,
+        departmentId: true,
+        companyId: true,
+      },
     });
     const requestDetails = await prisma.request.findUnique({
       where: { id: requestId },
       select: {
+        id: true,
         requestedById: true,
         resourceId: true,
         requestedQuantity: true,
         companyId: true,
+        status: true,
         requestedBy: { select: { departmentId: true } },
       },
     });
     if (!reviewer || !requestDetails) {
       throw new appError(500, "SERVER_ERROR", "server error");
+    }
+
+    if (requestDetails.companyId !== reviewer.companyId) {
+      throw new appError(
+        403,
+        "NOT_SAME_COMPANY",
+        "you cannot review requests from another company",
+      );
     }
 
     if (requestDetails.requestedById === reviewer.id) {
@@ -135,7 +150,8 @@ export const handleReview = async (
 
     if (
       reviewer.role === Role.manager &&
-      requestDetails.requestedBy.departmentId !== reviewer.departmentId
+      (!reviewer.departmentId ||
+        requestDetails.requestedBy.departmentId !== reviewer.departmentId)
     ) {
       throw new appError(
         403,
@@ -144,10 +160,25 @@ export const handleReview = async (
       );
     }
 
-    await prisma.request.update({
-      where: { id: requestId },
-      data: { reviewedById: reviewer.id, status },
-    });
+    if (requestDetails.status !== RequestStatus.pending) {
+      throw new appError(
+        400,
+        "REQUEST_ALREADY_PROCESSED",
+        "this request has already been processed",
+      );
+    }
+
+    const reviewOnlyStatuses: RequestStatus[] = [
+      RequestStatus.approved,
+      RequestStatus.rejected,
+    ];
+    if (!reviewOnlyStatuses.includes(status as RequestStatus)) {
+      throw new appError(
+        400,
+        "INVALID_REQUEST_STATUS",
+        "status must be approved or rejected",
+      );
+    }
 
     if (status === RequestStatus.approved) {
       const availableItems = await prisma.resourceItem.findMany({
@@ -168,12 +199,23 @@ export const handleReview = async (
         );
       }
 
-      await prisma.resourceItem.updateMany({
-        where: { id: { in: availableItems.map((item) => item.id) } },
-        data: {
-          status: ResourceStatus.inUse,
-          acquiredById: requestDetails.requestedById,
-        },
+      await prisma.$transaction([
+        prisma.request.update({
+          where: { id: requestId },
+          data: { reviewedById: reviewer.id, status },
+        }),
+        prisma.resourceItem.updateMany({
+          where: { id: { in: availableItems.map((item) => item.id) } },
+          data: {
+            status: ResourceStatus.inUse,
+            acquiredById: requestDetails.requestedById,
+          },
+        }),
+      ]);
+    } else {
+      await prisma.request.update({
+        where: { id: requestId },
+        data: { reviewedById: reviewer.id, status },
       });
     }
 
@@ -187,13 +229,136 @@ export const handleReview = async (
   }
 };
 
-export const handleCancel = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.json({ message: `cancels the specific request with id ${id}` });
+export const handleCancel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id as string;
+    const { companyId, email } = res.locals.user;
+    const userInfo = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+    const requestDetails = await prisma.request.findUnique({
+      where: { id },
+      select: {
+        companyId: true,
+        requestedById: true,
+        status: true,
+      },
+    });
+    if (!userInfo || !requestDetails) {
+      throw new appError(500, "SERVER_ERROR", "server error");
+    }
+    if (requestDetails.companyId !== companyId) {
+      throw new appError(
+        403,
+        "NOT_SAME_COMPANY",
+        "this request belongs to another company",
+      );
+    }
+    if (requestDetails.requestedById !== userInfo.id) {
+      throw new appError(
+        403,
+        "NOT_REQUESTER",
+        "you can only cancel your own requests",
+      );
+    }
+    if (requestDetails.status === RequestStatus.cancelled) {
+      throw new appError(
+        400,
+        "ALREADY_CANCELLED",
+        "this request has already been cancelled",
+      );
+    }
+    if (requestDetails.status !== RequestStatus.pending) {
+      throw new appError(
+        400,
+        "CANNOT_CANCEL",
+        "only pending requests can be cancelled",
+      );
+    }
+    await prisma.request.update({
+      where: { id },
+      data: { status: RequestStatus.cancelled },
+    });
+    return res.json({
+      message: "Request cancelled",
+      success: true,
+      code: "REQUEST_CANCELLED",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
-export const handleForward = (req: Request, res: Response) => {
-  const id = req.params.id;
-  res.json({
-    message: `forwards the specific request with id ${id} to higher authority`,
-  });
+
+export const handleForward = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id as string;
+    const { companyId, email } = res.locals.user;
+    const reviewer = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, departmentId: true },
+    });
+    const requestDetails = await prisma.request.findUnique({
+      where: { id },
+      select: {
+        companyId: true,
+        requestedById: true,
+        status: true,
+        requestedBy: { select: { departmentId: true } },
+      },
+    });
+    if (!reviewer || !requestDetails) {
+      throw new appError(500, "SERVER_ERROR", "server error");
+    }
+    if (requestDetails.companyId !== companyId) {
+      throw new appError(
+        403,
+        "NOT_SAME_COMPANY",
+        "this request belongs to another company",
+      );
+    }
+    if (requestDetails.requestedById === reviewer.id) {
+      throw new appError(
+        403,
+        "SELF_FORWARD",
+        "you cannot forward your own request",
+      );
+    }
+    if (
+      !reviewer.departmentId ||
+      requestDetails.requestedBy.departmentId !== reviewer.departmentId
+    ) {
+      throw new appError(
+        403,
+        "NOT_SAME_DEPARTMENT",
+        "you can only forward requests from your department",
+      );
+    }
+    if (requestDetails.status !== RequestStatus.pending) {
+      throw new appError(
+        400,
+        "CANNOT_FORWARD",
+        "only pending requests can be forwarded",
+      );
+    }
+    await prisma.request.update({
+      where: { id },
+      data: { status: RequestStatus.forwarded },
+    });
+    return res.json({
+      message: "Request forwarded to admin",
+      success: true,
+      code: "REQUEST_FORWARDED",
+    });
+  } catch (err) {
+    next(err);
+  }
 };

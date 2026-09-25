@@ -24,6 +24,8 @@ enum RequestStatus {
   pending
   approved
   rejected
+  cancelled
+  forwarded
 }
 
 enum ResourceStatus {
