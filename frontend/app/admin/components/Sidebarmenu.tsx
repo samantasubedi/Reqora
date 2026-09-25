@@ -201,6 +201,19 @@ const Sidebarmenu = () => {
                 </CollapsibleContent>
               </Collapsible>
             </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip="Requests"
+                isActive={isActive("/admin/requests")}
+                suppressHydrationWarning
+                className="flex justify-start font-bold"
+                onClick={() => handleSidebarNavigation("/admin/requests")}
+              >
+                <Icon icon="fluent:clipboard-task-list-ltr-24-filled" className="size-5!" />
+                Requests
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>

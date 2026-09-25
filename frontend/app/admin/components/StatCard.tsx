@@ -11,20 +11,28 @@ const borderGradientMap: Record<string, string> = {
   "border-green-500": "via-green-500",
   "border-amber-500": "via-amber-500",
   "border-red-500": "via-red-500",
+  "border-violet-500": "via-violet-500",
+  "border-gray-500": "via-gray-500",
   "blue-500": "via-blue-500",
   "green-500": "via-green-500",
   "amber-500": "via-amber-500",
   "red-500": "via-red-500",
+  "violet-500": "via-violet-500",
+  "gray-500": "via-gray-500",
 };
 const bgRadialMap: Record<string, string> = {
   "bg-blue-100": "from-blue-200/40 dark:from-blue-500/15",
   "bg-green-100": "from-green-200/40 dark:from-green-500/15",
   "bg-amber-100": "from-amber-200/40 dark:from-amber-500/15",
   "bg-red-100": "from-red-200/40 dark:from-red-500/15",
+  "bg-violet-100": "from-violet-200/40 dark:from-violet-500/15",
+  "bg-gray-100": "from-gray-200/40 dark:from-gray-500/15",
   "blue-100": "from-blue-200/40 dark:from-blue-500/15",
   "green-100": "from-green-200/40 dark:from-green-500/15",
   "amber-100": "from-amber-200/40 dark:from-amber-500/15",
   "red-100": "from-red-200/40 dark:from-red-500/15",
+  "violet-100": "from-violet-200/40 dark:from-violet-500/15",
+  "gray-100": "from-gray-200/40 dark:from-gray-500/15",
 };
 
 const StatCard = ({
