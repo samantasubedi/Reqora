@@ -1,5 +1,4 @@
-import axios from "axios";
-import { backendUrl } from "./resourceApi";
+import { api } from "@/lib/apiClient";
 
 export type requestType = {
   requestId: string;
@@ -19,9 +18,7 @@ export type requestType = {
 };
 
 export const getAllRequestsApi = async () => {
-  const response = await axios.get(`${backendUrl}/requests`, {
-    withCredentials: true,
-  });
+  const response = await api.get(`/requests`);
   return response.data;
 };
 
@@ -32,10 +29,9 @@ export const reviewRequestApi = async ({
   requestId: string;
   status: "approved" | "rejected";
 }) => {
-  const response = await axios.post(
-    `${backendUrl}/requests/${requestId}/review`,
-    { requestId, status },
-    { withCredentials: true },
-  );
+  const response = await api.post(`/requests/${requestId}/review`, {
+    requestId,
+    status,
+  });
   return response.data;
 };

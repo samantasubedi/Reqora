@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
+import { api } from "@/lib/apiClient";
 
 import { FilterValues } from "@/components/global/Filter";
 import { ParamValue } from "next/dist/server/request/params";
@@ -58,8 +59,7 @@ export const fetchResourcesApi = async ({
     countsByStatus: countsByStatusType[];
     totalPages: number;
     currentPage: number;
-  }> = await axios.get(`${backendUrl}/resources`, {
-    withCredentials: true,
+  }> = await api.get(`/resources`, {
     params: paramsObj,
   });
   return response.data;
@@ -69,26 +69,18 @@ export const fetchResourceApi = async (id: ParamValue) => {
     success: boolean;
     message: string;
     resourceDetail: resourceDetailType;
-  }> = await axios.get(`${backendUrl}/resource/${id}`, {
-    withCredentials: true,
-  });
+  }> = await api.get(`/resource/${id}`);
   return response.data;
 };
 export  const addResourceApi = async (data:resourceDataType) => {
-    const response = await axios.post(`${backendUrl}/resources`, data, {
-      withCredentials: true,
-    });
+    const response = await api.post(`/resources`, data);
     return response.data;
   };
   export  const editResourceApi = async ({data,id}:{data:resourceDataType,id:ParamValue}) => {
-    const response = await axios.patch(`${backendUrl}/resources/${id}`, data, {
-      withCredentials: true,
-    });
+    const response = await api.patch(`/resources/${id}`, data);
     return response.data;
   };
   export const deleteResourceApi = async (id: ParamValue) => {
-    const response = await axios.delete(`${backendUrl}/resources/${id}`, {
-      withCredentials: true,
-    });
+    const response = await api.delete(`/resources/${id}`);
     return response.data;
   };

@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
+import { api } from "@/lib/apiClient";
 
 export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -12,10 +13,6 @@ export const createRequestApi = async ({
   const response: AxiosResponse<{
     success: boolean;
     message: string;
-  }> = await axios.post(
-    `${backendUrl}/requests`,
-    { resourceId, requestedQuantity },
-    { withCredentials: true },
-  );
+  }> = await api.post(`/requests`, { resourceId, requestedQuantity });
   return response.data;
 };

@@ -1,6 +1,5 @@
 import { FilterValues } from "@/components/global/Filter";
-import axios from "axios";
-import { backendUrl } from "./resourceApi";
+import { api } from "@/lib/apiClient";
 import { emailInviteFormType } from "../components/EmailInviteForm";
 import { codeInviteFormType } from "../components/InviteCodeGenerator";
 
@@ -16,16 +15,13 @@ export const getAllUsersApi = async ({
   const paramsObj = searchText
     ? { search: searchText, ...filters }
     : { page: page, ...filters };
-  const response = await axios.get(`${backendUrl}/users`, {
-    withCredentials: true,
+  const response = await api.get(`/users`, {
     params: paramsObj,
   });
   return response.data;
 };
 export const getUserDetailsApi = async ({ id }: { id: string }) => {
-  const response = await axios.get(`${backendUrl}/users/${id}`, {
-    withCredentials: true,
-  });
+  const response = await api.get(`/users/${id}`);
   return response.data;
 };
 export const updateUserByAdminApi = async ({
@@ -37,34 +33,18 @@ export const updateUserByAdminApi = async ({
   role?: string;
   departmentId?: string;
 }) => {
-  const response = await axios.patch(
-    `${backendUrl}/users/${id}`,
-    { role, departmentId },
-    {
-      withCredentials: true,
-    },
-  );
+  const response = await api.patch(`/users/${id}`, { role, departmentId });
   return response.data;
 };
 export const deleteUserApi = async ({ id }: { id: string }) => {
-  const response = await axios.delete(`${backendUrl}/users/${id}`, {
-    withCredentials: true,
-  });
+  const response = await api.delete(`/users/${id}`);
   return response.data;
 };
 export const inviteByEmailApi=async(data:emailInviteFormType)=>{
- const response = await axios.post(
-      `${backendUrl}/invite/emailInvite`,
-      data,
-      {
-        withCredentials: true,
-      },
-    );
+ const response = await api.post(`/invite/emailInvite`, data);
     return response.data;
 }
   export const inviteByCodeApi = async (data: codeInviteFormType) => {
-    const response = await axios.post(`${backendUrl}/invite/codeInvite`, data, {
-      withCredentials: true,
-    });
+    const response = await api.post(`/invite/codeInvite`, data);
     return response.data;
   };

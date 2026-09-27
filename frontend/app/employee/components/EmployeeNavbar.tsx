@@ -23,7 +23,7 @@ import {
 import { Icon } from "@iconify/react";
 import ThemeToggler from "@/components/global/ThemeToggler";
 import LogoutDialog from "@/app/admin/components/LogoutDialog";
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import { toast } from "react-toastify";
 
 const NAV_ITEMS: {
@@ -66,10 +66,7 @@ const EmployeeNavbar = () => {
 
   const handleLeave = async () => {
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-      const response = await axios.post(`${backendUrl}/leave`, null, {
-        withCredentials: true,
-      });
+      const response = await api.post(`/leave`, null);
 
       if (response.data.success) {
         toast.success(response.data.message);

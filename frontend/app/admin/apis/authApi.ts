@@ -1,7 +1,6 @@
 import { api } from "@/lib/apiClient";
 import { Role } from "@/types/global";
-import axios, { AxiosResponse } from "axios";
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+import { AxiosResponse } from "axios";
 export const LoginApi = async (loginData: {
   username: string;
   password: string;
@@ -20,6 +19,6 @@ export const RegisterApi = async (registerData: {
   password: string;
   email: string;
 }) => {
-  const response = await axios.post(`${backendUrl}/register`, registerData);
+  const response = await api.post(`/register`, registerData);
   return response.data;
 };

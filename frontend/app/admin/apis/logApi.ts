@@ -1,5 +1,4 @@
-import axios from "axios";
-import { backendUrl } from "./resourceApi";
+import { api } from "@/lib/apiClient";
 
 export type logCategory = "resource" | "request" | "onboarding";
 
@@ -13,8 +12,7 @@ export type logEntryType = {
 };
 
 export const getLogsApi = async ({ page, pageSize }: { page?: number; pageSize?: number } = {}) => {
-  const response = await axios.get(`${backendUrl}/logs`, {
-    withCredentials: true,
+  const response = await api.get(`/logs`, {
     params: { page, pageSize },
   });
   return response.data;

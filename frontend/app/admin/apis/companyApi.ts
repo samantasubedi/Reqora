@@ -1,5 +1,4 @@
-import axios from "axios";
-import { backendUrl } from "./resourceApi";
+import { api } from "@/lib/apiClient";
 export type Department = {
   id: string;
   name: string;
@@ -7,9 +6,7 @@ export type Department = {
 };
 
 export const getAnalyticsApi = async () => {
-  const response = await axios.get(`${backendUrl}/analytics`, {
-    withCredentials: true,
-  });
+  const response = await api.get(`/analytics`);
   return response.data;
 };
 
@@ -18,17 +15,11 @@ export const fetchDepartmentsApi = async (): Promise<{
   success: boolean;
   departments: Department[];
 }> => {
-  const response = await axios.get(`${backendUrl}/departments`, {
-    withCredentials: true,
-  });
+  const response = await api.get(`/departments`);
   return response.data;
 };
 
 export const addDepartmentApi = async (name: string) => {
-  const response = await axios.post(
-    `${backendUrl}/departments`,
-    { name },
-    { withCredentials: true },
-  );
+  const response = await api.post(`/departments`, { name });
   return response.data;
 };
