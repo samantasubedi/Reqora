@@ -8,7 +8,9 @@ import {
 import {
   cancelRequestApi,
   createRequestApi,
+  editRequestApi,
   getMyRequestsApi,
+  getRequestDetailApi,
 } from "../apis/requestApi";
 import { getMyItemsApi } from "../apis/myItemsApi";
 import { employeeQueryKeys, MyRequestsParams } from "../apis/types";
@@ -47,6 +49,28 @@ export const useCancelRequest = (
 ) => {
   return useMutation({
     mutationFn: cancelRequestApi,
+    ...options,
+  });
+};
+
+export const useRequestDetail = (requestId: string) => {
+  return useQuery({
+    queryKey: employeeQueryKeys.myRequest(requestId),
+    queryFn: () => getRequestDetailApi(requestId),
+    enabled: !!requestId,
+    retry: false,
+  });
+};
+
+export const useEditRequest = (
+  options?: UseMutationOptions<
+    any,
+    T_MutationError,
+    { requestId: string; requestedQuantity?: number; priority?: "low" | "medium" | "high"; reason?: string | null }
+  >,
+) => {
+  return useMutation({
+    mutationFn: editRequestApi,
     ...options,
   });
 };

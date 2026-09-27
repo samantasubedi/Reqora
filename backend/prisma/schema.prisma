@@ -133,8 +133,12 @@ model ResourceItem {
   acquiredById String?
   acquiredBy   User?          @relation(fields: [acquiredById], references: [id])
   resource     Resource       @relation(fields: [resourceId], references: [id])
+  allocatedRequestId String?
+  allocatedRequest request? @relation("AllocatedItems", fields: [allocatedRequestId], references: [id], onDelete: SetNull)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+
+  @@index([allocatedRequestId])
 }
 
 model request {
@@ -152,6 +156,7 @@ model request {
   company           Company       @relation(fields: [companyId], references: [id])
   requestedBy       User          @relation("requestedByUser", fields: [requestedById], references: [id])
   reviewedBy        User?         @relation("reviewedByUser", fields: [reviewedById], references: [id])
+  allocatedItems    ResourceItem[] @relation("AllocatedItems")
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 }

@@ -1,9 +1,10 @@
 import { AxiosResponse } from "axios";
 import { api } from "@/lib/apiClient";
 import type {
-  MyRequestItem,
+  EditRequestInput,
   MyRequestsParams,
   MyRequestsResponse,
+  RequestDetail,
 } from "./types";
 
 export const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
@@ -45,5 +46,27 @@ export const cancelRequestApi = async (requestId: string) => {
     message: string;
     code: string;
   }> = await api.post(`/requests/${requestId}/cancel`);
+  return response.data;
+};
+
+export const getRequestDetailApi = async (requestId: string) => {
+  const response: AxiosResponse<{
+    success: boolean;
+    message: string;
+    code: string;
+    data: RequestDetail;
+  }> = await api.get(`/requests/${requestId}`);
+  return response.data;
+};
+
+export const editRequestApi = async ({
+  requestId,
+  ...data
+}: EditRequestInput & { requestId: string }) => {
+  const response: AxiosResponse<{
+    success: boolean;
+    message: string;
+    code: string;
+  }> = await api.patch(`/requests/${requestId}`, data);
   return response.data;
 };

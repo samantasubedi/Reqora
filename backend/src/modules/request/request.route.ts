@@ -4,6 +4,7 @@ import {
   getAllRequest,
   getSpecificRequest,
   createRequest,
+  handleEdit,
   handleReview,
   handleCancel,
   handleForward,
@@ -11,13 +12,13 @@ import {
 } from "./request.controller";
 import { validate } from "../../middleware/validationMiddleware";
 import { create } from "node:domain";
-import { createRequestSchema } from "./request.schema";
+import { createRequestSchema, editRequestSchema } from "./request.schema";
 const router = Router();
 router.get("/requests", roleMiddleware(["admin"]), getAllRequest);
 router.get("/myRequests", getMyRequest);
 router.get(
   "/requests/:id",
-  roleMiddleware(["manager", "admin"]),
+  roleMiddleware(["manager", "admin", "employee"]),
   getSpecificRequest,
 );
 router.post(
@@ -25,6 +26,12 @@ router.post(
   roleMiddleware(["employee", "manager"]),
   validate(createRequestSchema),
   createRequest,
+);
+router.patch(
+  "/requests/:id",
+  roleMiddleware(["employee", "manager"]),
+  validate(editRequestSchema),
+  handleEdit,
 );
 router.post(
   "/requests/:id/review",

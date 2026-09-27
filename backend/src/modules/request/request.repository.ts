@@ -42,9 +42,20 @@ export const findRequestById = async ({ id }: { id: string }) => {
     where: {
       id,
     },
-    select: {
-      requestedBy: true,
-      reviewedBy: true,
+    include: {
+      company: { select: { companyName: true } },
+      resource: { select: { id: true, name: true, type: true } },
+      requestedBy: {
+        select: {
+          id: true,
+          username: true,
+          department: { select: { name: true } },
+        },
+      },
+      reviewedBy: { select: { id: true, username: true } },
+      allocatedItems: {
+        select: { id: true, status: true, location: true },
+      },
     },
   });
 };

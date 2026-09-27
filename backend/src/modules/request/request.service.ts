@@ -1,4 +1,5 @@
 import { appError } from "../../utils/appError";
+import { prisma } from "../../lib/prisma";
 import {
   Priority,
   RequestStatus,
@@ -231,8 +232,31 @@ export const getMyRequestService = async ({
   };
 };
 export const getRequestDetailsService = async ({ id }: { id: string }) => {
-  const requestDetails = await findRequestById({ id });
-  return requestDetails;
+  const details = await findRequestById({ id });
+  if (!details) {
+    throw new appError(404, "REQUEST_NOT_FOUND", "request not found");
+  }
+  return {
+    requestId: details.id,
+    status: details.status,
+    requestedQuantity: details.requestedQuantity,
+    priority: details.priority,
+    reason: details.reason,
+    note: details.note,
+    resourceId: details.resourceId,
+    resourceName: details.resource.name,
+    resourceType: details.resource.type,
+    requestedBy: details.requestedBy.username,
+    requestedById: details.requestedBy.id,
+    requestedByDepartment: details.requestedBy.department?.name ?? null,
+    reviewedBy: details.reviewedBy?.username ?? null,
+    reviewedById: details.reviewedBy?.id ?? null,
+    companyId: details.companyId,
+    companyName: details.company.companyName,
+    allocatedItems: details.allocatedItems,
+    createdAt: details.createdAt,
+    updatedAt: details.updatedAt,
+  };
 };
 export const createRequestService = async ({
   email,
@@ -278,4 +302,74 @@ export const createRequestService = async ({
     reason,
   });
   return createdRequest;
+};
+
+export const editRequestService = async ({
+  id,
+  email,
+  companyId,
+  requestedQuantity,
+  priority,
+  reason,
+}: {
+  id: string;
+  email: string;
+  companyId: string;
+  requestedQuantity?: number;
+  priority?: Priority;
+  reason?: string | null;
+}) => {
+  const userDetails = await findUserByEmail({ email });
+  if (!userDetails) {
+    throw new appError(404, "USER_NOT_FOUND", "unable to retrive user details");
+  }
+  const existing = await findRequestById({ id });
+  if (!existing || existing.companyId !== companyId) {
+    throw new appError(404, "REQUEST_NOT_FOUND", "request not found");
+  }
+  if (existing.requestedBy.id !== userDetails.id) {
+    throw new appError(
+      403,
+      "NOT_REQUESTER",
+      "you can only edit your own requests",
+    );
+  }
+  if (existing.status !== RequestStatus.pending) {
+    throw new appError(
+      400,
+      "CANNOT_EDIT",
+      "only pending requests can be edited",
+    );
+  }
+  if (
+    requestedQuantity === undefined &&
+    priority === undefined &&
+    reason === undefined
+  ) {
+    throw new appError(400, "NO_FIELDS", "nothing to update");
+  }
+  if (requestedQuantity !== undefined) {
+    const resourceDetails = await findResourceDetailsById({
+      id: existing.resourceId,
+    });
+    const availableQuantity =
+      resourceDetails?.resourceItems.filter(
+        (item) => item.status === ResourceStatus.available,
+      ).length ?? 0;
+    if (availableQuantity < requestedQuantity) {
+      throw new appError(
+        400,
+        "INVALID_REQUEST",
+        "requested quantity of resource is unavailable",
+      );
+    }
+  }
+  return prisma.request.update({
+    where: { id },
+    data: {
+      requestedQuantity: requestedQuantity ?? undefined,
+      priority: priority ?? undefined,
+      reason: reason ?? undefined,
+    },
+  });
 };

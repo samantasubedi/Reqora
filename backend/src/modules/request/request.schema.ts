@@ -5,3 +5,8 @@ export const createRequestSchema = z.object({
   priority: z.enum(["low", "medium", "high"]).optional(),
   reason: z.string().max(2000, "reason is too long").optional(),
 });
+export const editRequestSchema = z.object({
+  requestedQuantity: z.number().min(1, "quantity must be at least 1").optional(),
+  priority: z.enum(["low", "medium", "high"]).optional(),
+  reason: z.string().max(2000, "reason is too long").nullable().optional(),
+});

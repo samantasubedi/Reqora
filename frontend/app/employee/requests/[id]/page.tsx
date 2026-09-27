@@ -1,13 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  Ban,
   CheckCircle2,
   ClipboardList,
+  Forward,
   Hourglass,
   XCircle,
   FileText,
+  FileX,
   CalendarDays,
   UserRound,
   Boxes,
@@ -19,6 +23,9 @@ import {
   PackageCheck,
   Send,
   History,
+  RotateCcw,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,10 +47,39 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "react-toastify";
+import {
+  useCancelRequest,
+  useCreateRequest,
+  useEditRequest,
+  useRequestDetail,
+} from "@/app/employee/hooks/requestHooks";
+import type {
+  EmployeePriority,
+  EmployeeRequestStatus,
+  RequestDetail,
+} from "@/app/employee/apis/types";
 
-type RequestStatus = "pending" | "approved" | "rejected";
-type Priority = "low" | "medium" | "high";
+type RequestStatus = EmployeeRequestStatus;
+type Priority = EmployeePriority;
 
 type ActivityEvent = {
   time: string;
@@ -51,123 +87,45 @@ type ActivityEvent = {
   detail?: string;
 };
 
-type DummyRequest = {
-  name: string;
-  type: string;
-  quantity: number;
-  date: string;
-  status: RequestStatus;
-  priority: Priority;
-  reviewedBy: string | null;
-  reason: string;
-  note: string | null;
-  allocatedItems: string[] | null;
-  activity: ActivityEvent[];
-};
-
-const DUMMY_REQUESTS: Record<string, DummyRequest> = {
-  "REQ-8291": {
-    name: "Dell UltraSharp 32''",
-    type: "Hardware",
-    quantity: 1,
-    date: "Feb 20, 2024",
-    status: "pending",
-    priority: "medium",
-    reviewedBy: null,
-    reason: "Upgrading current monitor for better color accuracy on design work.",
-    note: null,
-    allocatedItems: null,
-    activity: [
-      {
-        time: "Feb 20, 2024 · 10:24 AM",
-        title: "Request submitted",
-        detail: "You requested 1 × Dell UltraSharp 32''.",
-      },
-      {
-        time: "Feb 20, 2024 · 10:47 AM",
-        title: "Awaiting review",
-        detail: "No reviewer assigned yet.",
-      },
-    ],
-  },
-  "REQ-8285": {
-    name: "IntelliJ IDEA License",
-    type: "Software",
-    quantity: 1,
-    date: "Feb 15, 2024",
-    status: "approved",
-    priority: "high",
-    reviewedBy: "Sarah Chen",
-    reason: "Needed for Java backend development of the Reqora platform.",
-    note: null,
-    allocatedItems: ["ITM-2210"],
-    activity: [
-      {
-        time: "Feb 15, 2024 · 10:05 AM",
-        title: "Request submitted",
-        detail: "You requested 1 × IntelliJ IDEA License.",
-      },
-      {
-        time: "Feb 16, 2024 · 2:30 PM",
-        title: "Approved by Sarah Chen",
-        detail: "Request approved during review.",
-      },
-      {
-        time: "Feb 16, 2024 · 2:31 PM",
-        title: "Items allocated",
-        detail: "1 item assigned to you (ITM-2210).",
-      },
-    ],
-  },
-  "REQ-8264": {
-    name: "Dual Monitor Stand",
-    type: "Furniture",
-    quantity: 2,
-    date: "Feb 3, 2024",
-    status: "rejected",
-    priority: "low",
-    reviewedBy: "Mike Ross",
-    reason: "Dual monitor setup for improved home office productivity.",
-    note: "Budget limit exceeded for Q1",
-    allocatedItems: null,
-    activity: [
-      {
-        time: "Feb 3, 2024 · 9:12 AM",
-        title: "Request submitted",
-        detail: "You requested 2 × Dual Monitor Stand.",
-      },
-      {
-        time: "Feb 5, 2024 · 4:05 PM",
-        title: "Rejected by Mike Ross",
-        detail: "Budget limit exceeded for Q1.",
-      },
-    ],
-  },
-};
-
 const STATUS_BADGE_STYLES: Record<RequestStatus, string> = {
-  pending: "bg-amber-50 text-amber-700 border-amber-200",
-  approved: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  rejected: "bg-rose-50 text-rose-700 border-rose-200",
+  pending:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
+  approved:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+  rejected:
+    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
+  cancelled:
+    "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
+  forwarded:
+    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800",
 };
 
 const PRIORITY_BADGE_STYLES: Record<Priority, string> = {
-  low: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  medium: "bg-amber-50 text-amber-700 border-amber-200",
-  high: "bg-rose-50 text-rose-700 border-rose-200",
+  low: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+  medium:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
+  high: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
 };
 
 const STATUS_BANNER_STYLES: Record<RequestStatus, string> = {
-  pending: "from-amber-500/15 via-transparent to-transparent text-amber-700",
+  pending:
+    "from-amber-500/15 via-transparent to-transparent text-amber-700 dark:text-amber-300",
   approved:
-    "from-emerald-500/15 via-transparent to-transparent text-emerald-700",
-  rejected: "from-rose-500/15 via-transparent to-transparent text-rose-700",
+    "from-emerald-500/15 via-transparent to-transparent text-emerald-700 dark:text-emerald-300",
+  rejected:
+    "from-rose-500/15 via-transparent to-transparent text-rose-700 dark:text-rose-300",
+  cancelled:
+    "from-gray-500/15 via-transparent to-transparent text-gray-700 dark:text-gray-300",
+  forwarded:
+    "from-violet-500/15 via-transparent to-transparent text-violet-700 dark:text-violet-300",
 };
 
 const STATUS_BANNER_ICON: Record<RequestStatus, typeof Hourglass> = {
   pending: Hourglass,
   approved: CheckCircle2,
   rejected: XCircle,
+  cancelled: Ban,
+  forwarded: Forward,
 };
 
 type StepState = "done" | "current" | "upcoming";
@@ -196,6 +154,7 @@ const TIMELINE_STEPS: {
 
 const stepForStatus = (status: RequestStatus): StepState[] => {
   if (status === "pending") return ["done", "current", "upcoming"];
+  if (status === "forwarded") return ["done", "done", "current"];
   return ["done", "done", "done"];
 };
 
@@ -203,16 +162,109 @@ const ACTIVITY_ICONS: Record<string, typeof Send> = {
   submitted: Send,
   approved: CheckCircle2,
   rejected: XCircle,
+  cancelled: Ban,
+  forwarded: Forward,
   allocated: PackageCheck,
   awaiting: Hourglass,
 };
 
 const activityIcon = (title: string) => {
-  if (title.toLowerCase().includes("submitted")) return ACTIVITY_ICONS.submitted;
-  if (title.toLowerCase().includes("approved")) return ACTIVITY_ICONS.approved;
-  if (title.toLowerCase().includes("rejected")) return ACTIVITY_ICONS.rejected;
-  if (title.toLowerCase().includes("allocated")) return ACTIVITY_ICONS.allocated;
+  const t = title.toLowerCase();
+  if (t.includes("submitted")) return ACTIVITY_ICONS.submitted;
+  if (t.includes("approved")) return ACTIVITY_ICONS.approved;
+  if (t.includes("rejected")) return ACTIVITY_ICONS.rejected;
+  if (t.includes("cancelled")) return ACTIVITY_ICONS.cancelled;
+  if (t.includes("forwarded")) return ACTIVITY_ICONS.forwarded;
+  if (t.includes("allocated")) return ACTIVITY_ICONS.allocated;
   return ACTIVITY_ICONS.awaiting;
+};
+
+const formatDateTime = (iso: string) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const date = d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const time = d.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  return `${date} · ${time}`;
+};
+
+const formatDate = (iso: string) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const buildActivity = (detail: RequestDetail): ActivityEvent[] => {
+  const events: ActivityEvent[] = [
+    {
+      time: formatDateTime(detail.createdAt),
+      title: "Request submitted",
+      detail: `You requested ${detail.requestedQuantity} × ${detail.resourceName}.`,
+    },
+  ];
+  if (detail.status === "pending") {
+    events.push({
+      time: formatDateTime(detail.createdAt),
+      title: "Awaiting review",
+      detail: "No reviewer assigned yet.",
+    });
+  }
+  if (detail.reviewedBy) {
+    const verb =
+      detail.status === "approved"
+        ? "Approved"
+        : detail.status === "rejected"
+          ? "Rejected"
+          : detail.status === "forwarded"
+            ? "Forwarded"
+            : "Reviewed";
+    events.push({
+      time: formatDateTime(detail.updatedAt),
+      title: `${verb} by ${detail.reviewedBy}`,
+      detail:
+        detail.note ??
+        (detail.status === "forwarded"
+          ? "Escalated to admin for final decision."
+          : `Request ${detail.status} during review.`),
+    });
+  }
+  if (detail.status === "forwarded" && !detail.reviewedBy) {
+    events.push({
+      time: formatDateTime(detail.updatedAt),
+      title: "Forwarded to admin",
+      detail: "Escalated to admin for final decision.",
+    });
+  }
+  if (detail.status === "cancelled") {
+    events.push({
+      time: formatDateTime(detail.updatedAt),
+      title: "Request cancelled",
+      detail: "You cancelled this request.",
+    });
+  }
+  if (
+    detail.status === "approved" &&
+    detail.allocatedItems.length > 0
+  ) {
+    events.push({
+      time: formatDateTime(detail.updatedAt),
+      title: "Items allocated",
+      detail: `${detail.allocatedItems.length} item(s) assigned to you (${detail.allocatedItems
+        .map((i) => i.id.slice(0, 8))
+        .join(", ")}).`,
+    });
+  }
+  return events;
 };
 
 const DetailItem = ({
@@ -239,40 +291,150 @@ const DetailItem = ({
 
 const RequestDetails = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const params = useParams<{ id: string }>();
   const id = params.id ?? "";
 
-  const dummy = DUMMY_REQUESTS[id] ?? DUMMY_REQUESTS["REQ-8291"];
+  const { data, isLoading, isError, refetch } = useRequestDetail(id);
+  const detail = data?.data;
+
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editQuantity, setEditQuantity] = useState(1);
+  const [editPriority, setEditPriority] = useState<Priority>("medium");
+  const [editReason, setEditReason] = useState("");
+
+  useEffect(() => {
+    if (detail) {
+      setEditQuantity(detail.requestedQuantity);
+      setEditPriority(detail.priority);
+      setEditReason(detail.reason ?? "");
+    }
+  }, [detail]);
+
+  const cancelMutation = useCancelRequest();
+  const editMutation = useEditRequest();
+  const createMutation = useCreateRequest();
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["myRequest", id] });
+    queryClient.invalidateQueries({ queryKey: ["myRequests"] });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 space-y-6">
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-32 w-full" />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Skeleton className="h-96 w-full" />
+          <Skeleton className="h-96 w-full" />
+        </div>
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  }
+
+  if (isError || !detail) {
+    return (
+      <div className="p-8">
+        <Card className="mx-auto max-w-lg">
+          <CardContent className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+            <FileX className="size-12 text-muted-foreground" />
+            <h2 className="text-2xl font-semibold">Request not found</h2>
+            <p className="text-sm text-muted-foreground">
+              This request doesn&apos;t exist or you don&apos;t have access
+              to it.
+            </p>
+            <Button
+              className="mt-2 cursor-pointer"
+              onClick={() => router.push("/employee/requests")}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to requests
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const {
-    name,
-    type,
-    quantity,
-    date,
+    resourceName,
+    resourceType,
+    requestedQuantity,
     status,
     priority,
     reviewedBy,
     reason,
     note,
     allocatedItems,
-    activity,
-  } = dummy;
-
-  const [cancelOpen, setCancelOpen] = useState(false);
-  const [isCancelled, setIsCancelled] = useState(false);
+  } = detail;
 
   const StatusIcon = STATUS_BANNER_ICON[status];
   const steps: StepState[] = stepForStatus(status);
-  const isPending = status === "pending" && !isCancelled;
+  const activity = buildActivity(detail);
+  const isPending = status === "pending";
+  const canReRequest = status === "rejected" || status === "cancelled";
 
   const handleCancel = () => {
-    setIsCancelled(true);
-    setCancelOpen(false);
-    toast.success(`Request ${id} cancelled`);
-    router.push("/employee/requests");
+    cancelMutation.mutate(id, {
+      onSuccess: (res) => {
+        toast.success(res.message ?? `Request ${id.slice(0, 8)} cancelled`);
+        setCancelOpen(false);
+        invalidate();
+        router.push("/employee/requests");
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.message ?? "Failed to cancel");
+      },
+    });
   };
 
   const handleEdit = () => {
-    toast.info("Request editing form is coming soon.");
+    editMutation.mutate(
+      {
+        requestId: id,
+        requestedQuantity: editQuantity,
+        priority: editPriority,
+        reason: editReason.trim() === "" ? null : editReason.trim(),
+      },
+      {
+        onSuccess: (res) => {
+          toast.success(res.message ?? "Request updated");
+          setEditOpen(false);
+          invalidate();
+          refetch();
+        },
+        onError: (err) => {
+          toast.error(err.response?.data?.message ?? "Failed to update");
+        },
+      },
+    );
+  };
+
+  const handleReRequest = () => {
+    createMutation.mutate(
+      {
+        resourceId: detail.resourceId,
+        requestedQuantity: detail.requestedQuantity,
+        priority: detail.priority,
+        reason: detail.reason ?? undefined,
+      },
+      {
+        onSuccess: (res) => {
+          toast.success("Request re-submitted successfully");
+          const newId = (res as unknown as { data?: { id?: string } })?.data
+            ?.id;
+          invalidate();
+          router.push(
+            newId ? `/employee/requests/${newId}` : "/employee/requests",
+          );
+        },
+        onError: (err) => {
+          toast.error(err.response?.data?.message ?? "Failed to re-submit");
+        },
+      },
+    );
   };
 
   return (
@@ -292,7 +454,9 @@ const RequestDetails = () => {
             <h1 className="text-3xl font-bold tracking-tight">
               Request Details
             </h1>
-            <p className="text-muted-foreground font-mono text-sm">{id}</p>
+            <p className="text-muted-foreground font-mono text-sm">
+              {id.slice(0, 8)}
+            </p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -300,7 +464,7 @@ const RequestDetails = () => {
             <>
               <Button
                 className="gap-2 cursor-pointer"
-                onClick={handleEdit}
+                onClick={() => setEditOpen(true)}
               >
                 <Pencil className="h-4 w-4" /> Edit Request
               </Button>
@@ -312,6 +476,16 @@ const RequestDetails = () => {
                 <X className="h-4 w-4" /> Cancel Request
               </Button>
             </>
+          )}
+          {canReRequest && (
+            <Button
+              className="gap-2 cursor-pointer"
+              disabled={createMutation.isPending}
+              onClick={handleReRequest}
+            >
+              <RotateCcw className="h-4 w-4" />
+              {createMutation.isPending ? "Submitting…" : "Request Again"}
+            </Button>
           )}
           <Badge
             className={cn(
@@ -336,10 +510,14 @@ const RequestDetails = () => {
             className={cn(
               "flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-muted",
               status === "pending"
-                ? "text-amber-600"
+                ? "text-amber-600 dark:text-amber-400"
                 : status === "approved"
-                  ? "text-emerald-600"
-                  : "text-rose-600",
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : status === "rejected"
+                    ? "text-rose-600 dark:text-rose-400"
+                    : status === "forwarded"
+                      ? "text-violet-600 dark:text-violet-400"
+                      : "text-gray-600 dark:text-gray-400",
             )}
           >
             <StatusIcon className="size-8" />
@@ -347,7 +525,7 @@ const RequestDetails = () => {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {type} · Quantity {quantity}
+                {resourceType} · Quantity {requestedQuantity}
               </p>
               <Badge
                 className={cn(
@@ -358,9 +536,9 @@ const RequestDetails = () => {
                 <Flag className="h-3 w-3 mr-1" /> {priority} priority
               </Badge>
             </div>
-            <h2 className="text-2xl font-bold">{name}</h2>
+            <h2 className="text-2xl font-bold">{resourceName}</h2>
             {note && (
-              <p className="mt-1 text-sm text-rose-600 font-medium">
+              <p className="mt-1 text-sm text-rose-600 dark:text-rose-400 font-medium">
                 Review note: {note}
               </p>
             )}
@@ -377,11 +555,19 @@ const RequestDetails = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
-            <DetailItem icon={Hash} label="Request ID" value={id} />
-            <DetailItem icon={Boxes} label="Resource" value={name} />
-            <DetailItem icon={FileText} label="Type" value={type} />
-            <DetailItem icon={Hash} label="Quantity" value={String(quantity)} />
-            <DetailItem icon={CalendarDays} label="Requested On" value={date} />
+            <DetailItem icon={Hash} label="Request ID" value={id.slice(0, 8)} />
+            <DetailItem icon={Boxes} label="Resource" value={resourceName} />
+            <DetailItem icon={FileText} label="Type" value={resourceType} />
+            <DetailItem
+              icon={Hash}
+              label="Quantity"
+              value={String(requestedQuantity)}
+            />
+            <DetailItem
+              icon={CalendarDays}
+              label="Requested On"
+              value={formatDate(detail.createdAt)}
+            />
             <DetailItem
               icon={UserRound}
               label="Reviewed By"
@@ -411,28 +597,29 @@ const RequestDetails = () => {
               <DetailItem
                 icon={MessageSquareText}
                 label="Reason for Request"
-                value={reason}
+                value={reason ?? "No reason provided"}
               />
             </div>
 
-            {status === "approved" && allocatedItems ? (
+            {status === "approved" && allocatedItems.length > 0 ? (
               <div className="sm:col-span-2">
                 <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-                    <PackageCheck className="size-4 text-emerald-600" />
+                    <PackageCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       Allocated Items
                     </p>
                     <div className="mt-1 flex flex-wrap gap-2">
-                      {allocatedItems.map((itemId) => (
+                      {allocatedItems.map((item) => (
                         <Badge
-                          key={itemId}
+                          key={item.id}
                           variant="outline"
                           className="font-mono text-xs"
+                          title={`${item.location} · ${item.status}`}
                         >
-                          {itemId}
+                          {item.id.slice(0, 8)}
                         </Badge>
                       ))}
                     </div>
@@ -451,13 +638,13 @@ const RequestDetails = () => {
                     </p>
                     <div className="mt-1 flex flex-wrap items-center gap-2">
                       <span className="text-sm font-semibold">
-                        {quantity} × {name}
+                        {requestedQuantity} × {resourceName}
                       </span>
                       <Badge
                         variant="outline"
-                        className="font-medium bg-white capitalize shadow-none"
+                        className="font-medium bg-card capitalize shadow-none"
                       >
-                        {type}
+                        {resourceType}
                       </Badge>
                     </div>
                   </div>
@@ -498,7 +685,7 @@ const RequestDetails = () => {
                         state === "done"
                           ? "border-primary bg-primary text-primary-foreground"
                           : state === "current"
-                            ? "border-amber-400 bg-amber-50 text-amber-600"
+                            ? "border-amber-400 bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400"
                             : "border-border bg-muted text-muted-foreground",
                       )}
                     >
@@ -512,6 +699,10 @@ const RequestDetails = () => {
                         )}
                       >
                         {step.title}
+                        {index === 2 &&
+                          (status === "cancelled" ||
+                            status === "forwarded") &&
+                          ` (${status})`}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {step.description}
@@ -570,22 +761,110 @@ const RequestDetails = () => {
             <AlertDialogTitle>Cancel this request?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to cancel request{" "}
-              <span className="font-mono font-semibold">{id}</span> for{" "}
-              <span className="font-semibold">{name}</span>? This action cannot
-              be undone.
+              <span className="font-mono font-semibold">
+                {id.slice(0, 8)}
+              </span>{" "}
+              for <span className="font-semibold">{resourceName}</span>? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep Request</AlertDialogCancel>
             <AlertDialogAction
-              className="text-white bg-red-600 hover:bg-red-500 cursor-pointer"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/80 cursor-pointer"
+              disabled={cancelMutation.isPending}
               onClick={handleCancel}
             >
-              Cancel Request
+              {cancelMutation.isPending ? "Cancelling…" : "Cancel Request"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Request</DialogTitle>
+            <DialogDescription>
+              Update quantity, priority or reason while the request is still
+              pending.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Quantity</p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() =>
+                    setEditQuantity((q) => Math.max(1, q - 1))
+                  }
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input
+                  type="number"
+                  min={1}
+                  value={editQuantity}
+                  onChange={(e) =>
+                    setEditQuantity(Math.max(1, Number(e.target.value) || 1))
+                  }
+                  className="w-20 text-center"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setEditQuantity((q) => q + 1)}
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Priority</p>
+              <Select
+                value={editPriority}
+                onValueChange={(v) => setEditPriority(v as Priority)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Reason</p>
+              <Textarea
+                value={editReason}
+                onChange={(e) => setEditReason(e.target.value)}
+                placeholder="Why do you need this resource?"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>
+              Discard
+            </Button>
+            <Button
+              disabled={editMutation.isPending}
+              onClick={handleEdit}
+              className="cursor-pointer"
+            >
+              {editMutation.isPending ? "Saving…" : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

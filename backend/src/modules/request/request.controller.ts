@@ -9,6 +9,7 @@ import { findByUsername } from "../auth/auth.repository";
 import { appError } from "../../utils/appError";
 import {
   createRequestService,
+  editRequestService,
   getAllRequestService,
   getMyRequestService,
   getRequestDetailsService,
@@ -109,12 +110,34 @@ export const getSpecificRequest = async (
 ) => {
   try {
     const id = req.params.id as string;
+    if (!id) {
+      throw new appError(400, "INVALID_ID", "please provide an id");
+    }
+    const { companyId, role } = res.locals.user;
     const requestDetails = await getRequestDetailsService({ id });
+    if (requestDetails.companyId !== companyId) {
+      throw new appError(
+        403,
+        "NOT_SAME_COMPANY",
+        "this request belongs to another company",
+      );
+    }
+    if (role === Role.employee) {
+      const viewer = await findByUsername({ username: res.locals.user.username });
+      if (!viewer || requestDetails.requestedById !== viewer.id) {
+        throw new appError(
+          403,
+          "NOT_REQUESTER",
+          "you can only view your own requests",
+        );
+      }
+    }
+    const { companyId: _omit, ...response } = requestDetails;
     return res.status(200).json({
       success: true,
-      code: "RESOURCE_RETRIVED",
-      message: "resource details retrived successfully",
-      data: requestDetails,
+      code: "REQUEST_RETRIEVED",
+      message: "request details retrieved successfully",
+      data: response,
     });
   } catch (err) {
     next(err);
@@ -141,6 +164,36 @@ export const createRequest = async (
       code: "REQUEST_CREATED",
       success: true,
       data: createdRequest,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+export const handleEdit = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id as string;
+    if (!id) {
+      throw new appError(400, "INVALID_ID", "please provide an id");
+    }
+    const { companyId, email } = res.locals.user;
+    const { requestedQuantity, priority, reason } = req.body;
+    const updated = await editRequestService({
+      id,
+      email,
+      companyId,
+      requestedQuantity,
+      priority,
+      reason,
+    });
+    return res.status(200).json({
+      success: true,
+      code: "REQUEST_UPDATED",
+      message: "request updated successfully",
+      data: updated,
     });
   } catch (err) {
     next(err);
@@ -263,6 +316,7 @@ export const handleReview = async (
           data: {
             status: ResourceStatus.inUse,
             acquiredById: requestDetails.requestedById,
+            allocatedRequestId: requestId,
           },
         }),
       ]);

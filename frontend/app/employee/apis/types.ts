@@ -71,6 +71,39 @@ export type MyResourceItem = {
   note?: string | null;
 };
 
+export type AllocatedItem = {
+  id: string;
+  status: string;
+  location: string;
+};
+
+export type RequestDetail = {
+  requestId: string;
+  status: EmployeeRequestStatus;
+  requestedQuantity: number;
+  priority: EmployeePriority;
+  reason: string | null;
+  note: string | null;
+  resourceId: string;
+  resourceName: string;
+  resourceType: string;
+  requestedBy: string;
+  requestedById: string;
+  requestedByDepartment: string | null;
+  reviewedBy: string | null;
+  reviewedById: string | null;
+  companyName: string;
+  allocatedItems: AllocatedItem[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type EditRequestInput = {
+  requestedQuantity?: number;
+  priority?: EmployeePriority;
+  reason?: string | null;
+};
+
 export const employeeQueryKeys = {
   myRequests: (filters?: Record<string, unknown>) =>
     filters ? (["myRequests", filters] as const) : (["myRequests"] as const),
