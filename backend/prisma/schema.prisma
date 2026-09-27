@@ -28,6 +28,12 @@ enum RequestStatus {
   forwarded
 }
 
+enum Priority {
+  low
+  medium
+  high
+}
+
 enum ResourceStatus {
   available
   inUse
@@ -137,6 +143,9 @@ model request {
   reviewedById      String?
   requestedQuantity Int
   status            RequestStatus
+  priority          Priority      @default(medium)
+  reason            String?       @db.Text
+  note              String?       @db.Text
   companyId         String
   resourceId        String
   resource          Resource      @relation(fields: [resourceId], references: [id])

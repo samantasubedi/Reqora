@@ -39,17 +39,64 @@ export const getMyRequest = async (
 ) => {
   try {
     const { companyId, username } = res.locals.user;
-    const limit = req.query.limit ? Number(req.query.limit) : undefined;
-    const myRequests = await getMyRequestService({
+    const {
+      search,
+      status,
+      type,
+      reviewer,
+      priority,
+      sortBy,
+      order,
+      page,
+      limit,
+    } = req.query as Record<string, string | undefined>;
+    const validStatuses: RequestStatus[] = [
+      RequestStatus.pending,
+      RequestStatus.approved,
+      RequestStatus.rejected,
+      RequestStatus.cancelled,
+      RequestStatus.forwarded,
+    ];
+    if (status && !(validStatuses as string[]).includes(status)) {
+      throw new appError(400, "INVALID_STATUS", "invalid request status filter");
+    }
+    if (
+      priority &&
+      !priority
+        .split(",")
+        .every((p) => ["low", "medium", "high"].includes(p))
+    ) {
+      throw new appError(400, "INVALID_PRIORITY", "invalid priority filter");
+    }
+    const validSortBy = ["date", "name", "status", "priority"];
+    if (sortBy && !validSortBy.includes(sortBy)) {
+      throw new appError(400, "INVALID_SORT", "invalid sort field");
+    }
+    const result = await getMyRequestService({
       username,
       companyId,
-      limit: limit && limit > 0 && limit <= 100 ? limit : undefined,
+      search,
+      status: status as RequestStatus | undefined,
+      type,
+      reviewer,
+      priority,
+      sortBy: (sortBy as "date" | "name" | "status" | "priority" | undefined) ?? "date",
+      order: order === "asc" ? "asc" : "desc",
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : undefined,
     });
     return res.status(200).json({
       success: true,
       code: "REQUESTS_RETRIVED",
       message: "requests retirved successfully",
-      data: myRequests,
+      data: result.requests,
+      total: result.total,
+      totalPages: result.totalPages,
+      currentPage: result.currentPage,
+      countsByStatus: result.countsByStatus,
+      reviewers: result.reviewers,
+      types: result.types,
+      oldestPendingAt: result.oldestPendingAt,
     });
   } catch (err) {
     next(err);
@@ -80,12 +127,14 @@ export const createRequest = async (
 ) => {
   try {
     const { companyId, email } = res.locals.user;
-    const { requestedQuantity, resourceId } = req.body;
+    const { requestedQuantity, resourceId, priority, reason } = req.body;
     const createdRequest = await createRequestService({
       companyId,
       email,
       requestedQuantity,
       resourceId,
+      priority,
+      reason,
     });
     return res.status(201).json({
       message: "Request created successfully",
@@ -103,7 +152,7 @@ export const handleReview = async (
   next: NextFunction,
 ) => {
   try {
-    const { status, requestId } = req.body;
+    const { status, requestId, note } = req.body;
     if (!status || !requestId) {
       throw new appError(400, "INVALID_REQUEST", "please provide all fields");
     }
@@ -207,7 +256,7 @@ export const handleReview = async (
       await prisma.$transaction([
         prisma.request.update({
           where: { id: requestId },
-          data: { reviewedById: reviewer.id, status },
+          data: { reviewedById: reviewer.id, status, note: note ?? undefined },
         }),
         prisma.resourceItem.updateMany({
           where: { id: { in: availableItems.map((item) => item.id) } },
@@ -220,7 +269,7 @@ export const handleReview = async (
     } else {
       await prisma.request.update({
         where: { id: requestId },
-        data: { reviewedById: reviewer.id, status },
+        data: { reviewedById: reviewer.id, status, note: note ?? undefined },
       });
     }
 

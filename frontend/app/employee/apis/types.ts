@@ -5,10 +5,15 @@ export type EmployeeRequestStatus =
   | "cancelled"
   | "forwarded";
 
+export type EmployeePriority = "low" | "medium" | "high";
+
 export type MyRequestItem = {
   requestId: string;
   status: EmployeeRequestStatus;
   requestedQuantity: number;
+  priority: EmployeePriority;
+  reason: string | null;
+  note: string | null;
   resourceId: string;
   resourceName: string;
   resourceType?: string;
@@ -20,6 +25,39 @@ export type MyRequestItem = {
   companyName: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export type MyRequestsResponse = {
+  success: boolean;
+  message: string;
+  code: string;
+  data: MyRequestItem[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+  countsByStatus: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    cancelled: number;
+    forwarded: number;
+  };
+  reviewers: string[];
+  types: string[];
+  oldestPendingAt: string | null;
+};
+
+export type MyRequestsParams = {
+  search?: string;
+  status?: EmployeeRequestStatus;
+  type?: string;
+  reviewer?: string;
+  priority?: EmployeePriority;
+  sortBy?: "date" | "name" | "status" | "priority";
+  order?: "asc" | "desc";
+  page?: number;
+  limit?: number;
 };
 
 export type MyResourceItem = {

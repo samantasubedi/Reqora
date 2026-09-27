@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   MoreHorizontal,
   FileText,
@@ -7,7 +7,6 @@ import {
   Plus,
   Inbox,
   X,
-  Star,
   LayoutGrid,
   List,
   ChevronUp,
@@ -19,8 +18,11 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  Ban,
+  Forward,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -60,225 +62,65 @@ import PaginationControls from "@/app/admin/components/PaginationControls";
 import type { statCardInterface } from "@/app/admin/components/ResourceStats";
 import InitialsAvatar from "@/app/manager/components/InitialsAvatar";
 import { toast } from "react-toastify";
+import {
+  useCancelRequest,
+  useCreateRequest,
+  useMyRequests,
+} from "@/app/employee/hooks/requestHooks";
+import type {
+  EmployeePriority,
+  EmployeeRequestStatus,
+  MyRequestItem,
+} from "@/app/employee/apis/types";
 
-type RequestStatus = "pending" | "approved" | "rejected";
-type Priority = "low" | "medium" | "high";
-
-type RequestRecord = {
-  id: string;
-  name: string;
-  type: string;
-  quantity: number;
-  date: string;
-  createdAt: string;
-  status: RequestStatus;
-  priority: Priority;
-  reviewedBy: string | null;
-  reason: string;
-  note: string | null;
-  favorite: boolean;
-};
-
-const REQUESTS: RequestRecord[] = [
-  {
-    id: "REQ-8291",
-    name: "Dell UltraSharp 32''",
-    type: "Hardware",
-    quantity: 1,
-    date: "Feb 20, 2024",
-    createdAt: "2024-02-20T10:24:00",
-    status: "pending",
-    priority: "medium",
-    reviewedBy: null,
-    reason: "Upgrading current monitor for better color accuracy on design work.",
-    note: null,
-    favorite: false,
-  },
-  {
-    id: "REQ-8285",
-    name: "IntelliJ IDEA License",
-    type: "Software",
-    quantity: 1,
-    date: "Feb 15, 2024",
-    createdAt: "2024-02-15T10:05:00",
-    status: "approved",
-    priority: "high",
-    reviewedBy: "Sarah Chen",
-    reason: "Needed for Java backend development of the Reqora platform.",
-    note: null,
-    favorite: true,
-  },
-  {
-    id: "REQ-8277",
-    name: "Mechanical Keyboard",
-    type: "Hardware",
-    quantity: 1,
-    date: "Feb 11, 2024",
-    createdAt: "2024-02-11T09:00:00",
-    status: "approved",
-    priority: "low",
-    reviewedBy: "Sarah Chen",
-    reason: "Current keyboard has sticky keys affecting typing speed.",
-    note: null,
-    favorite: false,
-  },
-  {
-    id: "REQ-8264",
-    name: "Dual Monitor Stand",
-    type: "Furniture",
-    quantity: 2,
-    date: "Feb 3, 2024",
-    createdAt: "2024-02-03T09:12:00",
-    status: "rejected",
-    priority: "low",
-    reviewedBy: "Mike Ross",
-    reason: "Dual monitor setup for improved home office productivity.",
-    note: "Budget limit exceeded for Q1",
-    favorite: false,
-  },
-  {
-    id: "REQ-8219",
-    name: "Jabra Headset",
-    type: "Hardware",
-    quantity: 1,
-    date: "Jan 28, 2024",
-    createdAt: "2024-01-28T14:20:00",
-    status: "pending",
-    priority: "high",
-    reviewedBy: null,
-    reason: "Replacing faulty headset used for daily client calls.",
-    note: null,
-    favorite: false,
-  },
-  {
-    id: "REQ-8204",
-    name: "4K Webcam",
-    type: "Hardware",
-    quantity: 1,
-    date: "Jan 18, 2024",
-    createdAt: "2024-01-18T11:45:00",
-    status: "approved",
-    priority: "medium",
-    reviewedBy: "Sarah Chen",
-    reason: "Higher video quality required for product demos.",
-    note: null,
-    favorite: false,
-  },
-  {
-    id: "REQ-8188",
-    name: "Standing Desk",
-    type: "Furniture",
-    quantity: 1,
-    date: "Jan 9, 2024",
-    createdAt: "2024-01-09T08:30:00",
-    status: "approved",
-    priority: "medium",
-    reviewedBy: "Sarah Chen",
-    reason: "Ergonomic requirement recommended by physiotherapist.",
-    note: null,
-    favorite: true,
-  },
-  {
-    id: "REQ-8062",
-    name: "Photoshop License",
-    type: "Software",
-    quantity: 1,
-    date: "Dec 20, 2023",
-    createdAt: "2023-12-20T15:00:00",
-    status: "rejected",
-    priority: "low",
-    reviewedBy: "Mike Ross",
-    reason: "Occasional image editing for marketing material.",
-    note: "License pool already allocated",
-    favorite: false,
-  },
-  {
-    id: "REQ-8041",
-    name: "External SSD 1TB",
-    type: "Hardware",
-    quantity: 1,
-    date: "Dec 12, 2023",
-    createdAt: "2023-12-12T10:15:00",
-    status: "pending",
-    priority: "medium",
-    reviewedBy: null,
-    reason: "Backup drive for large media project files.",
-    note: null,
-    favorite: false,
-  },
-  {
-    id: "REQ-8017",
-    name: "Herman Miller Aeron",
-    type: "Furniture",
-    quantity: 1,
-    date: "Dec 5, 2023",
-    createdAt: "2023-12-05T16:40:00",
-    status: "approved",
-    priority: "high",
-    reviewedBy: "Sarah Chen",
-    reason: "Office chair replacement for chronic back pain.",
-    note: null,
-    favorite: true,
-  },
-];
+type RequestStatus = EmployeeRequestStatus;
+type Priority = EmployeePriority;
 
 const STATUS_BADGE_STYLES: Record<RequestStatus, string> = {
-  pending: "bg-status-pending-bg text-status-pending-text border-status-pending-border",
-  approved: "bg-status-success-bg text-status-success-text border-status-success-border",
-  rejected: "bg-status-danger-bg text-status-danger-text border-status-danger-border",
+  pending:
+    "bg-status-pending-bg text-status-pending-text border-status-pending-border",
+  approved:
+    "bg-status-success-bg text-status-success-text border-status-success-border",
+  rejected:
+    "bg-status-danger-bg text-status-danger-text border-status-danger-border",
+  cancelled:
+    "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
+  forwarded:
+    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800",
 };
 
 const PRIORITY_BADGE_STYLES: Record<Priority, string> = {
   low: "bg-status-success-bg text-status-success-text border-status-success-border",
-  medium: "bg-status-pending-bg text-status-pending-text border-status-pending-border",
+  medium:
+    "bg-status-pending-bg text-status-pending-text border-status-pending-border",
   high: "bg-status-danger-bg text-status-danger-text border-status-danger-border",
 };
 
-const PRIORITY_ORDER: Record<Priority, number> = {
-  low: 0,
-  medium: 1,
-  high: 2,
-};
-
-const TAB_FILTERS = ["all", "pending", "approved", "rejected"] as const;
+const TAB_FILTERS = [
+  "all",
+  "pending",
+  "approved",
+  "rejected",
+  "cancelled",
+  "forwarded",
+] as const;
 type TabFilter = (typeof TAB_FILTERS)[number];
 
-const REQUEST_TYPES = ["Hardware", "Software", "Furniture"] as const;
 const PRIORITIES = ["low", "medium", "high"] as const;
 const PAGE_SIZE = 8;
-
-const DEMO_NOW = Date.now();
-
-const REVIEWERS = [...new Set(REQUESTS.map((r) => r.reviewedBy).filter(Boolean) as string[])];
-
-const requestFilterConfig: FilterConfig[] = [
-  {
-    key: "type",
-    title: "Type",
-    type: "select",
-    multiple: true,
-    options: REQUEST_TYPES.map((type) => ({ label: type, value: type })),
-  },
-  {
-    key: "priority",
-    title: "Priority",
-    type: "select",
-    multiple: true,
-    options: PRIORITIES.map((priority) => ({ label: priority, value: priority })),
-  },
-  {
-    key: "reviewer",
-    title: "Reviewer",
-    type: "dropdown",
-    placeholder: "Any reviewer",
-    options: REVIEWERS.map((reviewer) => ({ label: reviewer, value: reviewer })),
-  },
-];
 
 type SortKey = "name" | "priority" | "status" | "date";
 type SortState = { key: SortKey; direction: "asc" | "desc" };
 
-const TABLE_COLUMNS = ["ID", "Resource", "Reviewer", "Priority", "Date", "Status", "Action"];
+const TABLE_COLUMNS = [
+  "ID",
+  "Resource",
+  "Reviewer",
+  "Priority",
+  "Date",
+  "Status",
+  "Action",
+];
 
 const SORTABLE_COLUMN_MAP: Partial<Record<string, SortKey>> = {
   Resource: "name",
@@ -287,13 +129,17 @@ const SORTABLE_COLUMN_MAP: Partial<Record<string, SortKey>> = {
   Status: "status",
 };
 
-const nextRequestId = (list: RequestRecord[]) => {
-  const max = list.reduce((maxId, r) => {
-    const n = parseInt(r.id.replace(/\D/g, ""), 10);
-    return Number.isFinite(n) ? Math.max(maxId, n) : maxId;
-  }, 8000);
-  return `REQ-${max + 1}`;
+const formatDate = (iso: string) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 };
+
+const shortId = (id: string) => id.slice(0, 8);
 
 const SortableHead = ({
   label,
@@ -331,7 +177,13 @@ const SortableHead = ({
   );
 };
 
-const StatusBadge = ({ status, note }: { status: RequestStatus; note?: string | null }) => (
+const StatusBadge = ({
+  status,
+  note,
+}: {
+  status: RequestStatus;
+  note?: string | null;
+}) => (
   <div className="flex items-center gap-1.5">
     <Badge
       className={cn(
@@ -364,13 +216,15 @@ const ReviewerCell = ({
   reviewer,
   size = "h-7 w-7",
 }: {
-  reviewer: string | null;
+  reviewer: string | null | undefined;
   size?: string;
 }) =>
   reviewer ? (
     <div className="flex items-center gap-2">
       <InitialsAvatar name={reviewer} className={size} />
-      <span className="text-muted-foreground whitespace-nowrap">{reviewer}</span>
+      <span className="text-muted-foreground whitespace-nowrap">
+        {reviewer}
+      </span>
     </div>
   ) : (
     <span className="text-muted-foreground">—</span>
@@ -378,23 +232,115 @@ const ReviewerCell = ({
 
 const MyRequests = () => {
   const router = useRouter();
-  const [requests, setRequests] = useState<RequestRecord[]>(REQUESTS);
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filters, setFilters] = useState<FilterValues>({});
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [view, setView] = useState<"table" | "grid">("table");
-  const [sort, setSort] = useState<SortState>({ key: "date", direction: "desc" });
+  const [sort, setSort] = useState<SortState>({
+    key: "date",
+    direction: "desc",
+  });
   const [page, setPage] = useState(1);
-  const [cancelTarget, setCancelTarget] = useState<RequestRecord | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<MyRequestItem | null>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchInput.trim());
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  const typeFilter = (filters.type as string[] | undefined) ?? [];
+  const priorityFilter = (filters.priority as string[] | undefined) ?? [];
+  const reviewerFilter = filters.reviewer as string | undefined;
+
+  const queryParams = useMemo(
+    () => ({
+      search: debouncedSearch || undefined,
+      status: activeTab === "all" ? undefined : (activeTab as RequestStatus),
+      type: typeFilter.length > 0 ? typeFilter.join(",") : undefined,
+      reviewer: reviewerFilter || undefined,
+      priority:
+        priorityFilter.length > 0
+          ? (priorityFilter.join(",") as Priority)
+          : undefined,
+      sortBy: sort.key,
+      order: sort.direction,
+      page,
+      limit: PAGE_SIZE,
+    }),
+    [
+      debouncedSearch,
+      activeTab,
+      typeFilter,
+      reviewerFilter,
+      priorityFilter,
+      sort,
+      page,
+    ],
+  );
+
+  const { data, isLoading, isError, refetch, isFetching } =
+    useMyRequests(queryParams);
+
+  const requests = useMemo(() => data?.data ?? [], [data]);
+  const counts = data?.countsByStatus ?? {
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    cancelled: 0,
+    forwarded: 0,
+  };
+  const totalPages = data?.totalPages ?? 1;
+  const currentPage = data?.currentPage ?? 1;
+  const liveReviewers = useMemo(() => data?.reviewers ?? [], [data]);
+  const liveTypes = useMemo(() => data?.types ?? [], [data]);
+
+  const requestFilterConfig: FilterConfig[] = useMemo(
+    () => [
+      {
+        key: "type",
+        title: "Type",
+        type: "select",
+        multiple: true,
+        options: liveTypes.map((type) => ({ label: type, value: type })),
+      },
+      {
+        key: "priority",
+        title: "Priority",
+        type: "select",
+        multiple: true,
+        options: PRIORITIES.map((priority) => ({
+          label: priority,
+          value: priority,
+        })),
+      },
+      {
+        key: "reviewer",
+        title: "Reviewer",
+        type: "dropdown",
+        placeholder: "Any reviewer",
+        options: liveReviewers.map((reviewer) => ({
+          label: reviewer,
+          value: reviewer,
+        })),
+      },
+    ],
+    [liveTypes, liveReviewers],
+  );
+
+  const cancelMutation = useCancelRequest();
+  const createMutation = useCreateRequest();
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ["myRequests"] });
 
   const changeTab = (value: string) => {
     setActiveTab(value as TabFilter);
-    setPage(1);
-  };
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
     setPage(1);
   };
 
@@ -403,114 +349,76 @@ const MyRequests = () => {
     setPage(1);
   };
 
-  const handleFavoritesOnly = () => {
-    setFavoritesOnly((f) => !f);
-    setPage(1);
-  };
-
-  const stats = {
-    total: requests.length,
-    pending: requests.filter((r) => r.status === "pending").length,
-    approved: requests.filter((r) => r.status === "approved").length,
-    rejected: requests.filter((r) => r.status === "rejected").length,
-  };
-
-  const pct = (n: number) => (stats.total ? ((n / stats.total) * 100).toFixed(1) : "0.0");
+  const pct = (n: number) =>
+    counts.total ? ((n / counts.total) * 100).toFixed(1) : "0.0";
 
   const statCards: Partial<statCardInterface>[] = [
     {
       title: "Total Requests",
-      number: stats.total,
-      subtext: `${stats.pending} awaiting review`,
+      number: counts.total,
+      subtext: `${counts.pending} awaiting review`,
       IconName: Package,
       bgColor: "bg-blue-100",
-      textColor: "text-blue-800",
+      textColor: "text-blue-800 dark:text-blue-200",
       borderColor: "border-blue-500",
     },
     {
       title: "Pending",
-      number: stats.pending,
-      subtext: `${pct(stats.pending)}% of your requests`,
+      number: counts.pending,
+      subtext: `${pct(counts.pending)}% of your requests`,
       IconName: Clock,
       bgColor: "bg-amber-100",
-      textColor: "text-amber-800",
+      textColor: "text-amber-800 dark:text-amber-200",
       borderColor: "border-amber-500",
     },
     {
       title: "Approved",
-      number: stats.approved,
-      subtext: `${pct(stats.approved)}% of your requests`,
+      number: counts.approved,
+      subtext: `${pct(counts.approved)}% of your requests`,
       IconName: CheckCircle2,
       bgColor: "bg-green-100",
-      textColor: "text-green-800",
+      textColor: "text-green-800 dark:text-green-200",
       borderColor: "border-green-500",
     },
     {
       title: "Rejected",
-      number: stats.rejected,
-      subtext: `${pct(stats.rejected)}% of your requests`,
+      number: counts.rejected,
+      subtext: `${pct(counts.rejected)}% of your requests`,
       IconName: XCircle,
       bgColor: "bg-red-100",
-      textColor: "text-red-800",
+      textColor: "text-red-800 dark:text-red-200",
       borderColor: "border-red-500",
+    },
+    {
+      title: "Cancelled",
+      number: counts.cancelled,
+      subtext: `${pct(counts.cancelled)}% of your requests`,
+      IconName: Ban,
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800 dark:text-gray-200",
+      borderColor: "border-gray-500",
+    },
+    {
+      title: "Forwarded",
+      number: counts.forwarded,
+      subtext: `${pct(counts.forwarded)}% of your requests`,
+      IconName: Forward,
+      bgColor: "bg-violet-100",
+      textColor: "text-violet-800 dark:text-violet-200",
+      borderColor: "border-violet-500",
     },
   ];
 
-  const pendingList = requests.filter((r) => r.status === "pending");
-  const oldestPending = pendingList.reduce<RequestRecord | null>(
-    (oldest, r) =>
-      !oldest || +new Date(r.createdAt) < +new Date(oldest.createdAt) ? r : oldest,
-    null,
-  );
-  const pendingDays = oldestPending
-    ? Math.max(1, Math.floor((DEMO_NOW - +new Date(oldestPending.createdAt)) / 86400000))
+  const pendingDays = data?.oldestPendingAt
+    ? Math.max(
+        1,
+        Math.floor(
+          (Date.now() - +new Date(data.oldestPendingAt)) / 86400000,
+        ),
+      )
     : 0;
 
-  const countByStatus = (status: RequestStatus) =>
-    requests.filter((r) => r.status === status).length;
-
-  const filteredRequests = requests.filter((req) => {
-    const matchesTab = activeTab === "all" || req.status === activeTab;
-    const query = searchQuery.trim().toLowerCase();
-    const matchesSearch =
-      query === "" ||
-      req.name.toLowerCase().includes(query) ||
-      req.id.toLowerCase().includes(query);
-    const typeFilter = filters.type as string[] | undefined;
-    const matchesType =
-      !typeFilter || typeFilter.length === 0 || typeFilter.includes(req.type);
-    const priorityFilter = filters.priority as string[] | undefined;
-    const matchesPriority =
-      !priorityFilter || priorityFilter.length === 0 || priorityFilter.includes(req.priority);
-    const reviewerFilter = filters.reviewer as string | undefined;
-    const matchesReviewer = !reviewerFilter || req.reviewedBy === reviewerFilter;
-    const matchesFavorite = !favoritesOnly || req.favorite;
-    return (
-      matchesTab &&
-      matchesSearch &&
-      matchesType &&
-      matchesPriority &&
-      matchesReviewer &&
-      matchesFavorite
-    );
-  });
-
-  const sortedRequests = [...filteredRequests].sort((a, b) => {
-    let cmp = 0;
-    if (sort.key === "date") cmp = +new Date(a.createdAt) - +new Date(b.createdAt);
-    else if (sort.key === "name") cmp = a.name.localeCompare(b.name);
-    else if (sort.key === "status") cmp = a.status.localeCompare(b.status);
-    else if (sort.key === "priority") cmp = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
-    return sort.direction === "asc" ? cmp : -cmp;
-  });
-
-  const total = filteredRequests.length;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const pagedRequests = sortedRequests.slice(
-    (safePage - 1) * PAGE_SIZE,
-    safePage * PAGE_SIZE,
-  );
+  const countByStatus = (status: RequestStatus) => counts[status] ?? 0;
 
   const handleSort = (key: SortKey) => {
     setSort((prev) =>
@@ -518,66 +426,53 @@ const MyRequests = () => {
         ? { key, direction: prev.direction === "asc" ? "desc" : "asc" }
         : { key, direction: key === "date" ? "desc" : "asc" },
     );
-  };
-
-  const toggleFavorite = (id: string) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, favorite: !r.favorite } : r)),
-    );
-  };
-
-  const handleReRequest = (req: RequestRecord) => {
-    const now = new Date();
-    const nextId = nextRequestId(requests);
-    const resubmitted: RequestRecord = {
-      ...req,
-      id: nextId,
-      date: now.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-      createdAt: now.toISOString(),
-      status: "pending",
-      reviewedBy: null,
-      note: null,
-    };
-    setRequests((prev) => [resubmitted, ...prev]);
-    setActiveTab("all");
     setPage(1);
-    toast.success(`Request ${req.id} re-submitted as ${nextId}`);
+  };
+
+  const handleReRequest = (req: MyRequestItem) => {
+    createMutation.mutate(
+      {
+        resourceId: req.resourceId,
+        requestedQuantity: req.requestedQuantity,
+        priority: req.priority,
+        reason: req.reason ?? undefined,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Request re-submitted successfully");
+          setActiveTab("all");
+          setPage(1);
+          invalidate();
+        },
+        onError: (err) => {
+          toast.error(err.response?.data?.message ?? "Failed to re-submit");
+        },
+      },
+    );
   };
 
   const handleCancel = () => {
     if (!cancelTarget) return;
-    setRequests((prev) => prev.filter((req) => req.id !== cancelTarget.id));
-    toast.success(`Request ${cancelTarget.id} cancelled`);
-    setCancelTarget(null);
+    cancelMutation.mutate(cancelTarget.requestId, {
+      onSuccess: (res) => {
+        toast.success(res.message ?? "Request cancelled");
+        setCancelTarget(null);
+        invalidate();
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.message ?? "Failed to cancel");
+      },
+    });
   };
 
-  const renderFavorite = (req: RequestRecord, className?: string) => (
-    <Button
-      variant="ghost"
-      size="icon"
-      className={cn("h-8 w-8 hover:bg-status-pending-bg", className)}
-      aria-label={req.favorite ? "Remove from favorites" : "Add to favorites"}
-      onClick={(e) => {
-        e.stopPropagation();
-        toggleFavorite(req.id);
-      }}
-    >
-      <Star className={cn("h-4 w-4", req.favorite && "fill-chart-3 text-chart-3")} />
-    </Button>
-  );
-
-  const renderRowActions = (req: RequestRecord) => (
+  const renderRowActions = (req: MyRequestItem) => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
           className="h-8 w-8 hover:bg-muted/60"
-          aria-label={`Actions for ${req.id}`}
+          aria-label={`Actions for ${req.requestId}`}
           onClick={(e) => e.stopPropagation()}
         >
           <MoreHorizontal className="h-4 w-4" />
@@ -587,7 +482,7 @@ const MyRequests = () => {
         <DropdownMenuLabel>Manage</DropdownMenuLabel>
         <DropdownMenuItem
           className="cursor-pointer"
-          onClick={() => router.push(`/employee/requests/${req.id}`)}
+          onClick={() => router.push(`/employee/requests/${req.requestId}`)}
         >
           <FileText className="mr-2 h-4 w-4" /> View Details
         </DropdownMenuItem>
@@ -602,11 +497,12 @@ const MyRequests = () => {
             </DropdownMenuItem>
           </>
         )}
-        {req.status === "rejected" && (
+        {(req.status === "rejected" || req.status === "cancelled") && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer"
+              disabled={createMutation.isPending}
               onClick={() => handleReRequest(req)}
             >
               <RotateCcw className="mr-2 h-4 w-4" /> Request Again
@@ -622,7 +518,9 @@ const MyRequests = () => {
       <div className="mb-6 p-4 bg-background rounded-full shadow-sm">
         <Inbox className="size-12 text-muted-foreground" />
       </div>
-      <h2 className="text-2xl font-semibold text-primary mb-3">No requests found</h2>
+      <h2 className="text-2xl font-semibold text-primary mb-3">
+        No requests found
+      </h2>
       <p className="m-4 font-semibold text-muted-foreground">
         {activeTab === "all"
           ? "You haven't submitted any requests yet. Request a new resource to get started."
@@ -638,8 +536,44 @@ const MyRequests = () => {
     </div>
   );
 
+  const loadingRows = (
+    <>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <TableRow key={i} className="hover:bg-transparent">
+          <TableCell colSpan={TABLE_COLUMNS.length}>
+            <div className="h-10 w-full animate-pulse rounded bg-muted" />
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
+
   const renderTableBody = () => {
-    if (pagedRequests.length === 0) {
+    if (isLoading) return loadingRows;
+    if (isError) {
+      return (
+        <TableRow className="hover:bg-transparent">
+          <TableCell
+            colSpan={TABLE_COLUMNS.length}
+            className="p-0"
+          >
+            <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 text-center">
+              <p className="text-sm text-muted-foreground">
+                Failed to load requests.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+              >
+                Retry
+              </Button>
+            </div>
+          </TableCell>
+        </TableRow>
+      );
+    }
+    if (requests.length === 0) {
       return (
         <TableRow className="hover:bg-transparent">
           <TableCell colSpan={TABLE_COLUMNS.length} className="p-0">
@@ -649,31 +583,37 @@ const MyRequests = () => {
       );
     }
 
-    return pagedRequests.map((req) => (
+    return requests.map((req) => (
       <TableRow
-        key={req.id}
+        key={req.requestId}
         className="group transition-colors cursor-pointer"
-        onClick={() => router.push(`/employee/requests/${req.id}`)}
+        onClick={() => router.push(`/employee/requests/${req.requestId}`)}
       >
         <TableCell className="pl-6 font-mono text-xs text-muted-foreground font-medium whitespace-nowrap">
-          {req.id}
+          {shortId(req.requestId)}
         </TableCell>
         <TableCell>
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-foreground">{req.name}</span>
-            <Badge
-              variant="outline"
-              className="font-medium bg-card capitalize shadow-none"
-            >
-              {req.type}
-            </Badge>
-            {req.quantity > 1 && (
+            <span className="font-semibold text-foreground">
+              {req.resourceName}
+            </span>
+            {req.resourceType && (
+              <Badge
+                variant="outline"
+                className="font-medium bg-card capitalize shadow-none"
+              >
+                {req.resourceType}
+              </Badge>
+            )}
+            {req.requestedQuantity > 1 && (
               <Badge variant="secondary" className="font-medium shadow-none">
-                {req.quantity} ×
+                {req.requestedQuantity} ×
               </Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">Quantity: {req.quantity}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Quantity: {req.requestedQuantity}
+          </p>
         </TableCell>
         <TableCell className="whitespace-nowrap">
           <ReviewerCell reviewer={req.reviewedBy} />
@@ -681,13 +621,14 @@ const MyRequests = () => {
         <TableCell>
           <PriorityBadge priority={req.priority} />
         </TableCell>
-        <TableCell className="text-muted-foreground whitespace-nowrap">{req.date}</TableCell>
+        <TableCell className="text-muted-foreground whitespace-nowrap">
+          {formatDate(req.createdAt)}
+        </TableCell>
         <TableCell>
           <StatusBadge status={req.status} note={req.note} />
         </TableCell>
         <TableCell className="text-right pr-6">
           <div className="flex items-center justify-end gap-1">
-            {renderFavorite(req)}
             {renderRowActions(req)}
           </div>
         </TableCell>
@@ -696,7 +637,35 @@ const MyRequests = () => {
   };
 
   const renderCardGrid = () => {
-    if (pagedRequests.length === 0) {
+    if (isLoading) {
+      return (
+        <CardContent className="p-5">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-48 animate-pulse rounded-xl bg-muted"
+              />
+            ))}
+          </div>
+        </CardContent>
+      );
+    }
+    if (isError) {
+      return (
+        <CardContent className="p-0">
+          <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 p-5 text-center">
+            <p className="text-sm text-muted-foreground">
+              Failed to load requests.
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              Retry
+            </Button>
+          </div>
+        </CardContent>
+      );
+    }
+    if (requests.length === 0) {
       return (
         <CardContent className="p-0">
           <div className="p-5">{emptyState}</div>
@@ -707,40 +676,47 @@ const MyRequests = () => {
     return (
       <CardContent className="p-5">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {pagedRequests.map((req) => (
+          {requests.map((req) => (
             <Card
-              key={req.id}
+              key={req.requestId}
               className="group cursor-pointer transition-all duration-200 hover:shadow-md"
-              onClick={() => router.push(`/employee/requests/${req.id}`)}
+              onClick={() => router.push(`/employee/requests/${req.requestId}`)}
             >
               <CardContent className="space-y-3 p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="font-mono text-xs text-muted-foreground font-medium">
-                      {req.id}
+                      {shortId(req.requestId)}
                     </p>
-                    <p className="truncate font-semibold text-foreground">{req.name}</p>
+                    <p className="truncate font-semibold text-foreground">
+                      {req.resourceName}
+                    </p>
                   </div>
-                  {renderFavorite(req)}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="font-medium bg-card capitalize shadow-none"
-                  >
-                    {req.type}
-                  </Badge>
+                  {req.resourceType && (
+                    <Badge
+                      variant="outline"
+                      className="font-medium bg-card capitalize shadow-none"
+                    >
+                      {req.resourceType}
+                    </Badge>
+                  )}
                   <PriorityBadge priority={req.priority} />
                   <StatusBadge status={req.status} note={req.note} />
                 </div>
-                <p className="line-clamp-2 text-sm text-muted-foreground">{req.reason}</p>
+                {req.reason && (
+                  <p className="line-clamp-2 text-sm text-muted-foreground">
+                    {req.reason}
+                  </p>
+                )}
                 <div className="flex items-center justify-between gap-2 border-t pt-3">
                   <div className="flex min-w-0 items-center gap-2">
                     <ReviewerCell reviewer={req.reviewedBy} size="h-6 w-6" />
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      {req.date}
+                      {formatDate(req.createdAt)}
                     </span>
                     {renderRowActions(req)}
                   </div>
@@ -771,19 +747,27 @@ const MyRequests = () => {
         </Button>
       </div>
 
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((card) => (
-          <StatCard
-            key={card.title}
-            title={card.title!}
-            number={card.number!}
-            IconName={card.IconName}
-            subtext={card.subtext}
-            bgColor={card.bgColor!}
-            textColor={card.textColor!}
-            borderColor={card.borderColor!}
-          />
-        ))}
+      <section className="flex gap-4 overflow-x-auto pb-2">
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-[180px] min-w-[240px] flex-1 animate-pulse rounded-xl bg-muted"
+              />
+            ))
+          : statCards.map((card) => (
+              <div key={card.title} className="min-w-[240px] flex-1">
+                <StatCard
+                  title={card.title!}
+                  number={card.number!}
+                  IconName={card.IconName}
+                  subtext={card.subtext}
+                  bgColor={card.bgColor!}
+                  textColor={card.textColor!}
+                  borderColor={card.borderColor!}
+                />
+              </div>
+            ))}
       </section>
 
       <Tabs
@@ -792,7 +776,7 @@ const MyRequests = () => {
         onValueChange={changeTab}
         className="w-full"
       >
-        {pendingList.length > 0 && (
+        {counts.pending > 0 && (
           <div
             className="mb-3 flex w-full cursor-pointer items-center gap-4 overflow-hidden rounded-xl border border-status-pending-border bg-status-pending-bg p-4 transition-shadow hover:shadow-md sm:p-5"
             onClick={() => changeTab("pending")}
@@ -802,8 +786,8 @@ const MyRequests = () => {
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-status-pending-text">
-                {pendingList.length}{" "}
-                {pendingList.length === 1 ? "request" : "requests"} awaiting
+                {counts.pending}{" "}
+                {counts.pending === 1 ? "request" : "requests"} awaiting
                 review
               </p>
               <p className="text-sm text-status-pending-text/80">
@@ -824,7 +808,7 @@ const MyRequests = () => {
           </div>
         )}
         <div className="flex w-full justify-end">
-          <TabsList className="w-fit">
+          <TabsList className="w-fit max-w-full overflow-x-auto">
             {TAB_FILTERS.map((tab) => (
               <TabsTrigger
                 key={tab}
@@ -837,7 +821,7 @@ const MyRequests = () => {
                 {tab}
                 {tab !== "all" && (
                   <span className="rounded-full bg-foreground/10 px-1.5 text-xs font-semibold text-muted-foreground data-[state=active]:bg-foreground/20 data-[state=active]:text-primary-foreground">
-                    {countByStatus(tab)}
+                    {countByStatus(tab as RequestStatus)}
                   </span>
                 )}
               </TabsTrigger>
@@ -851,27 +835,13 @@ const MyRequests = () => {
               <Input
                 placeholder="Search requests..."
                 className="w-[50%] bg-secondary!"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
               />
               <Filter
                 filters={requestFilterConfig}
                 setFilters={handleFilters}
               />
-              <Button
-                variant={favoritesOnly ? "default" : "outline"}
-                size="sm"
-                className={cn(
-                  "gap-2 cursor-pointer",
-                  !favoritesOnly && "bg-secondary!",
-                )}
-                onClick={handleFavoritesOnly}
-              >
-                <Star
-                  className={cn("h-4 w-4", favoritesOnly && "fill-current")}
-                />
-                Favorites
-              </Button>
               <div className="flex items-center rounded-lg border border-border bg-muted p-0.5">
                 <Button
                   size="icon"
@@ -901,44 +871,46 @@ const MyRequests = () => {
             </div>
 
             {view === "table" ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {TABLE_COLUMNS.map((label, index) => {
-                      const first = index === 0;
-                      const last = index === TABLE_COLUMNS.length - 1;
-                      const base = cn(
-                        "font-semibold",
-                        first && "pl-6",
-                        last && "text-right pr-6",
-                      );
-                      const sortKey = SORTABLE_COLUMN_MAP[label];
-                      return sortKey ? (
-                        <SortableHead
-                          key={label}
-                          label={label}
-                          sortKey={sortKey}
-                          sort={sort}
-                          onSort={handleSort}
-                          className={base}
-                        />
-                      ) : (
-                        <TableHead key={label} className={base}>
-                          {label}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>{renderTableBody()}</TableBody>
-              </Table>
+              <div className={cn(isFetching && !isLoading && "opacity-70")}>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      {TABLE_COLUMNS.map((label, index) => {
+                        const first = index === 0;
+                        const last = index === TABLE_COLUMNS.length - 1;
+                        const base = cn(
+                          "font-semibold",
+                          first && "pl-6",
+                          last && "text-right pr-6",
+                        );
+                        const sortKey = SORTABLE_COLUMN_MAP[label];
+                        return sortKey ? (
+                          <SortableHead
+                            key={label}
+                            label={label}
+                            sortKey={sortKey}
+                            sort={sort}
+                            onSort={handleSort}
+                            className={base}
+                          />
+                        ) : (
+                          <TableHead key={label} className={base}>
+                            {label}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>{renderTableBody()}</TableBody>
+                </Table>
+              </div>
             ) : (
               renderCardGrid()
             )}
 
             {totalPages > 1 && (
               <PaginationControls
-                currentPage={safePage}
+                currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setPage}
               />
@@ -958,18 +930,24 @@ const MyRequests = () => {
             <AlertDialogTitle>Cancel this request?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to cancel request{" "}
-              <span className="font-mono font-semibold">{cancelTarget?.id}</span>{" "}
-              for <span className="font-semibold">{cancelTarget?.name}</span>? This
-              action cannot be undone.
+              <span className="font-mono font-semibold">
+                {cancelTarget && shortId(cancelTarget.requestId)}
+              </span>{" "}
+              for{" "}
+              <span className="font-semibold">
+                {cancelTarget?.resourceName}
+              </span>
+              ? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep Request</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/80 cursor-pointer"
+              disabled={cancelMutation.isPending}
               onClick={handleCancel}
             >
-              Cancel Request
+              {cancelMutation.isPending ? "Cancelling…" : "Cancel Request"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -53,11 +53,15 @@ export const createRequest = async ({
   requestedQuantity,
   resourceId,
   companyId,
+  priority,
+  reason,
 }: {
   requestedById: string;
   requestedQuantity: number;
   resourceId: string;
   companyId: string;
+  priority?: "low" | "medium" | "high";
+  reason?: string;
 }) => {
   return await prisma.request.create({
     data: {
@@ -66,6 +70,8 @@ export const createRequest = async ({
       resourceId,
       companyId,
       status: "pending",
+      priority: priority ?? "medium",
+      reason,
     },
   });
 };
