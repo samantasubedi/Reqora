@@ -16,6 +16,7 @@ export type resourceType = {
   location: string;
   department: string | null;
   type: string;
+  description?: string | null;
   availability: boolean;
   totalQuantity: number;
   availableQuantity: number;

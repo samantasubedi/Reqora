@@ -70,6 +70,11 @@ const EmployeeResourceTable = ({
                   <Building2 className="size-3" />
                   {resource.department}
                 </p>
+                {resource.description && (
+                  <p className="max-w-64 truncate text-xs text-muted-foreground/70">
+                    {resource.description}
+                  </p>
+                )}
               </TableCell>
               <TableCell className="text-muted-foreground">
                 {resource.type}

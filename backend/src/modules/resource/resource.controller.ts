@@ -18,7 +18,7 @@ export const getAllResources = async (
   next: NextFunction,
 ) => {
   try {
-    const companyId = res.locals.user.companyId;
+    const { companyId, role, departmentId } = res.locals.user;
     const {
       skip,
       take,
@@ -27,7 +27,13 @@ export const getAllResources = async (
       resourceTypeSearch,
       resourceDepartmentSearch,
       resourceAvailableQuantity,
+      availability,
     } = res.locals.query as T_QueryFilters;
+
+    // Employees only see resources of their own department. Users without a
+    // department (or other roles) keep the company-wide view.
+    const scopedDepartmentId =
+      role === "employee" && departmentId ? departmentId : undefined;
 
     const {
       resources,
@@ -40,7 +46,9 @@ export const getAllResources = async (
       search,
       resourceTypeSearch,
       resourceDepartmentSearch,
+      departmentId: scopedDepartmentId,
       availableQuantity: resourceAvailableQuantity,
+      availability,
       skip,
       take,
     });
@@ -66,6 +74,7 @@ export const getAllResources = async (
         type: resource.type,
         department: resource.department?.name ?? null,
         location: locations.join(", "),
+        description: resource.description,
         availability: availableQuantity > 0,
         totalQuantity,
         availableQuantity,
@@ -150,11 +159,14 @@ export const getSpecificResource = async (
       throw new appError(400, "ID_NOT_FOUND", "please provide an id");
     }
     const companyId = res.locals.user.companyId;
+    const { role, departmentId } = res.locals.user;
     const { resourceStatus } = res.locals.query as T_QueryFilters;
     const resourceDetail = await getSpecificResourceService({
       id,
       companyId,
       status: resourceStatus,
+      departmentId:
+        role === "employee" && departmentId ? departmentId : undefined,
     });
 
     return res.status(200).json({

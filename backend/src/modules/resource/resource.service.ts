@@ -32,7 +32,9 @@ export const findAllResourcesService = async ({
   search,
   resourceTypeSearch,
   resourceDepartmentSearch,
+  departmentId,
   availableQuantity,
+  availability,
 }: {
   companyId: string;
   skip: number;
@@ -40,13 +42,30 @@ export const findAllResourcesService = async ({
   search?: string;
   resourceTypeSearch?: string;
   resourceDepartmentSearch?: string;
+  departmentId?: string;
   availableQuantity?: number;
+  availability?: "inStock" | "outOfStock";
 }) => {
   let resourceIds: string[] | undefined;
-  if (availableQuantity !== undefined) {
+  let excludeResourceIds: string[] | undefined;
+  if (availability === "inStock") {
+    resourceIds = await findResourceIdsWithMinAvailable({
+      companyId,
+      min: 1,
+      departmentId,
+    });
+  } else if (availability === "outOfStock") {
+    const inStockIds = await findResourceIdsWithMinAvailable({
+      companyId,
+      min: 1,
+      departmentId,
+    });
+    excludeResourceIds = inStockIds;
+  } else if (availableQuantity !== undefined) {
     resourceIds = await findResourceIdsWithMinAvailable({
       companyId,
       min: availableQuantity,
+      departmentId,
     });
   }
 
@@ -59,17 +78,21 @@ export const findAllResourcesService = async ({
         search,
         resourceTypeSearch,
         resourceDepartmentSearch,
+        departmentId,
         resourceIds,
+        excludeResourceIds,
       }),
-      countResourceItemsByStatus({ companyId }),
-      countResourcesByType({ companyId }),
-      countAllResources({ companyId }),
+      countResourceItemsByStatus({ companyId, departmentId }),
+      countResourcesByType({ companyId, departmentId }),
+      countAllResources({ companyId, departmentId }),
       countResources({
         companyId,
         search,
         resourceTypeSearch,
         resourceDepartmentSearch,
+        departmentId,
         resourceIds,
+        excludeResourceIds,
       }),
     ]);
 
@@ -141,13 +164,18 @@ export const getSpecificResourceService = async ({
   id,
   companyId,
   status,
+  departmentId,
 }: {
   id: string;
   companyId: string;
   status?: ResourceStatus;
+  departmentId?: string;
 }) => {
   const resource = await findResourceDetailsById({ id });
   if (!resource || resource.companyId !== companyId) {
+    throw new appError(404, "RESOURCE_NOT_FOUND", "invalid resource id");
+  }
+  if (departmentId && resource.departmentId !== departmentId) {
     throw new appError(404, "RESOURCE_NOT_FOUND", "invalid resource id");
   }
 

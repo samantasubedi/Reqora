@@ -37,23 +37,16 @@ const Page = () => {
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  const { isLoading, data, isSuccess } = useTableResources({
-    searchText: debouncedSearchText,
-    filters,
-    page: currentPage,
-  });
+  const { isLoading, data, isSuccess, isError, refetch } =
+    useTableResources({
+      searchText: debouncedSearchText,
+      filters,
+      page: currentPage,
+    });
 
   const typeOptions = [
     ...new Set((data?.allResources ?? []).map((r) => r.type)),
   ].map((type) => ({ label: type, value: type }));
-
-  const departmentOptions = [
-    ...new Set(
-      (data?.allResources ?? [])
-        .map((r) => r.department)
-        .filter((d): d is string => Boolean(d)),
-    ),
-  ].map((department) => ({ label: department, value: department }));
 
   const tableFilter: FilterConfig[] = [
     {
@@ -63,10 +56,13 @@ const Page = () => {
       options: typeOptions,
     },
     {
-      key: "resourceDepartmentSearch",
-      title: "Department",
+      key: "availability",
+      title: "Availability",
       type: "dropdown",
-      options: departmentOptions,
+      options: [
+        { label: "In stock", value: "inStock" },
+        { label: "Out of stock", value: "outOfStock" },
+      ],
     },
   ];
 
@@ -93,7 +89,7 @@ const Page = () => {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
         <p className="text-muted-foreground">
-          Browse company resources and request what you need.
+          Browse your department&apos;s resources and request what you need.
         </p>
       </div>
 
@@ -149,6 +145,17 @@ const Page = () => {
           ) : (
             <div className="h-72 animate-pulse bg-muted/40" />
           )
+        ) : isError ? (
+          <div className="flex min-h-64 flex-col items-center justify-center gap-3 p-10 text-center">
+            <p className="text-sm font-semibold">Failed to load resources</p>
+            <p className="text-sm text-muted-foreground">
+              Something went wrong while fetching your department&apos;s
+              resources.
+            </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              Retry
+            </Button>
+          </div>
         ) : isSuccess && data.allResources ? (
           view === "grid" ? (
             <div className="p-4">

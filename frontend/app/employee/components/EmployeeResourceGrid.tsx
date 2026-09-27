@@ -58,6 +58,12 @@ const EmployeeResourceGrid = ({
             />
           </div>
 
+          {resource.description && (
+            <p className="line-clamp-2 text-sm text-muted-foreground">
+              {resource.description}
+            </p>
+          )}
+
           <div className="space-y-1.5 text-sm text-muted-foreground">
             <p className="flex items-center gap-2">
               <Building2 className="size-4 shrink-0 text-muted-foreground" />

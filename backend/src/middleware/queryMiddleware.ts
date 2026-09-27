@@ -14,6 +14,7 @@ export type T_QueryFilters = {
   resourceStatus: ResourceStatus | undefined;
   resourceTypeSearch: string | undefined;
   resourceAvailableQuantity: number | undefined;
+  availability: "inStock" | "outOfStock" | undefined;
   resourceDepartmentSearch: string | undefined;
   //users
   userRole: string | undefined;
@@ -50,6 +51,10 @@ export const parseQueryFilters = (
     resourceAvailableQuantity: query.resourceAvailableQuantity
       ? Number(query.resourceAvailableQuantity)
       : undefined,
+    availability:
+      query.availability === "inStock" || query.availability === "outOfStock"
+        ? query.availability
+        : undefined,
     resourceDepartmentSearch: query.resourceDepartmentSearch
       ? String(query.resourceDepartmentSearch)
       : undefined,

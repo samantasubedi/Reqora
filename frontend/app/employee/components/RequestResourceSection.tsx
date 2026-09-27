@@ -6,7 +6,16 @@ import { Loader, Minus, PackageX, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCreateRequest } from "../hooks/requestHooks";
+import type { EmployeePriority } from "../apis/types";
 
 type RequestResourceSectionProps = {
   resourceId: string;
@@ -22,13 +31,21 @@ const RequestResourceSection = ({
   onSuccess,
 }: RequestResourceSectionProps) => {
   const [quantity, setQuantity] = useState(1);
+  const [priority, setPriority] = useState<EmployeePriority>("medium");
+  const [reason, setReason] = useState("");
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useCreateRequest({
     onSuccess: (res) => {
       toast.success(res?.message ?? "Request submitted successfully");
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: ["tableResourceData"] });
+      queryClient.invalidateQueries({ queryKey: ["resourceDetails"] });
+      queryClient.invalidateQueries({ queryKey: ["myRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["myItems"] });
+      queryClient.invalidateQueries({ queryKey: ["employeeStats"] });
       setQuantity(1);
+      setPriority("medium");
+      setReason("");
       onSuccess?.();
     },
     onError: (err) => {
@@ -48,7 +65,12 @@ const RequestResourceSection = ({
   const clampedQuantity = Math.min(Math.max(quantity, 1), availableQuantity);
 
   const handleSubmit = () => {
-    mutate({ resourceId, requestedQuantity: clampedQuantity });
+    mutate({
+      resourceId,
+      requestedQuantity: clampedQuantity,
+      priority,
+      reason: reason.trim() === "" ? undefined : reason.trim(),
+    });
   };
 
   return (
@@ -60,7 +82,7 @@ const RequestResourceSection = ({
         of {resourceName} available to request
       </p>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center rounded-lg border bg-card">
           <Button
             type="button"
@@ -109,6 +131,37 @@ const RequestResourceSection = ({
           {isPending && <Loader className="size-4 animate-spin" />}
           Submit Request
         </Button>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <p className="text-xs font-medium text-muted-foreground">Priority</p>
+          <Select
+            value={priority}
+            onValueChange={(v) => setPriority(v as EmployeePriority)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5 sm:col-span-1">
+          <p className="text-xs font-medium text-muted-foreground">
+            Reason <span className="font-normal">(optional)</span>
+          </p>
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Why do you need this?"
+            rows={2}
+            maxLength={2000}
+          />
+        </div>
       </div>
     </div>
   );

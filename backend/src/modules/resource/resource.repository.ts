@@ -12,7 +12,9 @@ export const findAllResources = async ({
   search,
   resourceTypeSearch,
   resourceDepartmentSearch,
+  departmentId,
   resourceIds,
+  excludeResourceIds,
 }: {
   companyId: string;
   skip: number;
@@ -20,17 +22,26 @@ export const findAllResources = async ({
   search?: string;
   resourceTypeSearch?: string;
   resourceDepartmentSearch?: string;
+  departmentId?: string;
   resourceIds?: string[];
+  excludeResourceIds?: string[];
 }) => {
   return prisma.resource.findMany({
     skip,
     take,
     where: {
       companyId,
-      id: resourceIds ? { in: resourceIds } : undefined,
+      departmentId: departmentId ?? undefined,
+      id: resourceIds
+        ? { in: resourceIds }
+        : excludeResourceIds && excludeResourceIds.length > 0
+          ? { notIn: excludeResourceIds }
+          : undefined,
       name: { contains: search },
       type: { contains: resourceTypeSearch },
-      department: { name: { contains: resourceDepartmentSearch } },
+      department: resourceDepartmentSearch
+        ? { name: { contains: resourceDepartmentSearch } }
+        : undefined,
     },
     include: {
       department: { select: { name: true } },
@@ -50,16 +61,21 @@ export const findAllResources = async ({
 export const findResourceIdsWithMinAvailable = async ({
   companyId,
   min,
+  departmentId,
 }: {
   companyId: string;
   min: number;
+  departmentId?: string;
 }) => {
   const grouped = await prisma.resourceItem.groupBy({
     by: ["resourceId"],
     _count: true,
     where: {
       status: ResourceStatus.available,
-      resource: { companyId },
+      resource: {
+        companyId,
+        departmentId: departmentId ?? undefined,
+      },
     },
     having: {
       resourceId: { _count: { gte: min } },
@@ -73,54 +89,75 @@ export const countResources = async ({
   search,
   resourceTypeSearch,
   resourceDepartmentSearch,
+  departmentId,
   resourceIds,
+  excludeResourceIds,
 }: {
   companyId: string;
   search?: string;
   resourceTypeSearch?: string;
   resourceDepartmentSearch?: string;
+  departmentId?: string;
   resourceIds?: string[];
+  excludeResourceIds?: string[];
 }) => {
   return prisma.resource.count({
     where: {
       companyId,
-      id: resourceIds ? { in: resourceIds } : undefined,
+      departmentId: departmentId ?? undefined,
+      id: resourceIds
+        ? { in: resourceIds }
+        : excludeResourceIds && excludeResourceIds.length > 0
+          ? { notIn: excludeResourceIds }
+          : undefined,
       name: { contains: search },
       type: { contains: resourceTypeSearch },
-      department: { name: { contains: resourceDepartmentSearch } },
+      department: resourceDepartmentSearch
+        ? { name: { contains: resourceDepartmentSearch } }
+        : undefined,
     },
   });
 };
 
 export const countAllResources = async ({
   companyId,
+  departmentId,
 }: {
   companyId: string;
+  departmentId?: string;
 }) => {
-  return prisma.resource.count({ where: { companyId } });
+  return prisma.resource.count({
+    where: { companyId, departmentId: departmentId ?? undefined },
+  });
 };
 
 export const countResourceItemsByStatus = async ({
   companyId,
+  departmentId,
 }: {
   companyId: string;
+  departmentId?: string;
 }) => {
   return prisma.resourceItem.groupBy({
     by: ["status"],
     _count: true,
-    where: { resource: { companyId } },
+    where: {
+      resource: { companyId, departmentId: departmentId ?? undefined },
+    },
   });
 };
 
 export const countResourcesByType = async ({
   companyId,
+  departmentId,
 }: {
   companyId: string;
+  departmentId?: string;
 }) => {
   return prisma.resource.groupBy({
     by: ["type"],
     _count: true,
-    where: { companyId },
+    where: { companyId, departmentId: departmentId ?? undefined },
   });
 };
 
