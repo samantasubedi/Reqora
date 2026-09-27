@@ -105,7 +105,7 @@ export const addResourceService = async ({
 }) => {
   const department = await findDepartmentById({ id: departmentId });
   if (!department || department.companyId !== companyId) {
-    throw new appError(400, "INVALID_DEPARTMENT", "department does not exist");
+    throw new appError(404, "DEPARTMENT_NOT_FOUND", "department does not exist");
   }
 
   const locations =
@@ -147,7 +147,7 @@ export const getSpecificResourceService = async ({
 }) => {
   const resource = await findResourceDetailsById({ id });
   if (!resource || resource.companyId !== companyId) {
-    throw new appError(404, "INVALID_ID", "invalid resource id");
+    throw new appError(404, "RESOURCE_NOT_FOUND", "invalid resource id");
   }
 
   const allItems = resource.resourceItems;
@@ -211,12 +211,12 @@ export const editResourceService = async ({
 }) => {
   const resource = await findResourceById({ id: resourceId });
   if (!resource || resource.companyId !== companyId) {
-    throw new appError(400, "INVALID_ID", "resource not found");
+    throw new appError(404, "RESOURCE_NOT_FOUND", "resource not found");
   }
 
   const department = await findDepartmentById({ id: departmentId });
   if (!department || department.companyId !== companyId) {
-    throw new appError(400, "INVALID_DEPARTMENT", "department does not exist");
+    throw new appError(404, "DEPARTMENT_NOT_FOUND", "department does not exist");
   }
 
   const locations =
@@ -338,7 +338,7 @@ export const deleteResourceService = async ({
 }) => {
   const resource = await findResourceById({ id });
   if (!resource || resource.companyId !== companyId) {
-    throw new appError(400, "INVALID_ID", "resource not found");
+    throw new appError(404, "RESOURCE_NOT_FOUND", "resource not found");
   }
   return deleteResourceWithDependencies({ id });
 };
@@ -359,12 +359,12 @@ export const releaseResourceService = async ({
 
   const item = await findResourceItemById({ id: resourceItemId });
   if (!item || item.resource.companyId !== companyId) {
-    throw new appError(400, "INVALID_ID", "resource item not found");
+    throw new appError(404, "ITEM_NOT_FOUND", "resource item not found");
   }
 
   if (item.acquiredById && item.acquiredById !== user.id) {
     throw new appError(
-      400,
+      403,
       "NOT_ACQUIRED",
       "you can only release a resource item acquired by you",
     );

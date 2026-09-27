@@ -75,7 +75,7 @@ export const getAllResources = async (
       };
     });
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "got all resources",
       allResources,
@@ -101,7 +101,7 @@ export const addResource = async (
     const companyId = res.locals.user.companyId;
     if (!companyId) {
       throw new appError(
-        400,
+        403,
         "USER_NOT_ENROLLED",
         "User does not belong to a company",
       );
@@ -195,7 +195,7 @@ export const editResource = async (
       statusAssignment,
       companyId,
     });
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Resource updated successfully",
       code: "RESOURCE_UPDATED",
       success: true,
@@ -217,7 +217,7 @@ export const deleteResource = async (
       throw new appError(400, "ID_NOT_FOUND", "please provide an id");
     }
     await deleteResourceService({ id, companyId });
-    res.json({ message: "resource deleted successfully", success: true });
+    res.status(200).json({ message: "resource deleted successfully", success: true, code: "RESOURCE_DELETED" });
   } catch (err) {
     next(err);
   }
@@ -232,7 +232,7 @@ export const releaseResource = async (
     const { resourceItemId } = req.body;
     const { email, companyId } = res.locals.user;
     await releaseResourceService({ resourceItemId, email, companyId });
-    return res.json({
+    return res.status(200).json({
       success: true,
       code: "RESOURCE_RELEASED",
       message: "resource item released successfully",

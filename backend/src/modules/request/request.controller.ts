@@ -129,7 +129,7 @@ export const handleReview = async (
       },
     });
     if (!reviewer || !requestDetails) {
-      throw new appError(500, "SERVER_ERROR", "server error");
+      throw new appError(404, "NOT_FOUND", "reviewer or request not found");
     }
 
     if (requestDetails.companyId !== reviewer.companyId) {
@@ -219,7 +219,7 @@ export const handleReview = async (
       });
     }
 
-    return res.json({
+    return res.status(200).json({
       message: "Request status updated",
       success: true,
       code: "REQUEST_REVIEWED",
@@ -250,7 +250,7 @@ export const handleCancel = async (
       },
     });
     if (!userInfo || !requestDetails) {
-      throw new appError(500, "SERVER_ERROR", "server error");
+      throw new appError(404, "NOT_FOUND", "user or request not found");
     }
     if (requestDetails.companyId !== companyId) {
       throw new appError(
@@ -284,7 +284,7 @@ export const handleCancel = async (
       where: { id },
       data: { status: RequestStatus.cancelled },
     });
-    return res.json({
+    return res.status(200).json({
       message: "Request cancelled",
       success: true,
       code: "REQUEST_CANCELLED",
@@ -316,7 +316,7 @@ export const handleForward = async (
       },
     });
     if (!reviewer || !requestDetails) {
-      throw new appError(500, "SERVER_ERROR", "server error");
+      throw new appError(404, "NOT_FOUND", "reviewer or request not found");
     }
     if (requestDetails.companyId !== companyId) {
       throw new appError(
@@ -353,7 +353,7 @@ export const handleForward = async (
       where: { id },
       data: { status: RequestStatus.forwarded },
     });
-    return res.json({
+    return res.status(200).json({
       message: "Request forwarded to admin",
       success: true,
       code: "REQUEST_FORWARDED",

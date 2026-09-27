@@ -11,7 +11,7 @@ import {
   getDepartmentsService,
   addDepartmentService,
 } from "./company.service";
-import { setCookie } from "../../utils/setCookie";
+import { clearAuthCookies, cookieOptions, setCookie } from "../../utils/setCookie";
 
 export const createCompany = async (
   req: Request,
@@ -93,14 +93,10 @@ export const joinByEmail = async (
 
         setCookie(res, accessToken, newRefreshToken);
       } catch (err) {
-        res.clearCookie("refreshToken", {
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-        });
+        res.clearCookie("refreshToken", { ...cookieOptions });
       }
     }
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "You have been joined to the company",
       code: "JOIN_SUCCESSFULL",
@@ -154,15 +150,11 @@ export const joinByCode = async (
         });
         setCookie(res, accessToken, newRefreshToken);
       } catch (err) {
-        res.clearCookie("refreshToken", {
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-        });
+        res.clearCookie("refreshToken", { ...cookieOptions });
       }
     }
 
-    return res.status(201).json({
+    return res.status(200).json({
       role: result[1].role,
       success: true,
       code: "JOIN_SUCCESSFULL",
@@ -188,11 +180,7 @@ export const leaveCompany = async (
         });
         setCookie(res, accessToken, newRefreshToken);
       } catch (err) {
-        res.clearCookie("refreshToken", {
-          sameSite: "strict",
-          httpOnly: true,
-          secure: true,
-        });
+        res.clearCookie("refreshToken", { ...cookieOptions });
       }
     }
     res.status(200).json({
@@ -213,8 +201,9 @@ export const getDepartments = async (
   try {
     const companyId = res.locals.user.companyId;
     const departments = await getDepartmentsService({ companyId });
-    res.json({
+    res.status(200).json({
       success: true,
+      code: "DEPARTMENTS_FETCHED",
       message: "departments fetched successfully",
       departments,
     });

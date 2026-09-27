@@ -41,17 +41,20 @@ export const loginUser = async ({ username, password }: loginType) => {
     );
   } else if (isPasswordCorrect) {
     let tokenData: {
+      id: string;
       username: string;
       email: string;
       role?: string;
       companyId?: string | null;
       departmentId?: string | null;
     } = {
+      id: user.id,
       username,
       email: user.email,
     };
     if (user.companyId && user.role) {
       tokenData = {
+        id: user.id,
         username,
         email: user.email,
         role: user.role,
@@ -93,10 +96,11 @@ export const refresh = async ({
   const userData = await findByUsername({ username: tokenData.username });
   if (!userData) {
     //user may have been removed from the company but token could still exist in users cookie
-    throw new appError(400, "USER_NOT_FOUND", "invalid token, user not found");
+    throw new appError(401, "INVALID_TOKEN", "invalid token, user not found");
   }
 
   let data: {
+    id: string;
     username: string;
     email: string;
     role?: string | null;
@@ -105,6 +109,7 @@ export const refresh = async ({
   };
   if (userData?.companyId && userData?.role) {
     data = {
+      id: userData.id,
       username: userData.username,
       email: userData.email,
       role: userData.role,
@@ -113,6 +118,7 @@ export const refresh = async ({
     };
   } else {
     data = {
+      id: userData.id,
       username: userData.username,
       email: userData.email,
     };

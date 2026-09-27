@@ -90,11 +90,11 @@ export const createRequestService = async ({
 }) => {
   const userDetails = await findUserByEmail({ email });
   if (!userDetails) {
-    throw new appError(400, "INVALID_EMAIL", "unable to retrive user details");
+    throw new appError(404, "USER_NOT_FOUND", "unable to retrive user details");
   }
   const resourceDetails = await findResourceDetailsById({ id: resourceId });
   if (!resourceDetails) {
-    throw new appError(400, "INVALID_ID", "unable to retrive resource details");
+    throw new appError(404, "RESOURCE_NOT_FOUND", "unable to retrive resource details");
   }
 
   const availableQuantity = resourceDetails.resourceItems.filter(

@@ -19,23 +19,40 @@ export const getProfileInfo = async (
     const userInfo = await findUserDetailsByEmail({ email });
 
     if (!userInfo) {
-      throw new appError(404, "NOT_FOUND", "user not found");
+      throw new appError(404, "USER_NOT_FOUND", "user not found");
     }
-    const { username, role, description } = userInfo;
+    const {
+      id,
+      username,
+      role,
+      description,
+      companyId,
+      departmentId,
+      department,
+      joinedAt,
+    } = userInfo;
     const {
       companyName,
       address,
       email: companyEmail,
     } = userInfo.company || {};
 
-    return res.status(201).json({
+    return res.status(200).json({
+      success: true,
+      code: "PROFILE_FETCHED",
+      message: "profile fetched successfully",
+      id,
       username,
       role,
       email,
+      companyId,
       companyName,
       address,
       companyEmail,
       description,
+      departmentId,
+      departmentName: department?.name ?? null,
+      joinedAt,
     });
   } catch (err) {
     next(err);

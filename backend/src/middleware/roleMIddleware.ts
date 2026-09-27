@@ -5,7 +5,7 @@ export const roleMiddleware = (allowedRoles: string[]) => {
     try {
       const userInfo = res.locals.user;
       if (!userInfo) {
-        throw new appError(400, "NOT_FOUND", "invalid or expired token");
+        throw new appError(401, "UNAUTHORIZED", "invalid or expired token");
       }
       if (allowedRoles.includes(userInfo.role)) {
         return next();

@@ -5,10 +5,15 @@ export const findUserDetailsByEmail = async ({ email }: { email: string }) => {
   return prisma.user.findUnique({
     where: { email },
     select: {
+      id: true,
       username: true,
+      email: true,
       role: true,
       description: true,
-
+      companyId: true,
+      departmentId: true,
+      department: { select: { id: true, name: true } },
+      joinedAt: true,
       company: { select: { companyName: true, email: true, address: true } },
     },
   });

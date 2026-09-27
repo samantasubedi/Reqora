@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
 import { loginUser, refresh, registerUser } from "./auth.service";
 import { appError } from "../../utils/appError";
-import { setCookie } from "../../utils/setCookie";
+import { clearAuthCookies, setCookie } from "../../utils/setCookie";
 
 export const Register = async (
   req: Request,
@@ -38,24 +38,16 @@ export const Login = async (
     if (result) {
       const { user, accessToken, refreshToken } = result;
 
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 15 * 24 * 60 * 60 * 1000, //15 days
-      });
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: true,
-        maxAge: 15 * 60 * 1000, //15 minutes
-      });
+      setCookie(res, accessToken, refreshToken);
       return res.status(200).json({
         success: true,
         code: "LOGIN_SUCCESSFULL",
         message: `You have been logged in as ${username}`,
+        id: user.id,
         role: user.role,
         username: user.username,
+        email: user.email,
+        companyId: user.companyId,
       });
     }
   } catch (err) {
@@ -64,16 +56,7 @@ export const Login = async (
 };
 export const Logout = (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.clearCookie("accessToken", {
-      sameSite: "strict",
-      httpOnly: true,
-      secure: true,
-    });
-    res.clearCookie("refreshToken", {
-      sameSite: "strict",
-      httpOnly: true,
-      secure: true,
-    });
+    clearAuthCookies(res);
     res.status(200).json({
       code: "LOGOUT_SUCCESSFULL",
       message: "You have been successfully logged out !",
@@ -96,48 +79,76 @@ export const Refresh = async (
     const { accessToken, newRefreshToken } = await refresh({refreshToken});
 
     setCookie(res, accessToken, newRefreshToken);
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "your tokens has been regenerated",
       code: "TOKEN_REFRESHED",
     });
   } catch (err) {
-    res.clearCookie("refreshToken", {
-      sameSite: "strict",
-      httpOnly: true,
-      secure: true,
-    });
+    clearAuthCookies(res);
     next(err);
   }
 };
 
 export const isLoggedIn = async (req: Request, res: Response) => {
   const accessToken = req.cookies.accessToken;
-  const refreshToken:string = req.cookies.refreshToken;
+  const refreshToken: string = req.cookies.refreshToken;
   const accessSecret = process.env.ACCESS_SECRET!;
   if (!accessToken) {
     if (!refreshToken) {
       return res.status(200).json({
+        success: false,
         code: "NOT_LOGGEDIN",
         message: "user is not logged in ",
       });
     }
-    const { accessToken, newRefreshToken } = await refresh({refreshToken});
+    const { accessToken, newRefreshToken } = await refresh({ refreshToken });
 
     setCookie(res, accessToken, newRefreshToken);
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "your tokens has been regenerated",
       code: "TOKEN_REFRESHED",
     });
   }
-  const userData = jwt.verify(accessToken, accessSecret) as JwtPayload;
-  res.status(200).json({
-    success: true,
-    code: "LOGGEDIN",
-    role: userData.role,
-    username: userData.username,
-    email: userData.email,
-    message: "user is logged in ",
-  });
+  try {
+    const userData = jwt.verify(accessToken, accessSecret) as JwtPayload;
+    return res.status(200).json({
+      success: true,
+      code: "LOGGEDIN",
+      id: userData.id ?? null,
+      role: userData.role ?? null,
+      username: userData.username,
+      email: userData.email,
+      companyId: userData.companyId ?? null,
+      departmentId: userData.departmentId ?? null,
+      message: "user is logged in ",
+    });
+  } catch {
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        code: "INVALID_TOKEN",
+        message: "Invalid or expired token",
+      });
+    }
+    try {
+      const { accessToken: freshAccess, newRefreshToken } = await refresh({
+        refreshToken,
+      });
+      setCookie(res, freshAccess, newRefreshToken);
+      return res.status(200).json({
+        success: true,
+        message: "your tokens has been regenerated",
+        code: "TOKEN_REFRESHED",
+      });
+    } catch {
+      clearAuthCookies(res);
+      return res.status(401).json({
+        success: false,
+        code: "INVALID_TOKEN",
+        message: "Invalid or expired token",
+      });
+    }
+  }
 };

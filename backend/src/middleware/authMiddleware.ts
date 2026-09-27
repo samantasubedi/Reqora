@@ -21,7 +21,7 @@ export const authMiddlware = async (
         const { accessToken, newRefreshToken } = await refresh({refreshToken});
         if (accessToken && newRefreshToken) {
           setCookie(res, accessToken, newRefreshToken);
-          return res.status(201).json({
+          return res.status(200).json({
             success: true,
             message: "your tokens has been regenerated",
             code: "TOKEN_REFRESHED",
@@ -35,7 +35,7 @@ export const authMiddlware = async (
         try {
           decodedData = jwt.verify(accessToken, accessSecret);
         } catch {
-          throw new appError(400, "INVALID_TOKEN", "Invalid or expired token");
+          throw new appError(401, "INVALID_TOKEN", "Invalid or expired token");
         }
         res.locals.user = decodedData;
         next();
