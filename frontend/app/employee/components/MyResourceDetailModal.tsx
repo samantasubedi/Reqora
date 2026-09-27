@@ -15,15 +15,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { MyResource } from "./myResourcesDummyData";
+import type { MyResourceItem } from "../apis/types";
 import { ItemStatusPill } from "./EmployeeResourceBits";
 import { formatAssignedDate } from "./MyResourcesTable";
 
 type MyResourceDetailModalProps = {
-  resource: MyResource | null;
+  resource: MyResourceItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onRelease: (resource: MyResource) => void;
+  onRelease: (resource: MyResourceItem) => void;
 };
 
 const InfoRow = ({
@@ -75,7 +75,7 @@ const MyResourceDetailModal = ({
             <InfoRow
               icon={Building2}
               label="Department"
-              value={resource.department}
+              value={resource.department ?? "—"}
             />
             <InfoRow icon={MapPin} label="Location" value={resource.location} />
             <InfoRow
@@ -85,10 +85,14 @@ const MyResourceDetailModal = ({
             />
           </div>
 
-          {resource.note && (
+          {resource.description && (
             <div className="space-y-1.5 rounded-xl border bg-card p-4">
-              <p className="text-sm font-semibold text-foreground">Note</p>
-              <p className="text-sm text-muted-foreground">{resource.note}</p>
+              <p className="text-sm font-semibold text-foreground">
+                Description
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {resource.description}
+              </p>
             </div>
           )}
 

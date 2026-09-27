@@ -318,18 +318,41 @@ export const findItemsByUserId = async ({
   userId,
   companyId,
   take,
+  search,
+  type,
+  status,
 }: {
   userId: string;
   companyId: string;
   take?: number;
+  search?: string;
+  type?: string;
+  status?: ResourceStatus;
 }) => {
   return prisma.resourceItem.findMany({
-    where: { acquiredById: userId, resource: { companyId } },
+    where: {
+      acquiredById: userId,
+      status: status ?? undefined,
+      resource: {
+        companyId,
+        type: type ? { contains: type } : undefined,
+      },
+      ...(search
+        ? {
+            OR: [
+              { resource: { name: { contains: search } } },
+              { resource: { type: { contains: search } } },
+              { location: { contains: search } },
+            ],
+          }
+        : {}),
+    },
     include: {
       resource: {
         select: {
           name: true,
           type: true,
+          description: true,
           department: { select: { name: true } },
         },
       },

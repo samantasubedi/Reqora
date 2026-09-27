@@ -12,8 +12,8 @@ import {
   getMyRequestsApi,
   getRequestDetailApi,
 } from "../apis/requestApi";
-import { getMyItemsApi } from "../apis/myItemsApi";
-import { employeeQueryKeys, MyRequestsParams } from "../apis/types";
+import { getMyItemsApi, releaseItemApi } from "../apis/myItemsApi";
+import { employeeQueryKeys, MyItemsParams, MyRequestsParams } from "../apis/types";
 import { T_MutationError } from "@/types/global";
 
 export const useCreateRequest = (
@@ -75,9 +75,19 @@ export const useEditRequest = (
   });
 };
 
-export const useMyItems = (params?: { limit?: number }) => {
+export const useMyItems = (params?: MyItemsParams) => {
   return useQuery({
     queryKey: [...employeeQueryKeys.myItems(), params],
     queryFn: () => getMyItemsApi(params),
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useReleaseItem = (
+  options?: UseMutationOptions<any, T_MutationError, string>,
+) => {
+  return useMutation({
+    mutationFn: releaseItemApi,
+    ...options,
   });
 };

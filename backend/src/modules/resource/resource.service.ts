@@ -406,10 +406,16 @@ export const getMyItemsService = async ({
   email,
   companyId,
   limit,
+  search,
+  type,
+  status,
 }: {
   email: string;
   companyId: string;
   limit?: number;
+  search?: string;
+  type?: string;
+  status?: ResourceStatus;
 }) => {
   const user = await findUserByEmail({ email });
   if (!user) {
@@ -419,11 +425,15 @@ export const getMyItemsService = async ({
     userId: user.id,
     companyId,
     take: limit,
+    search,
+    type,
+    status,
   });
   return items.map((item) => ({
     id: item.id,
     name: item.resource.name,
     type: item.resource.type,
+    description: item.resource.description,
     department: item.resource.department?.name ?? null,
     location: item.location,
     assignedAt: item.updatedAt,

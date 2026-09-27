@@ -9,13 +9,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { MyResource } from "./myResourcesDummyData";
+import type { MyResourceItem } from "../apis/types";
 import { ItemStatusPill } from "./EmployeeResourceBits";
 
 type MyResourcesTableProps = {
-  resources: MyResource[];
-  onSelect: (resource: MyResource) => void;
-  onRelease: (resource: MyResource) => void;
+  resources: MyResourceItem[];
+  onSelect: (resource: MyResourceItem) => void;
+  onRelease: (resource: MyResourceItem) => void;
 };
 
 export const formatAssignedDate = (iso: string) =>
@@ -52,9 +52,14 @@ const MyResourcesTable = ({
             <TableCell>
               <p className="font-medium text-foreground">{resource.name}</p>
               <p className="text-xs text-muted-foreground">{resource.type}</p>
+              {resource.description && (
+                <p className="max-w-64 truncate text-xs text-muted-foreground/70">
+                  {resource.description}
+                </p>
+              )}
             </TableCell>
             <TableCell className="text-muted-foreground">
-              {resource.department}
+              {resource.department ?? "—"}
             </TableCell>
             <TableCell className="text-muted-foreground">
               {resource.location}

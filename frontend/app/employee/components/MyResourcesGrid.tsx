@@ -2,14 +2,14 @@ import { Building2, MapPin, Undo2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MyResource } from "./myResourcesDummyData";
+import type { MyResourceItem } from "../apis/types";
 import { ItemStatusPill } from "./EmployeeResourceBits";
 import { formatAssignedDate } from "./MyResourcesTable";
 
 type MyResourcesGridProps = {
-  resources: MyResource[];
-  onSelect: (resource: MyResource) => void;
-  onRelease: (resource: MyResource) => void;
+  resources: MyResourceItem[];
+  onSelect: (resource: MyResourceItem) => void;
+  onRelease: (resource: MyResourceItem) => void;
 };
 
 const MyResourcesGrid = ({
@@ -40,15 +40,15 @@ const MyResourcesGrid = ({
           <div className="space-y-1.5 text-sm text-muted-foreground">
             <p className="flex items-center gap-2">
               <Building2 className="size-4 shrink-0 text-muted-foreground" />
-              {resource.department}
+              {resource.department ?? "—"}
             </p>
             <p className="flex items-center gap-2">
               <MapPin className="size-4 shrink-0 text-muted-foreground" />
               {resource.location}
             </p>
-            {resource.note && (
-              <p className="pt-1 text-xs text-muted-foreground">
-                {resource.note}
+            {resource.description && (
+              <p className="line-clamp-2 pt-1 text-xs text-muted-foreground">
+                {resource.description}
               </p>
             )}
           </div>

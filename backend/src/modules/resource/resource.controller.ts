@@ -262,11 +262,25 @@ export const getMyItems = async (
 ) => {
   try {
     const { email, companyId } = res.locals.user;
-    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const { limit, search, type, status } = req.query as Record<
+      string,
+      string | undefined
+    >;
+    const validItemStatuses = ["available", "inUse", "underMaintenance"];
+    if (status && !validItemStatuses.includes(status)) {
+      throw new appError(400, "INVALID_STATUS", "invalid item status filter");
+    }
+    const parsedLimit = limit ? Number(limit) : undefined;
     const items = await getMyItemsService({
       email,
       companyId,
-      limit: limit && limit > 0 && limit <= 100 ? limit : undefined,
+      limit:
+        parsedLimit && parsedLimit > 0 && parsedLimit <= 100
+          ? parsedLimit
+          : undefined,
+      search: search?.trim() || undefined,
+      type: type || undefined,
+      status: status as ResourceStatus | undefined,
     });
     return res.status(200).json({
       success: true,

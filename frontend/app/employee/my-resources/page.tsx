@@ -1,7 +1,8 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { LayoutGrid, List, PackageX, Plus } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -22,12 +23,15 @@ import {
 import MyResourcesTable from "../components/MyResourcesTable";
 import MyResourcesGrid from "../components/MyResourcesGrid";
 import MyResourceDetailModal from "../components/MyResourceDetailModal";
-import {
-  DUMMY_MY_RESOURCES,
-  MyResource,
-} from "../components/myResourcesDummyData";
+import { useMyItems, useReleaseItem } from "../hooks/requestHooks";
+import type { MyResourceItem } from "../apis/types";
 
 type ViewMode = "grid" | "table";
+
+const STATUS_OPTIONS = [
+  { label: "In use", value: "inUse" },
+  { label: "Under maintenance", value: "underMaintenance" },
+];
 
 const EmptyState = ({
   icon: Icon,
@@ -59,147 +63,232 @@ const EmptyState = ({
 };
 
 const Page = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [view, setView] = useState<ViewMode>("table");
   const [searchText, setSearchText] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filters, setFilters] = useState<FilterValues>({});
-  const [items, setItems] = useState<MyResource[]>(DUMMY_MY_RESOURCES);
-  const [releaseTarget, setReleaseTarget] = useState<MyResource | null>(null);
-  const [detailTarget, setDetailTarget] = useState<MyResource | null>(null);
+  const [releaseTarget, setReleaseTarget] = useState<MyResourceItem | null>(
+    null,
+  );
+  const [detailTarget, setDetailTarget] = useState<MyResourceItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  const handleOpenDetail = (resource: MyResource) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchText.trim());
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
+  const typeFilter = filters.resourceType as string | undefined;
+  const statusFilter = filters.resourceStatus as string | undefined;
+
+  const { data, isLoading, isError, refetch } = useMyItems({
+    search: debouncedSearch || undefined,
+    type: typeFilter || undefined,
+    status: statusFilter || undefined,
+  });
+
+  const items = useMemo(() => data?.data ?? [], [data]);
+
+  const typeOptions = useMemo(
+    () =>
+      [...new Set(items.map((item) => item.type))].map((type) => ({
+        label: type,
+        value: type,
+      })),
+    [items],
+  );
+
+  const tableFilter: FilterConfig[] = useMemo(
+    () => [
+      {
+        key: "resourceType",
+        title: "Type",
+        type: "dropdown",
+        options: typeOptions,
+      },
+      {
+        key: "resourceStatus",
+        title: "Status",
+        type: "dropdown",
+        options: STATUS_OPTIONS,
+      },
+    ],
+    [typeOptions],
+  );
+
+  const releaseMutation = useReleaseItem();
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["myItems"] });
+    queryClient.invalidateQueries({ queryKey: ["tableResourceData"] });
+    queryClient.invalidateQueries({ queryKey: ["resourceDetails"] });
+  };
+
+  const handleOpenDetail = (resource: MyResourceItem) => {
     setDetailTarget(resource);
     setDetailOpen(true);
   };
 
-  const typeOptions = [
-    ...new Set(items.map((item) => item.type)),
-  ].map((type) => ({ label: type, value: type }));
+  const handleSetFilters = (values: FilterValues) => {
+    setFilters(values);
+  };
 
-  const departmentOptions = [
-    ...new Set(items.map((item) => item.department)),
-  ].map((department) => ({ label: department, value: department }));
-
-  const tableFilter: FilterConfig[] = [
-    {
-      key: "resourceType",
-      title: "Type",
-      type: "dropdown",
-      options: typeOptions,
-    },
-    {
-      key: "resourceDepartment",
-      title: "Department",
-      type: "dropdown",
-      options: departmentOptions,
-    },
-  ];
-
-  const filtered = useMemo(() => {
-    const query = searchText.toLowerCase();
-    const typeFilter = filters.resourceType as string | undefined;
-    const departmentFilter = filters.resourceDepartment as string | undefined;
-    return items.filter((item) => {
-      const matchesSearch =
-        item.name.toLowerCase().includes(query) ||
-        item.type.toLowerCase().includes(query) ||
-        item.location.toLowerCase().includes(query) ||
-        item.department.toLowerCase().includes(query);
-      const matchesType = !typeFilter || item.type === typeFilter;
-      const matchesDepartment =
-        !departmentFilter || item.department === departmentFilter;
-      return matchesSearch && matchesType && matchesDepartment;
-    });
-  }, [items, searchText, filters]);
+  const hasActiveQuery =
+    debouncedSearch !== "" || !!typeFilter || !!statusFilter;
 
   const handleRelease = () => {
     if (!releaseTarget) return;
-    setItems((prev) => prev.filter((item) => item.id !== releaseTarget.id));
-    toast.success("Resource returned successfully");
-    setReleaseTarget(null);
+    releaseMutation.mutate(releaseTarget.id, {
+      onSuccess: (res) => {
+        toast.success(res.message ?? "Resource returned successfully");
+        setReleaseTarget(null);
+        invalidate();
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.message ?? "Failed to return");
+      },
+    });
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return view === "table" ? (
+        <div className="space-y-2 p-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-12 w-full animate-pulse rounded bg-muted"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="p-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-56 animate-pulse rounded-2xl bg-muted"
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+    if (isError) {
+      return (
+        <EmptyState
+          icon={PackageX}
+          header="Couldn't load your resources"
+          description="Something went wrong while fetching your assigned items. Please try again."
+        />
+      );
+    }
+    if (items.length === 0 && !hasActiveQuery) {
+      return (
+        <EmptyState
+          icon={PackageX}
+          header="No resources assigned to you"
+          description="You don't currently hold any resources. Approved requests will show up here — browse the inventory and request what you need."
+          button={{ text: "Browse Resources", link: "/employee/resources" }}
+        />
+      );
+    }
+    if (items.length === 0) {
+      return (
+        <EmptyState
+          icon={PackageX}
+          header="No matching resources"
+          description="None of your assigned items match this search or filter combination. Try clearing them to see everything assigned to you."
+        />
+      );
+    }
+    return view === "table" ? (
+      <div className="overflow-x-auto">
+        <MyResourcesTable
+          resources={items}
+          onSelect={handleOpenDetail}
+          onRelease={setReleaseTarget}
+        />
+      </div>
+    ) : (
+      <div className="p-4">
+        <MyResourcesGrid
+          resources={items}
+          onSelect={handleOpenDetail}
+          onRelease={setReleaseTarget}
+        />
+      </div>
+    );
   };
 
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">My Resources</h1>
-        <p className="text-muted-foreground">
-          Resources currently assigned to you.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">My Resources</h1>
+          <p className="text-muted-foreground">
+            Resources currently assigned to you.
+          </p>
+        </div>
+        <Button
+          size="lg"
+          className="gap-2 shadow-sm cursor-pointer"
+          onClick={() => router.push("/employee/resources")}
+        >
+          <Plus className="h-4 w-4" /> Request New Resource
+        </Button>
       </div>
 
-      {items.length === 0 ? (
-        <Card className="border-border shadow-sm">
-          <EmptyState
-            icon={PackageX}
-            header="No resources assigned to you"
-            description="You don&apos;t currently hold any resources. Browse the company inventory and request what you need."
-            button={{ text: "Browse Resources", link: "/employee/resources" }}
+      <Card className="border-border shadow-sm">
+        <div className="flex flex-wrap items-center justify-end gap-3 border-b border-border p-3">
+          <Input
+            placeholder="Search my resources..."
+            className="w-[50%] bg-secondary!"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
           />
-        </Card>
-      ) : (
-        <Card className="border-border shadow-sm">
-          <div className="flex flex-wrap items-center justify-end gap-3 border-b border-border p-3">
-            <Input
-              placeholder="Search my resources..."
-              className="w-[50%] bg-secondary!"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <Filter filters={tableFilter} setFilters={setFilters} />
-            <div className="flex items-center rounded-lg border border-border bg-muted p-0.5">
-              <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                  "h-8 w-8 cursor-pointer",
-                  view === "table" && "bg-background shadow-sm",
-                )}
-                onClick={() => setView("table")}
-                aria-label="Table view"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className={cn(
-                  "h-8 w-8 cursor-pointer",
-                  view === "grid" && "bg-background shadow-sm",
-                )}
-                onClick={() => setView("grid")}
-                aria-label="Card view"
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-            </div>
+          <Filter filters={tableFilter} setFilters={handleSetFilters} />
+          <div className="flex items-center rounded-lg border border-border bg-muted p-0.5">
+            <Button
+              size="icon"
+              variant="ghost"
+              className={cn(
+                "h-8 w-8 cursor-pointer",
+                view === "table" && "bg-background shadow-sm",
+              )}
+              onClick={() => setView("table")}
+              aria-label="Table view"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className={cn(
+                "h-8 w-8 cursor-pointer",
+                view === "grid" && "bg-background shadow-sm",
+              )}
+              onClick={() => setView("grid")}
+              aria-label="Card view"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
           </div>
+        </div>
 
-          {filtered.length === 0 ? (
-            <EmptyState
-              icon={PackageX}
-              header="No resources found"
-              description="Try adjusting your search or filters."
-            />
-          ) : view === "table" ? (
-            <div className="overflow-x-auto">
-              <MyResourcesTable
-                resources={filtered}
-                onSelect={handleOpenDetail}
-                onRelease={setReleaseTarget}
-              />
-            </div>
-          ) : (
-            <div className="p-4">
-              <MyResourcesGrid
-                resources={filtered}
-                onSelect={handleOpenDetail}
-                onRelease={setReleaseTarget}
-              />
-            </div>
-          )}
-        </Card>
-      )}
+        {renderContent()}
+        {isError && (
+          <div className="flex justify-center border-t border-border p-4">
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              Retry
+            </Button>
+          </div>
+        )}
+      </Card>
 
       <MyResourceDetailModal
         resource={detailTarget}
@@ -225,13 +314,17 @@ const Page = () => {
               <span className="font-semibold text-foreground">
                 {releaseTarget?.name}
               </span>
-              ? It will be released and made available again to your company.
+              ? It will be released immediately and made available again to
+              your department.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Keep Resource</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRelease}>
-              Return Resource
+            <AlertDialogAction
+              disabled={releaseMutation.isPending}
+              onClick={handleRelease}
+            >
+              {releaseMutation.isPending ? "Returning…" : "Return Resource"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

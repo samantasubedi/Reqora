@@ -64,11 +64,18 @@ export type MyResourceItem = {
   id: string;
   name: string;
   type: string;
+  description?: string | null;
   department: string | null;
   location: string;
   assignedAt: string;
   status: string;
-  note?: string | null;
+};
+
+export type MyItemsParams = {
+  limit?: number;
+  search?: string;
+  type?: string;
+  status?: string;
 };
 
 export type AllocatedItem = {
