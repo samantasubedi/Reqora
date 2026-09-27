@@ -1,6 +1,12 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+} from "@tanstack/react-query";
 
-import { createRequestApi } from "../apis/requestApi";
+import { createRequestApi, getMyRequestsApi } from "../apis/requestApi";
+import { getMyItemsApi } from "../apis/myItemsApi";
+import { employeeQueryKeys } from "../apis/types";
 import { T_MutationError } from "@/types/global";
 
 export const useCreateRequest = (
@@ -16,4 +22,18 @@ export const useCreateRequest = (
       ...options,
     });
   }
+};
+
+export const useMyRequests = (params?: { limit?: number }) => {
+  return useQuery({
+    queryKey: employeeQueryKeys.myRequests(params),
+    queryFn: () => getMyRequestsApi(params),
+  });
+};
+
+export const useMyItems = (params?: { limit?: number }) => {
+  return useQuery({
+    queryKey: [...employeeQueryKeys.myItems(), params],
+    queryFn: () => getMyItemsApi(params),
+  });
 };

@@ -6,6 +6,7 @@ import {
   deleteResourceService,
   editResourceService,
   findAllResourcesService,
+  getMyItemsService,
   getSpecificResourceService,
   releaseResourceService,
 } from "./resource.service";
@@ -236,6 +237,30 @@ export const releaseResource = async (
       success: true,
       code: "RESOURCE_RELEASED",
       message: "resource item released successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getMyItems = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email, companyId } = res.locals.user;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const items = await getMyItemsService({
+      email,
+      companyId,
+      limit: limit && limit > 0 && limit <= 100 ? limit : undefined,
+    });
+    return res.status(200).json({
+      success: true,
+      code: "MY_ITEMS_FETCHED",
+      message: "assigned items fetched successfully",
+      data: items,
     });
   } catch (err) {
     next(err);

@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Package,
   Clock,
   CheckCircle2,
   XCircle,
+  Ban,
+  Forward,
   Plus,
   ExternalLink,
 } from "lucide-react";
@@ -31,134 +33,157 @@ import {
 import StatCard from "@/app/admin/components/StatCard";
 import type { statCardInterface } from "@/app/admin/components/ResourceStats";
 import { ChartPieDonut } from "@/components/others/donoutChart";
-
-const REQUESTS = [
-  {
-    id: "REQ-8291",
-    name: "Dell UltraSharp 32''",
-    type: "Hardware",
-    date: "Feb 20, 2024",
-    status: "pending",
-  },
-  {
-    id: "REQ-8285",
-    name: "IntelliJ IDEA License",
-    type: "Software",
-    date: "Feb 15, 2024",
-    status: "approved",
-  },
-  {
-    id: "REQ-8277",
-    name: "Mechanical Keyboard",
-    type: "Hardware",
-    date: "Feb 11, 2024",
-    status: "approved",
-  },
-  {
-    id: "REQ-8264",
-    name: "Dual Monitor Stand",
-    type: "Furniture",
-    date: "Feb 3, 2024",
-    status: "rejected",
-  },
-  {
-    id: "REQ-8219",
-    name: "Jabra Headset",
-    type: "Hardware",
-    date: "Jan 28, 2024",
-    status: "pending",
-  },
-];
-
-const ASSIGNED_ITEMS = [
-  {
-    id: "ITM-1156",
-    name: "MacBook Pro 16",
-    location: "Office - Floor 3",
-    status: "inUse",
-  },
-  {
-    id: "ITM-1182",
-    name: "Dell UltraSharp 32''",
-    location: "Office - Floor 3",
-    status: "inUse",
-  },
-  {
-    id: "ITM-0991",
-    name: "Office Chair",
-    location: "Home Office",
-    status: "underMaintenance",
-  },
-];
+import { useMyItems, useMyRequests } from "@/app/employee/hooks/requestHooks";
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-700 border-amber-200",
-  approved: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  rejected: "bg-rose-50 text-rose-700 border-rose-200",
-  inUse: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  underMaintenance: "bg-rose-50 text-rose-700 border-rose-200",
+  pending:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
+  approved:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+  rejected:
+    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
+  cancelled:
+    "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
+  forwarded:
+    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800",
+  inUse:
+    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+  underMaintenance:
+    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
+  available:
+    "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800",
 };
 
 const RequestStatusBadge = ({ status }: { status: string }) => (
   <Badge
     className={cn(
       "shadow-none px-2.5 py-0.5 font-semibold capitalize border",
-      STATUS_BADGE_STYLES[status],
+      STATUS_BADGE_STYLES[status] ?? STATUS_BADGE_STYLES.cancelled,
     )}
   >
     {status}
   </Badge>
 );
 
+const formatDate = (iso: string) => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
 const EmployeeDashboard = () => {
   const router = useRouter();
+  const {
+    data: allRequestsRes,
+    isLoading: requestsLoading,
+    isError: requestsError,
+    refetch: refetchRequests,
+  } = useMyRequests();
+  const {
+    data: recentRes,
+    isLoading: recentLoading,
+    isError: recentError,
+    refetch: refetchRecent,
+  } = useMyRequests({ limit: 5 });
+  const {
+    data: itemsRes,
+    isLoading: itemsLoading,
+    isError: itemsError,
+    refetch: refetchItems,
+  } = useMyItems();
+
+  const allRequests = useMemo(
+    () => allRequestsRes?.data ?? [],
+    [allRequestsRes],
+  );
+  const recentRequests = useMemo(() => recentRes?.data ?? [], [recentRes]);
+  const assignedItems = useMemo(() => itemsRes?.data ?? [], [itemsRes]);
+
+  const counts = useMemo(() => {
+    const c = {
+      total: allRequests.length,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      cancelled: 0,
+      forwarded: 0,
+    };
+    for (const r of allRequests) {
+      if (r.status in c) c[r.status as keyof typeof c] += 1;
+    }
+    return c;
+  }, [allRequests]);
 
   const statCards: Partial<statCardInterface>[] = [
     {
       title: "Total Requests",
-      number: 24,
+      number: counts.total,
       subtext: "All time",
       IconName: Package,
       bgColor: "bg-blue-100",
-      textColor: "text-blue-800",
+      textColor: "text-blue-800 dark:text-blue-200",
       borderColor: "border-blue-500",
     },
     {
       title: "Pending",
-      number: 5,
+      number: counts.pending,
       subtext: "Awaiting review",
       IconName: Clock,
       bgColor: "bg-amber-100",
-      textColor: "text-amber-800",
+      textColor: "text-amber-800 dark:text-amber-200",
       borderColor: "border-amber-500",
     },
     {
       title: "Approved",
-      number: 15,
+      number: counts.approved,
       subtext: "Approved requests",
       IconName: CheckCircle2,
       bgColor: "bg-green-100",
-      textColor: "text-green-800",
+      textColor: "text-green-800 dark:text-green-200",
       borderColor: "border-green-500",
     },
     {
       title: "Rejected",
-      number: 4,
+      number: counts.rejected,
       subtext: "Rejected requests",
       IconName: XCircle,
       bgColor: "bg-red-100",
-      textColor: "text-red-800",
+      textColor: "text-red-800 dark:text-red-200",
       borderColor: "border-red-500",
+    },
+    {
+      title: "Cancelled",
+      number: counts.cancelled,
+      subtext: "Cancelled by you",
+      IconName: Ban,
+      bgColor: "bg-gray-100",
+      textColor: "text-gray-800 dark:text-gray-200",
+      borderColor: "border-gray-500",
+    },
+    {
+      title: "Forwarded",
+      number: counts.forwarded,
+      subtext: "Escalated to admin",
+      IconName: Forward,
+      bgColor: "bg-violet-100",
+      textColor: "text-violet-800 dark:text-violet-200",
+      borderColor: "border-violet-500",
     },
   ];
 
   const statusChartData = [
-    { label: "Approved", value: 15, fill: "var(--chart-2)" },
-    { label: "Pending", value: 5, fill: "var(--chart-3)" },
-    { label: "Rejected", value: 4, fill: "var(--chart-1)" },
+    { label: "Approved", value: counts.approved, fill: "var(--chart-2)" },
+    { label: "Pending", value: counts.pending, fill: "var(--chart-3)" },
+    { label: "Rejected", value: counts.rejected, fill: "var(--chart-1)" },
+    { label: "Cancelled", value: counts.cancelled, fill: "var(--chart-4)" },
+    { label: "Forwarded", value: counts.forwarded, fill: "var(--chart-5)" },
   ];
 
-  const recentRequests = REQUESTS.slice(0, 5);
+  const showRequestsSkeleton = requestsLoading || recentLoading;
 
   return (
     <div className="flex-1 space-y-8 p-8 pt-6">
@@ -170,25 +195,36 @@ const EmployeeDashboard = () => {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button className=" text-bold!  duration-300 bg-primary transition-all cursor-pointer">
+          <Button
+            className=" text-bold!  duration-300 bg-primary transition-all cursor-pointer"
+            onClick={() => router.push("/employee/resources")}
+          >
             <Plus className="mr-2 h-4 w-4" /> New Request
           </Button>
         </div>
       </div>
 
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((card) => (
-          <StatCard
-            key={card.title}
-            title={card.title!}
-            number={card.number!}
-            IconName={card.IconName}
-            subtext={card.subtext}
-            bgColor={card.bgColor!}
-            textColor={card.textColor!}
-            borderColor={card.borderColor!}
-          />
-        ))}
+      <section className="flex gap-4 overflow-x-auto pb-2">
+        {showRequestsSkeleton
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-[180px] min-w-[240px] flex-1 animate-pulse rounded-xl bg-muted"
+              />
+            ))
+          : statCards.map((card) => (
+              <div key={card.title} className="min-w-[240px] flex-1">
+                <StatCard
+                  title={card.title!}
+                  number={card.number!}
+                  IconName={card.IconName}
+                  subtext={card.subtext}
+                  bgColor={card.bgColor!}
+                  textColor={card.textColor!}
+                  borderColor={card.borderColor!}
+                />
+              </div>
+            ))}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
@@ -208,22 +244,76 @@ const EmployeeDashboard = () => {
             </Button>
           </CardHeader>
           <CardContent className="flex-1 p-0">
-            <ul className="divide-y">
-              {recentRequests.map((req) => (
-                <li
-                  key={req.id}
-                  className="flex items-center justify-between gap-4 px-6 py-3"
+            {showRequestsSkeleton ? (
+              <ul className="divide-y divide-border">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <li
+                    key={i}
+                    className="flex items-center justify-between gap-4 px-6 py-3"
+                  >
+                    <div className="w-full space-y-2">
+                      <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+                      <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : requestsError || recentError ? (
+              <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Failed to load your requests.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    refetchRequests();
+                    refetchRecent();
+                  }}
                 >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{req.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      <span className="font-mono">{req.id}</span> · {req.date}
-                    </p>
-                  </div>
-                  <RequestStatusBadge status={req.status} />
-                </li>
-              ))}
-            </ul>
+                  Retry
+                </Button>
+              </div>
+            ) : recentRequests.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
+                <p className="text-sm font-semibold">No requests yet</p>
+                <p className="text-sm text-muted-foreground">
+                  Browse resources to create your first request.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push("/employee/resources")}
+                >
+                  Browse Resources
+                </Button>
+              </div>
+            ) : (
+              <ul className="divide-y divide-border">
+                {recentRequests.map((req) => (
+                  <li
+                    key={req.requestId}
+                    className="flex cursor-pointer items-center justify-between gap-4 px-6 py-3 transition-colors hover:bg-muted/50"
+                    onClick={() =>
+                      router.push(`/employee/requests/${req.requestId}`)
+                    }
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {req.resourceName}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-mono">
+                          {req.requestId.slice(0, 8)}
+                        </span>{" "}
+                        · {formatDate(req.createdAt)}
+                      </p>
+                    </div>
+                    <RequestStatusBadge status={req.status} />
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
 
@@ -245,39 +335,80 @@ const EmployeeDashboard = () => {
               </CardDescription>
             </div>
             <Badge variant="secondary" className="px-3 py-1 font-semibold">
-              {ASSIGNED_ITEMS.length} assigned
+              {itemsLoading ? "…" : `${assignedItems.length} assigned`}
             </Badge>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50/50 hover:bg-transparent">
-                  <TableHead className="w-30 pl-6 font-semibold">ID</TableHead>
-                  <TableHead className="font-semibold">Item</TableHead>
-                  <TableHead className="font-semibold">Location</TableHead>
-                  <TableHead className="pr-6 font-semibold">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ASSIGNED_ITEMS.map((item) => (
-                  <TableRow
-                    key={item.id}
-                    className="group transition-colors hover:bg-slate-50/50"
-                  >
-                    <TableCell className="pl-6 font-mono text-xs text-muted-foreground font-medium">
-                      {item.id}
-                    </TableCell>
-                    <TableCell className="font-semibold">{item.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {item.location}
-                    </TableCell>
-                    <TableCell className="pr-6">
-                      <RequestStatusBadge status={item.status} />
-                    </TableCell>
-                  </TableRow>
+            {itemsLoading ? (
+              <div className="space-y-2 p-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-10 w-full animate-pulse rounded bg-muted"
+                  />
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            ) : itemsError ? (
+              <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Failed to load assigned items.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refetchItems()}
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : assignedItems.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
+                <p className="text-sm font-semibold">No items assigned</p>
+                <p className="text-sm text-muted-foreground">
+                  Approved requests will show up here.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push("/employee/resources")}
+                >
+                  Browse Resources
+                </Button>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="w-30 pl-6 font-semibold">ID</TableHead>
+                    <TableHead className="font-semibold">Item</TableHead>
+                    <TableHead className="font-semibold">Location</TableHead>
+                    <TableHead className="pr-6 font-semibold">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {assignedItems.slice(0, 5).map((item) => (
+                    <TableRow
+                      key={item.id}
+                      className="group cursor-pointer transition-colors hover:bg-muted/50"
+                      onClick={() => router.push("/employee/my-resources")}
+                    >
+                      <TableCell className="pl-6 font-mono text-xs text-muted-foreground font-medium">
+                        {item.id.slice(0, 8)}
+                      </TableCell>
+                      <TableCell className="font-semibold">
+                        {item.name}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {item.location}
+                      </TableCell>
+                      <TableCell className="pr-6">
+                        <RequestStatusBadge status={item.status} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </section>

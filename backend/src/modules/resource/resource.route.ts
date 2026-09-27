@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   getAllResources,
   addResource,
+  getMyItems,
   getSpecificResource,
   editResource,
   deleteResource,
@@ -14,6 +15,7 @@ import { releaseResourceSchema, ResourceSchema } from "./resource.schema";
 
 const router = Router();
 router.get("/resources", parseQueryFilters, getAllResources);
+router.get("/my-items", getMyItems);
 router.get("/resource/:id", parseQueryFilters, getSpecificResource);
 router.post(
   "/resources/release",

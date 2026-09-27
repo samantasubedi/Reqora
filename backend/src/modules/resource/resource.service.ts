@@ -19,6 +19,7 @@ import {
   findAllResources,
   findResourceDetailsById,
   findResourceIdsWithMinAvailable,
+  findItemsByUserId,
   findResourceById,
   findResourceItemById,
   releaseResourceItem,
@@ -371,4 +372,33 @@ export const releaseResourceService = async ({
   }
 
   return releaseResourceItem({ id: resourceItemId });
+};
+
+export const getMyItemsService = async ({
+  email,
+  companyId,
+  limit,
+}: {
+  email: string;
+  companyId: string;
+  limit?: number;
+}) => {
+  const user = await findUserByEmail({ email });
+  if (!user) {
+    throw new appError(404, "USER_NOT_FOUND", "user not found");
+  }
+  const items = await findItemsByUserId({
+    userId: user.id,
+    companyId,
+    take: limit,
+  });
+  return items.map((item) => ({
+    id: item.id,
+    name: item.resource.name,
+    type: item.resource.type,
+    department: item.resource.department?.name ?? null,
+    location: item.location,
+    assignedAt: item.updatedAt,
+    status: item.status,
+  }));
 };

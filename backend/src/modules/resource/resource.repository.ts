@@ -277,6 +277,31 @@ export const findResourceItemById = async ({ id }: { id: string }) => {
   });
 };
 
+export const findItemsByUserId = async ({
+  userId,
+  companyId,
+  take,
+}: {
+  userId: string;
+  companyId: string;
+  take?: number;
+}) => {
+  return prisma.resourceItem.findMany({
+    where: { acquiredById: userId, resource: { companyId } },
+    include: {
+      resource: {
+        select: {
+          name: true,
+          type: true,
+          department: { select: { name: true } },
+        },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+    take,
+  });
+};
+
 export const releaseResourceItem = async ({ id }: { id: string }) => {
   return prisma.resourceItem.update({
     where: { id },

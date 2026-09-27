@@ -19,18 +19,22 @@ export const findRequestsByCompanyId = async ({
 export const findRequestsByUserId = async ({
   companyId,
   userId,
+  take,
 }: {
   companyId: string;
   userId: string;
+  take?: number;
 }) => {
   return await prisma.request.findMany({
     where: { companyId, requestedById: userId },
     include: {
       company: true,
-      requestedBy: true,
+      requestedBy: { include: { department: true } },
       reviewedBy: true,
       resource: true,
     },
+    orderBy: { createdAt: "desc" },
+    take,
   });
 };
 export const findRequestById = async ({ id }: { id: string }) => {

@@ -44,18 +44,21 @@ export const getAllRequestService = async ({
 export const getMyRequestService = async ({
   username,
   companyId,
+  limit,
 }: {
   username: string;
   companyId: string;
+  limit?: number;
 }) => {
   const userInfo = await findByUsername({ username });
   if (!userInfo) {
-    throw new Error("User information couldnt be found");
+    throw new appError(404, "USER_NOT_FOUND", "User information couldn't be found");
   }
 
   const myRequests = await findRequestsByUserId({
     companyId,
     userId: userInfo.id,
+    take: limit,
   });
 
   const requestData = myRequests.map((curr) => {
@@ -65,10 +68,16 @@ export const getMyRequestService = async ({
       status: curr.status,
       requestedQuantity: curr.requestedQuantity,
       resourceId: curr.resourceId,
-      reviewedBy: curr.reviewedBy?.username,
+      reviewedBy: curr.reviewedBy?.username ?? null,
+      reviewedById: curr.reviewedBy?.id ?? null,
       requestedBy: curr.requestedBy.username,
+      requestedById: curr.requestedBy.id,
+      requestedByDepartment: curr.requestedBy.department?.name ?? null,
       companyName: curr.company.companyName,
       resourceName: curr.resource.name,
+      resourceType: curr.resource.type,
+      createdAt: curr.createdAt,
+      updatedAt: curr.updatedAt,
     };
   });
   return requestData;

@@ -39,7 +39,12 @@ export const getMyRequest = async (
 ) => {
   try {
     const { companyId, username } = res.locals.user;
-    const myRequests = await getMyRequestService({ username, companyId });
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const myRequests = await getMyRequestService({
+      username,
+      companyId,
+      limit: limit && limit > 0 && limit <= 100 ? limit : undefined,
+    });
     return res.status(200).json({
       success: true,
       code: "REQUESTS_RETRIVED",
