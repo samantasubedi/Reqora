@@ -11,13 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Building2, Check, Loader2, X } from "lucide-react";
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import { toast } from "react-toastify";
 import { T_MutationError } from "@/types/global";
 
 const Page = () => {
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const params = useSearchParams();
   const token = params.get("token");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -29,11 +28,7 @@ const Page = () => {
     }
     setIsProcessing(true);
     try {
-      const loginResponse = await axios.post(
-        `${backendUrl}/isloggedin`,
-        { token },
-        { withCredentials: true },
-      );
+      const loginResponse = await api.post(`/isloggedin`, { token });
 
       if (loginResponse.data.code === "NOT_LOGGEDIN") {
         toast.error(
@@ -43,11 +38,9 @@ const Page = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${backendUrl}/join/byEmail`,
-        { joinToken: token },
-        { withCredentials: true },
-      );
+      const response = await api.post(`/join/byEmail`, {
+        joinToken: token,
+      });
       const { code, message, success, role } = response.data;
       if (success && code === "JOIN_SUCCESSFULL") {
         toast.success(message);

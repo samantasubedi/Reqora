@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import Image from "next/image";
 import ThemeToggler from "../global/ThemeToggler";
 import { Button } from "../ui/button";
@@ -86,7 +86,6 @@ const getRoleLinks = (role: string): NavLink[] => {
 const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
   const [isChecking, setIsChecking] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -100,9 +99,7 @@ const Navbar = () => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const response = await axios.post(`${backendUrl}/isloggedin`, null, {
-          withCredentials: true,
-        });
+        const response = await api.post(`/isloggedin`, null);
         if (response.data.code === "LOGGEDIN") {
           setIsLoggedIn(true);
           setUsername(response.data.username ?? "");
@@ -115,8 +112,7 @@ const Navbar = () => {
       setIsChecking(false);
     };
     checkLoginStatus();
-  }, [backendUrl]);
-
+  }, []);
   const initials = username
     .split(" ")
     .filter(Boolean)
@@ -131,9 +127,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(`${backendUrl}/logout`, null, {
-        withCredentials: true,
-      });
+      const response = await api.post(`/logout`, null);
       toast.success(response.data.message);
     } catch {
       // Logout endpoint needs a valid access token; clear local state anyway.

@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import axios, { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import {
   Card,
@@ -39,7 +38,6 @@ const schema = z.object({
 
 const Page = () => {
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const {
     register,
     handleSubmit,

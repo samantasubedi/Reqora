@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import { useRouter } from "next/navigation";
 
 import { useEffect, useState } from "react";
@@ -13,16 +13,13 @@ import Footer from "@/components/others/Footer";
 
 export default function Home() {
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState("");
 
   useEffect(() => {
     const isLoggedIn = async () => {
       try {
-        const response = await axios.post(`${backendUrl}/isloggedin`, null, {
-          withCredentials: true,
-        });
+        const response = await api.post(`/isloggedin`, null);
 
         if (response.data.code == "LOGGEDIN") {
           const { role, username } = response.data;

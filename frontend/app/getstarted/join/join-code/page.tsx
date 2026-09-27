@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { T_MutationError } from "@/types/global";
 import { Icon } from "@iconify/react";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -20,17 +20,10 @@ import { toast } from "react-toastify";
 
 const Page = () => {
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const [joinCode, setJoinCode] = useState("");
 
   const postApi = async (code: string) => {
-    const response = await axios.post(
-      `${backendUrl}/join/byCode`,
-      { joinCode: code },
-      {
-        withCredentials: true,
-      },
-    );
+    const response = await api.post(`/join/byCode`, { joinCode: code });
     return response.data;
   };
   const mutation = useMutation({

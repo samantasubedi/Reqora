@@ -19,7 +19,6 @@ import { useMutation } from "@tanstack/react-query";
 import { Role, T_MutationError } from "@/types/global";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import axios from "axios";
 import { LoginApi } from "@/app/admin/apis/authApi";
 import { useLogin } from "@/app/admin/hooks/authHooks";
 import Navbar from "@/components/others/Navbar";

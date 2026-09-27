@@ -70,6 +70,7 @@ const EmployeeNavbar = () => {
 
       if (response.data.success) {
         toast.success(response.data.message);
+        router.push("/getstarted");
       }
     } catch (err: any) {
       console.log(err);

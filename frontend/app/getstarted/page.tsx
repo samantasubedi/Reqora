@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import { Icon } from "@iconify/react";
 import { Loader2 } from "lucide-react";
 import {
@@ -181,15 +181,12 @@ const OptionCard = ({ option }: { option: Option }) => {
 
 const Page = () => {
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
     const getUserStatus = async () => {
       try {
-        const userInfo = await axios.post(`${backendUrl}/isloggedin`, null, {
-          withCredentials: true,
-        });
+        const userInfo = await api.post(`/isloggedin`, null);
         const role = userInfo.data.role;
         if (role) {
           router.push(`/${role}/dashboard`);

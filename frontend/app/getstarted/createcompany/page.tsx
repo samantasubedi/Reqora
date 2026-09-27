@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -78,7 +78,6 @@ const sectionClass =
 
 const Page = () => {
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
   const {
     register,
@@ -97,9 +96,7 @@ const Page = () => {
   });
 
   const postApi = async (data: formData) => {
-    const response = await axios.post(`${backendUrl}/createcompany`, data, {
-      withCredentials: true,
-    });
+    const response = await api.post(`/createcompany`, data);
     return response.data;
   };
 

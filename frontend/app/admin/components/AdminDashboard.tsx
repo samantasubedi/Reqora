@@ -9,7 +9,7 @@ import ThemeToggler from "@/components/global/ThemeToggler";
 
 import { useResources } from "../hooks/resourceHooks";
 
-import axios from "axios";
+import { api } from "@/lib/apiClient";
 import { StatCardsSkeleton } from "./skeletonLoaders/statCardSkeleton";
 import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
 import { EmptyChart } from "./emptyStates/emptyChart";
@@ -24,10 +24,7 @@ import { camelToSentence } from "@/lib/HelperFunctions";
 
 export const handleLogout = async (router: AppRouterInstance) => {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
-    const logoutResponse = await axios.post(`${backendUrl}/logout`, null, {
-      withCredentials: true,
-    });
+    const logoutResponse = await api.post(`/logout`, null);
     if (
       logoutResponse.data.success === true &&
       logoutResponse.data.code === "LOGOUT_SUCCESSFULL"

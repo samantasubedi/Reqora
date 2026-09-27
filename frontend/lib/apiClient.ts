@@ -11,6 +11,8 @@ export const api = axios.create({
   baseURL: backendUrl,
   withCredentials: true,
 });
+const PUBLIC_PATHS = ["/login", "/register", "/isloggedin", "/refresh"];
+
 api.interceptors.response.use(
   async (response) => {
     if (response.data?.code == "TOKEN_REFRESHED") {
@@ -24,6 +26,12 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    const status = error?.response?.status;
+    const url: string = error?.config?.url ?? "";
+    const isPublicCall = PUBLIC_PATHS.some((path) => url.includes(path));
+    if (status === 401 && !isPublicCall && typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   },
 );
