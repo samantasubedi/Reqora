@@ -1,97 +1,108 @@
-import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+const productLinks = [
+  { label: "Features", href: "/#features" },
+  { label: "How it works", href: "/#how" },
+  { label: "Roles", href: "/#roles" },
+  { label: "FAQ", href: "/#faq" },
+];
+
+const onboardingLinks = [
+  { label: "Get started", href: "/getstarted" },
+  { label: "Create a company", href: "/getstarted/createcompany" },
+  { label: "Join with code", href: "/getstarted/join/join-code" },
+  { label: "Sign in", href: "/login" },
+];
 
 const Footer = () => {
   return (
-    <div>
-      <footer className="border-t bg-card mt-auto">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="grid gap-8 md:grid-cols-4">
-            <div>
-              <h2 className="text-lg font-bold text-card-foreground">
-                Resource Management
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Streamline resource allocation, monitor availability, and manage
-                employee requests from a single platform.
-              </p>
+    <footer className="mt-auto border-t bg-card">
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div>
+            <Link href="/" aria-label="Reqora home" className="inline-block">
+              <Image
+                src="/reqoraLogo.png"
+                width={160}
+                height={48}
+                alt="Reqora logo"
+                className="h-10 w-auto"
+              />
+            </Link>
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+              The resource request platform for modern teams. Request, approve,
+              and track every company resource — in one place.
+            </p>
+            <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span>Operational</span>
+              <span aria-hidden>·</span>
+              <span>v1.0.0</span>
             </div>
+          </div>
 
-            <div>
-              <h3 className="font-semibold text-card-foreground mb-3">Quick Links</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <a href="#" className="hover:text-foreground">
-                    Dashboard
-                  </a>
+          <div>
+            <h3 className="mb-3 font-semibold text-card-foreground">Product</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {productLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="hover:text-foreground">
+                    {link.label}
+                  </Link>
                 </li>
-                <li>
-                  <a href="#" className="hover:text-foreground">
-                    Resources
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground">
-                    Requests
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground">
-                    Employees
-                  </a>
-                </li>
-              </ul>
-            </div>
+              ))}
+            </ul>
+          </div>
 
-            <div>
-              <h3 className="font-semibold text-card-foreground mb-3">Support</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>Help Center</li>
-                <li>Documentation</li>
-                <li>Contact Admin</li>
-                <li>Report Issue</li>
-              </ul>
-            </div>
+          <div>
+            <h3 className="mb-3 font-semibold text-card-foreground">Get started</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {onboardingLinks.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="hover:text-foreground">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            <div>
-              <h3 className="font-semibold text-card-foreground mb-3">System</h3>
-
-              <div className="space-y-3 text-sm text-muted-foreground">
-                <div>
-                  <p>Version</p>
-                  <p className="font-medium text-card-foreground">v1.0.0</p>
+          <div>
+            <h3 className="mb-3 font-semibold text-card-foreground">System</h3>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <div>
+                <p>Version</p>
+                <p className="font-medium text-card-foreground">v1.0.0</p>
+              </div>
+              <div>
+                <p>Status</p>
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                  <span>Operational</span>
                 </div>
-
-                <div>
-                  <p>Status</p>
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-primary" />
-                    <span>Operational</span>
-                  </div>
-                </div>
-
-                <div>
-                  <p>Last Updated</p>
-                  <p className="font-medium text-card-foreground">June 2026</p>
-                </div>
+              </div>
+              <div>
+                <p>Last Updated</p>
+                <p className="font-medium text-card-foreground">June 2026</p>
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="mt-8 border-t pt-5 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
-            <p>© 2026 Resource Management System. All rights reserved.</p>
-
-            <div className="flex gap-4 mt-3 md:mt-0">
-              <a href="#" className="hover:text-foreground">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-foreground">
-                Terms
-              </a>
-            </div>
+        <div className="mt-10 flex flex-col items-center justify-between border-t pt-5 text-sm text-muted-foreground md:flex-row">
+          <p>© 2026 Reqora. Resource management for modern teams.</p>
+          <div className="mt-3 flex gap-4 md:mt-0">
+            <Link href="/getstarted" className="hover:text-foreground">
+              Get started
+            </Link>
+            <Link href="/login" className="hover:text-foreground">
+              Sign in
+            </Link>
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 };
 

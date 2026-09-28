@@ -7,6 +7,7 @@ import ThemeToggler from "../global/ThemeToggler";
 import { Button } from "../ui/button";
 
 import {
+  ArrowRight,
   Boxes,
   Building2,
   ChevronDown,
@@ -183,6 +184,18 @@ const Navbar = () => {
             >
               How it works
             </button>
+            <button
+              onClick={scrollToSection("roles")}
+              className="cursor-pointer text-sm font-semibold text-foreground/70 transition-colors hover:text-primary"
+            >
+              Roles
+            </button>
+            <button
+              onClick={scrollToSection("faq")}
+              className="cursor-pointer text-sm font-semibold text-foreground/70 transition-colors hover:text-primary"
+            >
+              FAQ
+            </button>
           </div>
         ) : (
           !isChecking &&
@@ -211,8 +224,18 @@ const Navbar = () => {
           )
         )}
 
-        <div className="flex items-center gap-3 md:gap-10">
+        <div className="flex items-center gap-3 md:gap-4">
           <ThemeToggler />
+
+          {isLanding && !isChecking && !isLoggedIn && (
+            <Button
+              onClick={() => router.push("/getstarted")}
+              className="hidden cursor-pointer border-0 bg-gradient-to-r from-emerald-500 to-teal-600 font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:from-emerald-600 hover:to-teal-700 hover:shadow-xl hover:shadow-emerald-500/30 md:inline-flex"
+            >
+              Get Started
+              <ArrowRight className="size-4" />
+            </Button>
+          )}
 
           {!isChecking &&
             (isLoggedIn ? (
@@ -278,8 +301,9 @@ const Navbar = () => {
               </DropdownMenu>
             ) : (
               <Button
+                variant="outline"
                 onClick={() => router.push("/login")}
-                className="hidden cursor-pointer md:inline-flex"
+                className="hidden cursor-pointer font-semibold md:inline-flex"
               >
                 Sign In
               </Button>
@@ -318,6 +342,24 @@ const Navbar = () => {
                 className="w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-foreground/70 transition-colors hover:bg-muted hover:text-primary"
               >
                 How it works
+              </button>
+              <button
+                onClick={(e) => {
+                  scrollToSection("roles")(e);
+                  setMenuOpen(false);
+                }}
+                className="w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-foreground/70 transition-colors hover:bg-muted hover:text-primary"
+              >
+                Roles
+              </button>
+              <button
+                onClick={(e) => {
+                  scrollToSection("faq")(e);
+                  setMenuOpen(false);
+                }}
+                className="w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-foreground/70 transition-colors hover:bg-muted hover:text-primary"
+              >
+                FAQ
               </button>
             </div>
           )}
@@ -380,15 +422,28 @@ const Navbar = () => {
                 </Button>
               </>
             ) : (
-              <Button
-                onClick={() => {
-                  setMenuOpen(false);
-                  router.push("/login");
-                }}
-                className="cursor-pointer"
-              >
-                Sign In
-              </Button>
+              <>
+                <Button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    router.push("/getstarted");
+                  }}
+                  className="cursor-pointer border-0 bg-gradient-to-r from-emerald-500 to-teal-600 font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700"
+                >
+                  Get Started
+                  <ArrowRight className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    router.push("/login");
+                  }}
+                  className="cursor-pointer"
+                >
+                  Sign In
+                </Button>
+              </>
             )}
           </div>
         </div>
