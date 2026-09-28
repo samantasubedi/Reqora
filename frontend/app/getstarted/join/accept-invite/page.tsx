@@ -1,21 +1,16 @@
 "use client";
-import { useState } from "react";
+
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Building2, Check, Loader2, X } from "lucide-react";
 import { api } from "@/lib/apiClient";
 import { toast } from "react-toastify";
 import { T_MutationError } from "@/types/global";
+import { GetStartedShell } from "../../components/GetStartedShell";
+import { Reveal } from "@/components/landing/Reveal";
 
-const Page = () => {
+const AcceptInviteContent = () => {
   const router = useRouter();
   const params = useSearchParams();
   const token = params.get("token");
@@ -31,10 +26,9 @@ const Page = () => {
       const loginResponse = await api.post(`/isloggedin`, { token });
 
       if (loginResponse.data.code === "NOT_LOGGEDIN") {
-        toast.error(
-          "Please register and log in to Reqora before joining the company!",
-        );
-        router.push("/register");
+        toast.error("Please sign in to Reqora before accepting the invite.");
+        const returnTo = `/getstarted/join/accept-invite?token=${encodeURIComponent(token)}`;
+        router.push(`/login?next=${encodeURIComponent(returnTo)}`);
         return;
       }
 
@@ -49,7 +43,7 @@ const Page = () => {
     } catch (err) {
       const error = err as T_MutationError;
       toast.error(
-        error.response?.data?.message || error.message || "Server error",
+        error.response?.data?.message || error.message || "Server error"
       );
     } finally {
       setIsProcessing(false);
@@ -61,55 +55,86 @@ const Page = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md rounded-2xl border-border shadow-xl">
-        <CardHeader className="space-y-1 pb-4 text-center">
-          <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-2xl bg-primary/10 ring-8 ring-primary/5">
-            <Building2 className="size-10 text-primary" />
+    <GetStartedShell
+      badge="Step 2 of 3 — Accept your invite"
+      title={
+        <>
+          You&apos;ve been{" "}
+          <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+            invited to Reqora
+          </span>
+        </>
+      }
+      subtitle="Accept to join your team's workspace with the role your admin chose for you."
+      step={2}
+      backHref="/getstarted"
+      backLabel="Back to options"
+      maxWidth="max-w-3xl"
+    >
+      <Reveal>
+        <div className="mx-auto w-full max-w-xl rounded-2xl border bg-card p-6 text-center shadow-sm sm:p-8">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25">
+            <Building2 className="size-8" />
           </div>
-
-          <CardTitle className="text-3xl font-extrabold tracking-tight text-card-foreground">
-            You&apos;ve been invited!
-          </CardTitle>
-
-          <CardDescription className="text-base">
-            You&apos;ve received an invitation to join a company workspace on{" "}
-            <span className="font-semibold text-primary">Reqora</span>.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="px-8 text-center">
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            By accepting this invitation, you will get access to your
-            team&apos;s workspace, shared resources, and active requests.
+          <p className="mt-4 text-xl font-bold text-card-foreground">
+            Join your team&apos;s workspace
           </p>
-        </CardContent>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+            By accepting, you get access to shared resources, active requests,
+            and your role&apos;s dashboard — all scoped to your company and
+            department.
+          </p>
+          {!token && (
+            <p className="mx-auto mt-4 max-w-md rounded-xl border border-destructive/30 bg-[var(--status-danger-bg)] px-4 py-3 text-sm font-semibold text-[var(--status-danger-text)]">
+              This link looks incomplete — no invite token was found. Ask your
+              admin to resend the invitation.
+            </p>
+          )}
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <Button
+              variant="outline"
+              onClick={handleDecline}
+              disabled={isProcessing}
+              className="h-11 flex-1 cursor-pointer rounded-xl font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <X className="size-4" />
+              Decline
+            </Button>
+            <Button
+              onClick={handleAccept}
+              disabled={isProcessing || !token}
+              className="h-11 flex-1 cursor-pointer rounded-xl border-0 bg-gradient-to-r from-emerald-500 to-teal-600 font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Joining...
+                </>
+              ) : (
+                <>
+                  <Check className="size-4" />
+                  Accept invite
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Reveal>
+    </GetStartedShell>
+  );
+};
 
-        <CardFooter className="flex gap-3 px-8 pb-8 pt-6">
-          <Button
-            variant="outline"
-            onClick={handleDecline}
-            disabled={isProcessing}
-            className="h-11 flex-1 cursor-pointer rounded-lg border-border font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <X className="mr-2 size-4" /> Decline
-          </Button>
-
-          <Button
-            onClick={handleAccept}
-            disabled={isProcessing}
-            className="h-11 flex-1 cursor-pointer rounded-lg bg-primary font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isProcessing ? (
-              <Loader2 className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Check className="mr-2 size-4" />
-            )}
-            {isProcessing ? "Joining..." : "Accept Invite"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+const Page = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <Loader2 className="size-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <AcceptInviteContent />
+    </Suspense>
   );
 };
 

@@ -11,7 +11,7 @@ const productLinks = [
 const onboardingLinks = [
   { label: "Get started", href: "/getstarted" },
   { label: "Create a company", href: "/getstarted/createcompany" },
-  { label: "Join with code", href: "/getstarted/join/join-code" },
+  { label: "Join with code", href: "/getstarted?join=code" },
   { label: "Sign in", href: "/login" },
 ];
 

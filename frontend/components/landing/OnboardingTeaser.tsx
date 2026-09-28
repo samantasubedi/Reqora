@@ -60,7 +60,7 @@ export function OnboardingTeaser() {
               </p>
               <Button
                 variant="outline"
-                onClick={() => router.push("/getstarted/join/join-code")}
+                onClick={() => router.push("/getstarted?join=code")}
                 className="mt-6 cursor-pointer font-semibold"
               >
                 Enter join code
