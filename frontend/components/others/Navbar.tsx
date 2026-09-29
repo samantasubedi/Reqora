@@ -153,8 +153,8 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-[var(--ledger-line)] bg-[var(--paper)]/85 backdrop-blur-md">
+      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={() => router.push("/")}
@@ -171,28 +171,28 @@ const Navbar = () => {
         </button>
 
         {isLanding ? (
-          <div className="hidden shrink-0 items-center gap-8 md:flex">
+          <div className="hidden shrink-0 items-center gap-7 text-sm font-semibold md:flex">
             <button
               onClick={scrollToSection("features")}
-              className="cursor-pointer text-sm font-semibold text-foreground/70 transition-colors hover:text-primary"
+              className="cursor-pointer text-foreground/60 transition-colors hover:text-[var(--stamp)]"
             >
-              Features
+              Ledger
             </button>
             <button
               onClick={scrollToSection("how")}
-              className="cursor-pointer text-sm font-semibold text-foreground/70 transition-colors hover:text-primary"
+              className="cursor-pointer text-foreground/60 transition-colors hover:text-[var(--stamp)]"
             >
-              How it works
+              Workflow
             </button>
             <button
               onClick={scrollToSection("roles")}
-              className="cursor-pointer text-sm font-semibold text-foreground/70 transition-colors hover:text-primary"
+              className="cursor-pointer text-foreground/60 transition-colors hover:text-[var(--stamp)]"
             >
-              Roles
+              Workspaces
             </button>
             <button
               onClick={scrollToSection("faq")}
-              className="cursor-pointer text-sm font-semibold text-foreground/70 transition-colors hover:text-primary"
+              className="cursor-pointer text-foreground/60 transition-colors hover:text-[var(--stamp)]"
             >
               FAQ
             </button>
@@ -228,13 +228,26 @@ const Navbar = () => {
           <ThemeToggler />
 
           {isLanding && !isChecking && !isLoggedIn && (
-            <Button
+            <button
+              type="button"
               onClick={() => router.push("/getstarted")}
-              className="hidden cursor-pointer border-0 bg-gradient-to-r from-emerald-500 to-teal-600 font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:from-emerald-600 hover:to-teal-700 hover:shadow-xl hover:shadow-emerald-500/30 md:inline-flex"
+              className="relative hidden cursor-pointer items-center gap-0 overflow-hidden rounded-lg bg-[var(--ink)] text-sm font-bold text-[var(--paper)] shadow-md transition-all hover:brightness-125 md:inline-flex"
             >
-              Get Started
-              <ArrowRight className="size-4" />
-            </Button>
+              {/* ticket-stub perforation */}
+              <span
+                aria-hidden
+                className="absolute top-1 bottom-1 left-9 border-l border-dashed border-[var(--paper)]/50"
+              />
+              <span aria-hidden className="absolute -top-1.5 left-[27px] size-3 rounded-full bg-background" />
+              <span aria-hidden className="absolute -bottom-1.5 left-[27px] size-3 rounded-full bg-background" />
+              <span className="font-ledger px-2.5 text-[11px] font-bold tracking-widest">
+                REQ
+              </span>
+              <span className="flex items-center gap-1.5 py-2 pr-3.5 pl-1">
+                Get Started
+                <ArrowRight className="size-4" />
+              </span>
+            </button>
           )}
 
           {!isChecking &&
@@ -428,7 +441,7 @@ const Navbar = () => {
                     setMenuOpen(false);
                     router.push("/getstarted");
                   }}
-                  className="cursor-pointer border-0 bg-gradient-to-r from-emerald-500 to-teal-600 font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700"
+                  className="cursor-pointer bg-[var(--ink)] font-semibold text-[var(--paper)] shadow-md hover:brightness-125"
                 >
                   Get Started
                   <ArrowRight className="size-4" />

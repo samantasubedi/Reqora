@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Reveal } from "./Reveal";
+import { SectionHeading } from "./SectionHeading";
 import { cn } from "@/lib/utils";
 
 const faqs = [
@@ -25,69 +26,77 @@ const faqs = [
   },
   {
     q: "What happens after approval?",
-    a: "An admin allocates specific item units to the approved request. The items flip to in use, stay linked to that request, and return to available when released — full traceability end to end.",
+    a: "The moment a request is approved, the system instantly assigns the oldest available units to it — no second queue, no waiting on anyone. The items flip to in use, stay linked to that request with reviewer and timestamp on record, and return to available when released — full traceability end to end.",
   },
 ];
 
+// Same Q/A, ruled ledger rows instead of generic cards.
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="mx-auto max-w-4xl scroll-mt-24 px-4 py-16 sm:px-6 lg:py-24">
-      <Reveal className="text-center">
-        <p className="text-sm font-bold tracking-widest text-primary uppercase">FAQ</p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Questions, answered
-        </h2>
-      </Reveal>
+    <section id="faq" className="scroll-mt-24 border-b border-[var(--ledger-line)]">
+      <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <SectionHeading
+          style="rule"
+          kicker="FAQ"
+          title={<>Questions, answered</>}
+        />
 
-      <div className="mt-8 space-y-3">
-        {faqs.map((faq, i) => {
-          const isOpen = open === i;
-          return (
-            <Reveal key={faq.q} delay={i * 0.04}>
-              <div
-                className={cn(
-                  "overflow-hidden rounded-2xl border bg-card transition-colors",
-                  isOpen ? "border-primary/40" : "hover:border-primary/30"
-                )}
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpen(isOpen ? null : i)}
-                  aria-expanded={isOpen}
-                  className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left"
-                >
-                  <span className="text-sm font-bold text-card-foreground sm:text-base">
-                    {faq.q}
-                  </span>
-                  <span
-                    className={cn(
-                      "flex size-8 shrink-0 items-center justify-center rounded-full bg-muted transition-transform duration-300",
-                      isOpen && "rotate-180 bg-primary/15 text-primary"
-                    )}
-                  >
-                    <ChevronDown className="size-4" />
-                  </span>
-                </button>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.21, 0.65, 0.35, 1] }}
-                    >
-                      <p className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground">
-                        {faq.a}
-                      </p>
-                    </motion.div>
+        <div className="mt-8 overflow-hidden rounded-xl border border-[var(--ledger-line)]">
+          {faqs.map((faq, i) => {
+            const isOpen = open === i;
+            return (
+              <Reveal key={faq.q} delay={i * 0.03}>
+                <div
+                  className={cn(
+                    "border-b border-[var(--ledger-line)] bg-[var(--paper-card)] last:border-0",
+                    isOpen && "bg-[var(--paper)]"
                   )}
-                </AnimatePresence>
-              </div>
-            </Reveal>
-          );
-        })}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                    className="flex w-full cursor-pointer items-center gap-4 p-5 text-left"
+                  >
+                    <span className="w-10 shrink-0 text-[13px] font-bold text-[var(--stamp)]">
+                      Q{i + 1}
+                    </span>
+                    <span className="flex-1 text-sm font-bold text-foreground sm:text-base">
+                      {faq.q}
+                    </span>
+                    <span
+                      className={cn(
+                        "flex size-8 shrink-0 items-center justify-center rounded-full border border-[var(--ledger-line)] transition-transform duration-300",
+                        isOpen && "rotate-180 border-[var(--stamp)] text-[var(--stamp)]"
+                      )}
+                    >
+                      <ChevronDown className="size-4" />
+                    </span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.28, ease: [0.21, 0.65, 0.35, 1] }}
+                      >
+                        <p className="px-5 pb-5 pl-[4.5rem] font-medium text-sm leading-relaxed text-muted-foreground">
+                          <span className="mr-2 text-[13px] font-bold text-[var(--stamp)]">
+                            A —
+                          </span>
+                          {faq.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

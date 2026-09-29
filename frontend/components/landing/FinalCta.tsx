@@ -4,35 +4,54 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "./Reveal";
+import { Barcode } from "./Barcode";
+import { Stamp } from "./Stamp";
+import { TicketDivider } from "./LedgerCard";
 
+// Same CTA wording, ink ticket instead of emerald gradient panel.
 export function FinalCta() {
   const router = useRouter();
 
   return (
-    <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
+    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <Reveal>
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 px-6 py-14 text-center shadow-xl sm:px-12 lg:py-20">
+        <div className="relative flex overflow-hidden rounded-2xl border border-[var(--ink)] bg-[var(--ink)] text-[var(--paper)] shadow-xl">
+          {/* ticket stub */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.15)_1px,transparent_1px)] bg-[size:36px_36px] [mask-image:radial-gradient(ellipse_60%_80%_at_50%_50%,black,transparent)]"
-          />
-          <div className="relative">
-            <p className="text-sm font-bold tracking-widest text-emerald-50/90 uppercase">
+            className="relative hidden w-16 shrink-0 flex-col items-center justify-between border-r border-dashed border-[var(--paper)]/40 py-8 sm:flex"
+          >
+            <span className="absolute -top-2.5 -right-2.5 size-5 rounded-full bg-background" />
+            <span className="absolute -bottom-2.5 -right-2.5 size-5 rounded-full bg-background" />
+            <span className="font-ledger text-[11px] font-bold tracking-[0.3em] opacity-70 [writing-mode:vertical-rl] rotate-180">
+              REQORA LEDGER · FILED
+            </span>
+            <span className="flex h-20 w-8 items-center justify-center overflow-hidden">
+              <Barcode className="w-20 rotate-90 opacity-60 [&>span]:bg-[var(--paper)]" />
+            </span>
+          </div>
+          <div className="relative flex-1 px-6 py-12 sm:px-12 lg:py-16">
+          <div className="absolute top-6 right-6 hidden sm:block">
+            <Stamp tone="pending" className="border-current text-[var(--paper)]">
               Ready when you are
+            </Stamp>
+          </div>
+          <div className="relative max-w-2xl">
+            <p className="text-[13px] font-bold opacity-70">
+              REQ-NEW · entry open
             </p>
-            <h2 className="mx-auto mt-3 max-w-2xl text-3xl font-bold tracking-tight text-balance text-white sm:text-4xl lg:text-5xl">
+            <h2 className="font-display mt-3 text-3xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-4xl lg:text-5xl">
               Bring every resource request into one place
             </h2>
-            <p className="mx-auto mt-4 max-w-xl font-medium text-emerald-50/90">
+            <p className="mt-4 max-w-xl leading-relaxed font-medium opacity-80">
               Create your company workspace or join your team — and stop losing
               equipment to inboxes and spreadsheets.
             </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button
                 size="lg"
-                variant="secondary"
                 onClick={() => router.push("/getstarted")}
-                className="h-12 cursor-pointer bg-white px-8 text-base font-bold text-emerald-700 hover:bg-emerald-50"
+                className="h-12 cursor-pointer bg-[var(--paper)] px-8 text-base font-bold text-[var(--ink)] hover:brightness-95"
               >
                 Get started free
                 <ArrowRight className="size-4" />
@@ -41,11 +60,19 @@ export function FinalCta() {
                 size="lg"
                 variant="outline"
                 onClick={() => router.push("/login")}
-                className="h-12 cursor-pointer border-white/40 bg-transparent px-8 text-base font-semibold text-white hover:bg-white/10 hover:text-white"
+                className="h-12 cursor-pointer border-[var(--paper)]/40 bg-transparent px-8 text-base font-semibold text-[var(--paper)] hover:bg-white/10 hover:text-[var(--paper)]"
               >
                 Sign in
               </Button>
             </div>
+          </div>
+          <TicketDivider className="mt-10 px-0 opacity-40" />
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+            <p className="text-[13px] font-semibold opacity-60">
+              Create workspace · Join with code · No spreadsheet export
+            </p>
+            <Barcode className="opacity-60 [&>span]:bg-[var(--paper)]" />
+          </div>
           </div>
         </div>
       </Reveal>

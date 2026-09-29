@@ -7,15 +7,14 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/others/Navbar";
 import Footer from "@/components/others/Footer";
 import { Hero } from "@/components/landing/Hero";
-import { StatsStrip } from "@/components/landing/StatsStrip";
-import { PainSolution } from "@/components/landing/PainSolution";
-import { FeaturesBento } from "@/components/landing/FeaturesBento";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { RoleTabs } from "@/components/landing/RoleTabs";
-import { ProductPreview } from "@/components/landing/ProductPreview";
-import { OnboardingTeaser } from "@/components/landing/OnboardingTeaser";
+import { TickerStrip } from "@/components/landing/TickerStrip";
+import { LedgerSection } from "@/components/landing/LedgerSection";
+import { Workflow } from "@/components/landing/Workflow";
+import { Workspaces } from "@/components/landing/Workspaces";
+import { FeaturesLedger } from "@/components/landing/FeaturesLedger";
 import { Faq } from "@/components/landing/Faq";
 import { FinalCta } from "@/components/landing/FinalCta";
+import { SectionDivider } from "@/components/landing/LedgerCard";
 
 export default function Home() {
   const router = useRouter();
@@ -54,14 +53,13 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero loggedIn={loggedIn} role={role} />
-        <StatsStrip />
-        <PainSolution />
-        <FeaturesBento />
-        <HowItWorks />
-        <RoleTabs />
-        <ProductPreview />
-        <OnboardingTeaser />
+        <TickerStrip />
+        <LedgerSection />
+        <Workflow />
+        <Workspaces />
+        <FeaturesLedger />
         <Faq />
+        <SectionDivider />
         <FinalCta />
       </main>
       <Footer />

@@ -17,8 +17,8 @@ const onboardingLinks = [
 
 const Footer = () => {
   return (
-    <footer className="mt-auto border-t bg-card">
-      <div className="mx-auto max-w-7xl px-6 py-12">
+    <footer className="mt-auto border-t border-[var(--ledger-line)] bg-[var(--paper-card)]">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" aria-label="Reqora home" className="inline-block">
@@ -43,7 +43,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="mb-3 font-semibold text-card-foreground">Product</h3>
+            <h3 className="mb-3 text-sm font-bold text-card-foreground">Product</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {productLinks.map((link) => (
                 <li key={link.label}>
@@ -56,7 +56,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="mb-3 font-semibold text-card-foreground">Get started</h3>
+            <h3 className="mb-3 text-sm font-bold text-card-foreground">Get started</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {onboardingLinks.map((link) => (
                 <li key={link.label}>
@@ -69,7 +69,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="mb-3 font-semibold text-card-foreground">System</h3>
+            <h3 className="mb-3 text-sm font-bold text-card-foreground">System</h3>
             <div className="space-y-3 text-sm text-muted-foreground">
               <div>
                 <p>Version</p>

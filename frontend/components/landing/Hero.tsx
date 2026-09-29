@@ -2,24 +2,27 @@
 
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import {
-  ArrowRight,
-  BadgeCheck,
-  CheckCircle2,
-  CircleDashed,
-  Clock3,
-  MapPin,
-  MapPinned,
-  PackageCheck,
-  PlayCircle,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DemoRequest } from "./DemoRequest";
+import { LedgerCard, TicketDivider } from "./LedgerCard";
 
 type HeroProps = {
   loggedIn: boolean;
   role: string;
 };
+
+const liveCounts = [
+  { label: "Available", value: "67", tone: "text-[var(--stamp)]" },
+  { label: "In use", value: "40", tone: "text-sky-700 dark:text-sky-300" },
+  { label: "Maintenance", value: "5", tone: "text-[var(--status-danger-text)]" },
+];
+
+const liveEntries = [
+  { id: "cmuaqLp8", text: "keyboard → Approved", tone: "text-[var(--stamp)]" },
+  { id: "cmuaqLq4", text: "cable → Rejected + note", tone: "text-[var(--status-danger-text)]" },
+  { id: "cmun17jk", text: "mouse → Awaiting review", tone: "text-[var(--status-pending-text)]" },
+];
 
 export function Hero({ loggedIn, role }: HeroProps) {
   const router = useRouter();
@@ -30,198 +33,112 @@ export function Hero({ loggedIn, role }: HeroProps) {
       router.push(`/${role}/dashboard`);
       return;
     }
-    if (loggedIn && !role) {
-      router.push("/getstarted");
-      return;
-    }
     router.push("/getstarted");
   };
 
-  const scrollToHow = () => {
-    document.getElementById("how")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <section className="relative overflow-hidden">
-      {/* backdrop: soft grid + emerald glows, works in light/dark */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:44px_44px] opacity-40 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
-        <div className="absolute -top-32 left-1/2 h-80 w-[42rem] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
-        <div className="absolute top-40 -left-24 h-72 w-72 rounded-full bg-teal-500/15 blur-3xl" />
-        <div className="absolute top-64 -right-24 h-72 w-72 rounded-full bg-emerald-500/15 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 pt-14 pb-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:pt-20 lg:pb-24">
-        {/* Copy */}
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.21, 0.65, 0.35, 1] }}
-        >
-          <Badge
-            variant="secondary"
-            className="gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+    <section className="relative overflow-hidden border-b border-[var(--ledger-line)]">
+      <div className="relative mx-auto max-w-7xl px-4 pt-12 pb-16 sm:px-6 lg:px-8 lg:pt-16 lg:pb-20">
+        <div className="grid items-start gap-10 lg:grid-cols-[1fr_340px]">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.21, 0.65, 0.35, 1] }}
           >
-            <span className="size-1.5 rounded-full bg-primary" />
-            Resource request platform for modern teams
-          </Badge>
+            <p className="flex flex-wrap items-center gap-2 text-[13px] font-bold text-muted-foreground">
+              <span className="font-ledger rounded border border-[var(--ledger-line)] bg-[var(--paper-card)] px-2 py-1 text-xs text-[var(--stamp)]">
+                REQ-2041
+              </span>
+              The resource request platform for modern teams
+            </p>
 
-          <h1 className="mt-5 text-4xl font-bold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
-            Every resource request,{" "}
-            <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
-              tracked to delivery.
-            </span>
-          </h1>
+            <h1 className="font-display mt-5 text-4xl leading-[1.02] font-semibold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
+              No lost emails.{" "}
+              <em className="rounded-[3px] [background:color-mix(in_oklch,var(--stamp)_20%,transparent)] px-[0.12em] [box-decoration-break:clone] not-italic">
+                No mystery laptops.
+              </em>
+            </h1>
 
-          <p className="mt-5 max-w-xl text-base font-medium text-muted-foreground sm:text-lg">
-            Reqora gives employees one place to request, managers one-click
-            approvals, and admins item-level visibility across companies and
-            departments. No lost emails. No mystery laptops.
-          </p>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed font-medium text-muted-foreground sm:text-lg">
+              Don&apos;t take our word for it — file a request below, review it
+              as the manager, then track it back as the employee. The whole
+              lifecycle, in about 30 seconds.
+            </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button
-              size="lg"
-              onClick={handlePrimary}
-              className="h-12 cursor-pointer border-0 bg-gradient-to-r from-emerald-500 to-teal-600 px-7 text-base font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:from-emerald-600 hover:to-teal-700 hover:shadow-xl hover:shadow-emerald-500/30"
-            >
-              Get started
-              <ArrowRight className="size-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={scrollToHow}
-              className="h-12 cursor-pointer px-7 text-base font-semibold"
-            >
-              <PlayCircle className="size-4" />
-              See how it works
-            </Button>
-          </div>
-
-          <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-muted-foreground">
-            <li className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-4 text-primary" />
-              Role-based approvals
-            </li>
-            <li className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-4 text-primary" />
-              Item-level tracking
-            </li>
-            <li className="flex items-center gap-1.5">
-              <CheckCircle2 className="size-4 text-primary" />
-              Department workspaces
-            </li>
-          </ul>
-        </motion.div>
-
-        {/* Product mock */}
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 32, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.15, ease: [0.21, 0.65, 0.35, 1] }}
-          className="relative"
-        >
-          <div className="relative rounded-2xl border bg-card p-5 shadow-xl shadow-primary/10 sm:p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                  Live request
-                </p>
-                <p className="mt-1 text-lg font-bold text-card-foreground">
-                  MacBook Pro 16&quot; × 2
-                </p>
-                <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                  <MapPin className="size-3.5" />
-                  Engineering · Floor 3 store
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <Badge className="bg-[var(--status-pending-bg)] text-[var(--status-pending-text)] border-[var(--status-pending-border)]">
-                  <Clock3 className="size-3" />
-                  Pending
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="border-destructive/30 text-destructive"
-                >
-                  High priority
-                </Badge>
-              </div>
+            <div className="mt-6">
+              <Button
+                size="lg"
+                onClick={handlePrimary}
+                className="h-12 cursor-pointer bg-[var(--stamp)] px-7 text-base font-semibold text-white shadow-lg transition-all hover:brightness-110"
+              >
+                Get started free
+                <ArrowRight className="size-4" />
+              </Button>
             </div>
+          </motion.div>
 
-            {/* timeline */}
-            <ol className="mt-6 space-y-0">
-              {[
-                { label: "Requested by Priya · qty 2 · reason attached", done: true },
-                { label: "Manager review · one-click approve", done: true },
-                { label: "Admin allocates items · serials assigned", done: false },
-              ].map((step, i) => (
-                <li key={step.label} className="relative flex gap-3 pb-5 last:pb-0">
-                  {i < 2 && (
-                    <span
-                      aria-hidden
-                      className="absolute top-6 left-[11px] h-[calc(100%-1.25rem)] w-px bg-border"
-                    />
-                  )}
-                  <span
-                    className={`flex size-6 shrink-0 items-center justify-center rounded-full ${
-                      step.done
-                        ? "bg-primary text-primary-foreground"
-                        : "border border-dashed border-primary/50 bg-primary/10 text-primary"
-                    }`}
-                  >
-                    {step.done ? (
-                      <BadgeCheck className="size-3.5" />
-                    ) : (
-                      <CircleDashed className="size-3.5" />
-                    )}
+          {/* proof rail — balances the composition with live ledger figures */}
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.21, 0.65, 0.35, 1] }}
+          >
+            <LedgerCard className="overflow-hidden p-0">
+              <div className="flex items-center justify-between gap-2 px-5 pt-4">
+                <p className="text-[13px] font-bold text-foreground">
+                  Live from the ledger
+                </p>
+                <span className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--stamp)]">
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--stamp)] opacity-60" />
+                    <span className="relative inline-flex size-2 rounded-full bg-[var(--stamp)]" />
                   </span>
-                  <p className="pt-0.5 text-sm font-medium text-card-foreground/90">
-                    {step.label}
-                  </p>
-                </li>
-              ))}
-            </ol>
+                  TODAY
+                </span>
+              </div>
+              <div className="px-5 pt-3">
+                <p className="font-ledger text-4xl font-bold text-foreground">112</p>
+                <p className="mt-0.5 text-xs font-semibold text-muted-foreground">
+                  resources tracked · 0 missing
+                </p>
+              </div>
+              <ul className="px-5 pt-3">
+                {liveCounts.map((c) => (
+                  <li
+                    key={c.label}
+                    className="flex items-baseline justify-between border-b border-dashed border-[var(--ledger-line)] py-2 last:border-0"
+                  >
+                    <span className="text-[13px] font-semibold text-muted-foreground">
+                      {c.label}
+                    </span>
+                    <span className={`font-ledger text-lg font-bold ${c.tone}`}>
+                      {c.value}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <TicketDivider />
+              <ul className="space-y-2 px-5 py-4">
+                {liveEntries.map((e) => (
+                  <li key={e.id} className="flex items-baseline justify-between gap-2 text-[13px]">
+                    <span className="font-ledger text-xs font-semibold text-muted-foreground">
+                      {e.id}
+                    </span>
+                    <span className={`font-semibold ${e.tone}`}>{e.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </LedgerCard>
+          </motion.div>
+        </div>
 
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              {[
-                { label: "Available", value: "18", dot: "bg-emerald-500" },
-                { label: "In use", value: "42", dot: "bg-sky-500" },
-                { label: "Maintenance", value: "3", dot: "bg-amber-500" },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-xl border bg-background px-3 py-2.5"
-                >
-                  <p className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground uppercase">
-                    <span className={`size-1.5 rounded-full ${s.dot}`} />
-                    {s.label}
-                  </p>
-                  <p className="mt-1 text-xl font-bold text-foreground">{s.value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 flex gap-3">
-              <Button className="flex-1 cursor-pointer font-semibold">
-                Approve & allocate
-              </Button>
-              <Button variant="outline" className="flex-1 cursor-pointer font-semibold">
-                View details
-              </Button>
-            </div>
-          </div>
-
-          {/* floating chips */}
-          <div className="absolute -top-4 -right-2 hidden items-center gap-1.5 rounded-full border bg-card px-3 py-1.5 text-xs font-semibold shadow-lg sm:flex">
-            <PackageCheck className="size-3.5 text-primary" />
-            Allocated to REQ-2041
-          </div>
-          <div className="absolute -bottom-4 -left-2 hidden items-center gap-1.5 rounded-full border bg-card px-3 py-1.5 text-xs font-semibold shadow-lg sm:flex">
-            <MapPinned className="size-3.5 text-primary" />
-            Floor 3 store · audited
-          </div>
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.15, ease: [0.21, 0.65, 0.35, 1] }}
+          className="mt-10"
+        >
+          <DemoRequest />
         </motion.div>
       </div>
     </section>
