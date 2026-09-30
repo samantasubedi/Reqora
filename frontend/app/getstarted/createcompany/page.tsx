@@ -76,8 +76,9 @@ const INDUSTRY_OPTIONS = [
 ];
 
 const labelClass =
-  "text-xs font-bold uppercase tracking-widest text-muted-foreground";
-const inputClass = "h-11 rounded-xl";
+  "font-ledger text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground";
+const inputClass =
+  "h-11 rounded-xl focus-visible:ring-[var(--stamp)]";
 const errorClass = "text-xs font-medium text-destructive";
 
 const adminPerks = [
@@ -169,21 +170,21 @@ const Page = () => {
   };
 
   const aside = (
-    <div className="rounded-2xl border bg-card p-6 shadow-sm sm:p-7">
-      <p className="text-sm font-bold tracking-widest text-primary uppercase">
+    <div className="ledger-card-flat rounded-xl border border-[var(--ledger-line)] p-6 shadow-[0_1px_0_var(--ledger-line),0_12px_32px_-16px_rgba(0,0,0,0.25)] sm:p-7">
+      <p className="font-ledger text-[11px] font-bold tracking-[0.14em] text-[var(--stamp)] uppercase">
         Why create first
       </p>
-      <p className="mt-2 text-lg font-bold text-card-foreground">
+      <p className="font-display mt-2 text-lg font-semibold text-foreground">
         One workspace for every request
       </p>
       <ul className="mt-5 space-y-5">
         {adminPerks.map((perk) => (
           <li key={perk.title} className="flex gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[var(--stamp)]/10 text-[var(--stamp)]">
               <perk.icon className="size-5" />
             </span>
             <span>
-              <span className="block text-sm font-bold text-card-foreground">
+              <span className="block text-sm font-bold text-foreground">
                 {perk.title}
               </span>
               <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">
@@ -193,8 +194,8 @@ const Page = () => {
           </li>
         ))}
       </ul>
-      <div className="mt-6 flex items-start gap-2 rounded-xl bg-muted/60 px-4 py-3 text-xs font-medium text-muted-foreground">
-        <Check className="mt-0.5 size-3.5 shrink-0 text-primary" />
+      <div className="mt-6 flex items-start gap-2 rounded-xl border border-[var(--ledger-line)] bg-[var(--paper)] px-4 py-3 text-xs font-medium text-muted-foreground">
+        <Check className="mt-0.5 size-3.5 shrink-0 text-[var(--stamp)]" />
         Takes about two minutes — you can edit every detail later from your
         admin dashboard.
       </div>
@@ -207,7 +208,7 @@ const Page = () => {
       title={
         <>
           Create your{" "}
-          <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+          <span className="rounded-[3px] [background:color-mix(in_oklch,var(--stamp)_20%,transparent)] px-[0.12em] not-italic">
             company workspace
           </span>
         </>
@@ -220,18 +221,18 @@ const Page = () => {
       maxWidth="max-w-6xl"
     >
       {authChecking ? (
-        <div className="flex justify-center rounded-2xl border bg-card py-16 shadow-sm">
-          <Loader2 className="size-8 animate-spin text-primary" />
+        <div className="ledger-card-flat flex justify-center rounded-xl border border-[var(--ledger-line)] py-16">
+          <Loader2 className="size-8 animate-spin text-[var(--stamp)]" />
         </div>
       ) : (
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="ledger-card-flat rounded-xl border-[var(--ledger-line)] shadow-[0_1px_0_var(--ledger-line),0_12px_32px_-16px_rgba(0,0,0,0.25)]">
           <CardContent className="pt-6">
             <form
               onSubmit={handleSubmit(handleFormSubmit)}
               className="flex flex-col gap-7"
             >
               <div className="flex flex-col gap-4">
-                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+                <p className="font-ledger text-[11px] font-bold tracking-[0.14em] text-muted-foreground uppercase">
                   Business details
                 </p>
 
@@ -283,7 +284,7 @@ const Page = () => {
               </div>
 
               <div className="flex flex-col gap-4">
-                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
+                <p className="font-ledger text-[11px] font-bold tracking-[0.14em] text-muted-foreground uppercase">
                   Contact details
                 </p>
 
@@ -358,7 +359,7 @@ const Page = () => {
               <Button
                 type="submit"
                 disabled={mutation.isPending}
-                className="h-12 w-full cursor-pointer rounded-xl border-0 bg-gradient-to-r from-emerald-500 to-teal-600 text-base font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="h-12 w-full cursor-pointer rounded-xl bg-[var(--stamp)] text-base font-semibold text-white shadow-lg transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {mutation.isPending ? (
                   <>

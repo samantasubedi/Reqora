@@ -19,7 +19,9 @@ export function StepsIndicator({ current }: { current: 1 | 2 | 3 }) {
                 aria-hidden
                 className={cn(
                   "h-0.5 w-6 rounded-full sm:w-10",
-                  stepNumber <= current ? "bg-primary" : "bg-border"
+                  stepNumber <= current
+                    ? "bg-[var(--stamp)]"
+                    : "bg-[var(--ledger-line)]"
                 )}
               />
             )}
@@ -28,8 +30,8 @@ export function StepsIndicator({ current }: { current: 1 | 2 | 3 }) {
                 className={cn(
                   "flex size-6 items-center justify-center rounded-full text-xs font-bold",
                   isDone || isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-muted text-muted-foreground"
+                    ? "bg-[var(--stamp)] text-white"
+                    : "border border-[var(--ledger-line)] bg-[var(--paper-card)] text-muted-foreground"
                 )}
               >
                 {isDone ? <Check className="size-3.5" /> : stepNumber}

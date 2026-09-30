@@ -58,12 +58,12 @@ export function JoinCodeModal({ open, onOpenChange }: JoinCodeModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="border-[var(--ledger-line)] bg-[var(--paper-card)] sm:max-w-md">
         <DialogHeader className="items-center text-center">
-          <span className="flex size-12 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-300">
+          <span className="flex size-12 items-center justify-center rounded-xl bg-[var(--stamp)]/10 text-[var(--stamp)]">
             <KeyRound className="size-6" />
           </span>
-          <DialogTitle className="text-xl font-bold">Join with a code</DialogTitle>
+          <DialogTitle className="font-display text-xl font-semibold">Join with a code</DialogTitle>
           <DialogDescription className="font-medium">
             Enter the join code shared by your administrator. Your company,
             department, and role are applied automatically.
@@ -74,7 +74,7 @@ export function JoinCodeModal({ open, onOpenChange }: JoinCodeModalProps) {
           <div className="flex flex-col gap-2">
             <label
               htmlFor="join-code"
-              className="text-xs font-bold tracking-widest text-muted-foreground uppercase"
+              className="font-ledger text-[11px] font-bold tracking-[0.14em] text-muted-foreground uppercase"
             >
               Join code
             </label>
@@ -85,13 +85,13 @@ export function JoinCodeModal({ open, onOpenChange }: JoinCodeModalProps) {
               placeholder="e.g. H3E0klMT3f"
               autoFocus
               autoComplete="off"
-              className="h-12 rounded-xl text-center font-mono text-lg font-semibold tracking-widest"
+              className="h-12 rounded-xl text-center font-mono text-lg font-semibold tracking-widest focus-visible:ring-[var(--stamp)]"
             />
           </div>
           <Button
             type="submit"
             disabled={!joinCode.trim() || mutation.isPending}
-            className="h-11 w-full cursor-pointer border-0 bg-gradient-to-r from-emerald-500 to-teal-600 font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-11 w-full cursor-pointer rounded-xl bg-[var(--stamp)] font-semibold text-white shadow-lg transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {mutation.isPending ? (
               <>

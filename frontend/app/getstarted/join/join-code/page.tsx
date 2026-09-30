@@ -14,8 +14,8 @@ const Page = () => {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <Loader2 className="size-8 animate-spin text-primary" />
+    <div className="ledger-paper flex min-h-screen items-center justify-center">
+      <Loader2 className="size-8 animate-spin text-[var(--stamp)]" />
     </div>
   );
 };

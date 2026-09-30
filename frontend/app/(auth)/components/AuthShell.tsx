@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import type { ReactNode } from "react";
 import Navbar from "@/components/others/Navbar";
-import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/landing/Reveal";
+import { LedgerCard, TicketDivider } from "@/components/landing/LedgerCard";
 
 const brandPoints = [
   {
@@ -43,12 +43,9 @@ export function AuthShell({
   children,
 }: AuthShellProps) {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
+    <div className="ledger-paper relative flex min-h-screen flex-col overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:44px_44px] opacity-40 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
-        <div className="absolute -top-32 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
-        <div className="absolute top-1/3 -left-24 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-24 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="absolute -top-32 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-[var(--stamp)]/10 blur-3xl" />
       </div>
 
       <div className="relative z-10">
@@ -60,13 +57,9 @@ export function AuthShell({
           <div className="grid items-stretch gap-6 lg:grid-cols-2">
             {/* Brand panel */}
             <Reveal className="hidden lg:block">
-              <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card p-8 shadow-sm">
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/12 via-primary/[0.04] to-teal-500/10"
-                />
+              <LedgerCard className="relative flex h-full flex-col overflow-hidden p-8">
                 <div className="relative">
-                  <span className="inline-flex items-center rounded-xl bg-primary/10 px-3 py-2">
+                  <span className="inline-flex items-center rounded-xl border border-[var(--ledger-line)] bg-[var(--stamp)]/10 px-3 py-2">
                     <Image
                       src="/reqoraLogo.png"
                       width={140}
@@ -75,7 +68,7 @@ export function AuthShell({
                       className="h-8 w-auto"
                     />
                   </span>
-                  <p className="mt-6 text-2xl font-bold tracking-tight text-balance text-card-foreground">
+                  <p className="font-display mt-6 text-2xl font-semibold tracking-tight text-balance text-foreground">
                     Resource requests, tracked to delivery.
                   </p>
                   <p className="mt-2 font-medium text-muted-foreground">
@@ -84,11 +77,11 @@ export function AuthShell({
                   <ul className="mt-8 space-y-5">
                     {brandPoints.map((point) => (
                       <li key={point.title} className="flex gap-3">
-                        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--stamp)]/12 text-[var(--stamp)]">
                           <Check className="size-3.5" />
                         </span>
                         <span>
-                          <span className="block text-sm font-bold text-card-foreground">
+                          <span className="block text-sm font-bold text-foreground">
                             {point.title}
                           </span>
                           <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground">
@@ -99,36 +92,36 @@ export function AuthShell({
                     ))}
                   </ul>
                 </div>
-              </div>
+              </LedgerCard>
             </Reveal>
 
             {/* Form card */}
             <Reveal delay={0.08}>
-              <div className="flex h-full flex-col rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
-                <Badge
-                  variant="secondary"
-                  className="w-fit gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
-                >
-                  <span className="size-1.5 rounded-full bg-primary" />
-                  {badge}
-                </Badge>
-                <h1 className="mt-4 text-2xl font-bold tracking-tight text-balance text-card-foreground sm:text-3xl">
+              <LedgerCard className="flex h-full flex-col p-6 sm:p-8">
+                <p>
+                  <span className="font-ledger inline-flex items-center gap-2 rounded-full border border-dashed border-[var(--stamp)]/60 px-3 py-1 text-xs font-semibold text-[var(--stamp)]">
+                    <span aria-hidden className="size-1.5 rounded-full bg-[var(--stamp)]" />
+                    {badge}
+                  </span>
+                </p>
+                <h1 className="font-display mt-4 text-2xl font-semibold tracking-tight text-balance text-foreground sm:text-3xl">
                   {title}
                 </h1>
                 <p className="mt-2 font-medium text-muted-foreground">{subtitle}</p>
 
                 <div className="mt-6 flex-1">{children}</div>
 
-                <p className="mt-6 border-t pt-5 text-center text-sm font-medium text-muted-foreground">
+                <TicketDivider className="mt-6 px-0" />
+                <p className="mt-4 text-center text-sm font-medium text-muted-foreground">
                   {switchPrompt}{" "}
                   <Link
                     href={switchHref}
-                    className="font-bold text-primary hover:underline"
+                    className="font-bold text-[var(--stamp)] hover:underline"
                   >
                     {switchLabel}
                   </Link>
                 </p>
-              </div>
+              </LedgerCard>
             </Reveal>
           </div>
         </div>

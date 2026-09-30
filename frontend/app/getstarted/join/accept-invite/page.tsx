@@ -60,7 +60,7 @@ const AcceptInviteContent = () => {
       title={
         <>
           You&apos;ve been{" "}
-          <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+          <span className="rounded-[3px] [background:color-mix(in_oklch,var(--stamp)_20%,transparent)] px-[0.12em] not-italic">
             invited to Reqora
           </span>
         </>
@@ -72,11 +72,11 @@ const AcceptInviteContent = () => {
       maxWidth="max-w-3xl"
     >
       <Reveal>
-        <div className="mx-auto w-full max-w-xl rounded-2xl border bg-card p-6 text-center shadow-sm sm:p-8">
-          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25">
+        <div className="ledger-card-flat mx-auto w-full max-w-xl rounded-xl border border-[var(--ledger-line)] p-6 text-center shadow-[0_1px_0_var(--ledger-line),0_12px_32px_-16px_rgba(0,0,0,0.25)] sm:p-8">
+          <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-[var(--stamp)] text-white shadow-lg">
             <Building2 className="size-8" />
           </div>
-          <p className="mt-4 text-xl font-bold text-card-foreground">
+          <p className="font-display mt-4 text-xl font-semibold text-foreground">
             Join your team&apos;s workspace
           </p>
           <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
@@ -103,7 +103,7 @@ const AcceptInviteContent = () => {
             <Button
               onClick={handleAccept}
               disabled={isProcessing || !token}
-              className="h-11 flex-1 cursor-pointer rounded-xl border-0 bg-gradient-to-r from-emerald-500 to-teal-600 font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-11 flex-1 cursor-pointer rounded-xl bg-[var(--stamp)] font-semibold text-white shadow-lg transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isProcessing ? (
                 <>
@@ -128,8 +128,8 @@ const Page = () => {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-background">
-          <Loader2 className="size-8 animate-spin text-primary" />
+        <div className="ledger-paper flex min-h-screen items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-[var(--stamp)]" />
         </div>
       }
     >

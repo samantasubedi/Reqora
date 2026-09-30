@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import Navbar from "@/components/others/Navbar";
-import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/landing/Reveal";
 import { StepsIndicator } from "./StepsIndicator";
 import { cn } from "@/lib/utils";
@@ -33,12 +32,9 @@ export function GetStartedShell({
   children,
 }: GetStartedShellProps) {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
+    <div className="ledger-paper relative flex min-h-screen flex-col overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:44px_44px] opacity-40 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
-        <div className="absolute -top-32 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
-        <div className="absolute top-1/3 -left-24 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl" />
-        <div className="absolute top-1/3 -right-24 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="absolute -top-32 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-[var(--stamp)]/10 blur-3xl" />
       </div>
 
       <div className="relative z-10">
@@ -51,7 +47,7 @@ export function GetStartedShell({
           {backHref !== "/" && (
             <Link
               href={backHref}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-[var(--stamp)]"
             >
               <ArrowLeft className="size-4" />
               {backLabel}
@@ -59,14 +55,13 @@ export function GetStartedShell({
           )}
 
           <Reveal className="space-y-5 text-center">
-            <Badge
-              variant="secondary"
-              className="gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
-            >
-              <span className="size-1.5 rounded-full bg-primary" />
-              {badge}
-            </Badge>
-            <h1 className="text-3xl font-bold tracking-tight text-balance text-foreground sm:text-4xl">
+            <p>
+              <span className="font-ledger inline-flex items-center gap-2 rounded-full border border-dashed border-[var(--stamp)]/60 px-3 py-1 text-xs font-semibold text-[var(--stamp)]">
+                <span aria-hidden className="size-1.5 rounded-full bg-[var(--stamp)]" />
+                {badge}
+              </span>
+            </p>
+            <h1 className="font-display text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
               {title}
             </h1>
             <p className="mx-auto max-w-xl font-medium text-muted-foreground">

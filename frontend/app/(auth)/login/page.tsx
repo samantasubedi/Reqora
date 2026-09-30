@@ -31,8 +31,9 @@ const schema = z.object({
 type formDataType = z.infer<typeof schema>;
 
 const labelClass =
-  "text-xs font-bold uppercase tracking-widest text-muted-foreground";
-const inputClass = "h-11 rounded-xl pl-10 font-medium";
+  "font-ledger text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground";
+const inputClass =
+  "h-11 rounded-xl pl-10 font-medium focus-visible:ring-[var(--stamp)]";
 const errorClass = "text-xs font-medium text-destructive";
 
 const SignInForm = () => {
@@ -126,7 +127,7 @@ const SignInForm = () => {
         <Button
           disabled={loginMutation.isPending}
           type="submit"
-          className="h-12 w-full cursor-pointer rounded-xl border-0 bg-gradient-to-r from-emerald-500 to-teal-600 text-base font-semibold text-white shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-12 w-full cursor-pointer rounded-xl bg-[var(--stamp)] text-base font-semibold text-white shadow-lg transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loginMutation.isPending ? (
             <>
@@ -146,8 +147,8 @@ const Page = () => {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-background">
-          <Loader2 className="size-8 animate-spin text-primary" />
+        <div className="ledger-paper flex min-h-screen items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-[var(--stamp)]" />
         </div>
       }
     >

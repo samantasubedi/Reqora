@@ -33,8 +33,10 @@ export function PathCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "group flex h-full w-full cursor-pointer flex-col rounded-2xl border bg-card p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:p-8",
-        isPrimary ? "hover:border-primary/50" : "hover:border-primary/40"
+        "ledger-card-flat group flex h-full w-full cursor-pointer flex-col rounded-xl border border-[var(--ledger-line)] p-6 text-left shadow-[0_1px_0_var(--ledger-line),0_12px_32px_-16px_rgba(0,0,0,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-[var(--stamp)] focus-visible:outline-none sm:p-8",
+        isPrimary
+          ? "hover:border-[var(--stamp)]/50"
+          : "hover:border-[var(--stamp)]/40"
       )}
     >
       <div className="flex items-center justify-between gap-3">
@@ -42,8 +44,8 @@ export function PathCard({
           className={cn(
             "flex size-12 shrink-0 items-center justify-center rounded-xl",
             isPrimary
-              ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25"
-              : "bg-teal-500/10 text-teal-600 dark:text-teal-300"
+              ? "bg-[var(--stamp)] text-white shadow-lg"
+              : "border border-[var(--ledger-line)] bg-[var(--stamp)]/10 text-[var(--stamp)]"
           )}
         >
           <Icon className="size-6" />
@@ -52,15 +54,15 @@ export function PathCard({
           className={cn(
             "rounded-full border px-3 py-1 text-xs font-semibold",
             recommended
-              ? "border-primary/30 bg-primary/10 text-primary"
-              : "border-border bg-muted text-muted-foreground"
+              ? "border-[var(--stamp)]/40 bg-[var(--stamp)]/10 text-[var(--stamp)]"
+              : "border-[var(--ledger-line)] bg-[var(--paper)] text-muted-foreground"
           )}
         >
           {badge}
         </span>
       </div>
 
-      <span className="mt-4 block text-xl font-bold text-card-foreground">
+      <span className="font-display mt-4 block text-xl font-semibold text-foreground">
         {title}
       </span>
       <span className="mt-2 block text-sm leading-relaxed text-muted-foreground">
@@ -70,7 +72,7 @@ export function PathCard({
       <ul className="mt-5 space-y-2.5">
         {points.map((point) => (
           <li key={point} className="flex items-start gap-2.5">
-            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--stamp)]/12 text-[var(--stamp)]">
               <Check className="size-3" />
             </span>
             <span className="text-sm font-medium text-foreground/90">{point}</span>
@@ -82,8 +84,8 @@ export function PathCard({
         className={cn(
           "mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-base font-semibold transition-all",
           isPrimary
-            ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25 group-hover:from-emerald-600 group-hover:to-teal-700 group-hover:shadow-xl group-hover:shadow-emerald-500/30"
-            : "border border-border bg-background text-foreground group-hover:border-primary/40 group-hover:text-primary"
+            ? "bg-[var(--stamp)] text-white shadow-lg group-hover:brightness-110"
+            : "border border-[var(--ledger-line)] bg-[var(--paper)] text-foreground group-hover:border-[var(--stamp)]/40 group-hover:text-[var(--stamp)]"
         )}
       >
         {cta}

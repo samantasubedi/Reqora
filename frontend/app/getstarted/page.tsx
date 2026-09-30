@@ -98,7 +98,7 @@ const Page = () => {
         title={
           <>
             Start your{" "}
-            <span className="bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent">
+            <span className="rounded-[3px] [background:color-mix(in_oklch,var(--stamp)_20%,transparent)] px-[0.12em] not-italic">
               Reqora workspace
             </span>
           </>
@@ -109,20 +109,20 @@ const Page = () => {
       >
         {isChecking ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="size-8 animate-spin text-primary" />
+            <Loader2 className="size-8 animate-spin text-[var(--stamp)]" />
           </div>
         ) : (
           <>
             {!loggedIn && (
-              <div className="flex flex-col items-center justify-between gap-3 rounded-2xl border border-primary/25 bg-primary/5 px-5 py-4 text-center sm:flex-row sm:text-left">
+              <div className="flex flex-col items-center justify-between gap-3 rounded-xl border border-[var(--ledger-line)] bg-[var(--paper-card)] px-5 py-4 text-center sm:flex-row sm:text-left">
                 <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <LogIn className="size-4 shrink-0 text-primary" />
+                  <LogIn className="size-4 shrink-0 text-[var(--stamp)]" />
                   You&apos;re signed out — sign in to create or join a workspace.
                 </p>
                 <button
                   type="button"
                   onClick={() => router.push("/login")}
-                  className="shrink-0 cursor-pointer rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-emerald-500/25 transition-all hover:from-emerald-600 hover:to-teal-700"
+                  className="shrink-0 cursor-pointer rounded-lg bg-[var(--stamp)] px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:brightness-110"
                 >
                   Go to login
                 </button>
@@ -172,12 +172,12 @@ const Page = () => {
               </Reveal>
             </div>
 
-            <div className="mt-8 grid gap-3 rounded-2xl border bg-card p-6 sm:grid-cols-3 sm:p-7">
+            <div className="ledger-card-flat mt-8 grid gap-3 rounded-xl border border-[var(--ledger-line)] p-6 sm:grid-cols-3 sm:p-7">
               {helperFaqs.map((faq) => (
                 <div key={faq.q} className="flex gap-2.5">
-                  <CircleHelp className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <CircleHelp className="mt-0.5 size-4 shrink-0 text-[var(--stamp)]" />
                   <div>
-                    <p className="text-sm font-bold text-card-foreground">{faq.q}</p>
+                    <p className="text-sm font-bold text-foreground">{faq.q}</p>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                       {faq.a}
                     </p>
