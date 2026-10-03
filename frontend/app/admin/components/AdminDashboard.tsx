@@ -7,19 +7,15 @@ import { ChartBarLabel, chartPropsType } from "@/components/others/BarChart";
 import { ChartPieLabel } from "@/components/others/PieChart";
 import ThemeToggler from "@/components/global/ThemeToggler";
 
-import { useResources } from "../hooks/resourceHooks";
-
 import { api } from "@/lib/apiClient";
-import { StatCardsSkeleton } from "./skeletonLoaders/statCardSkeleton";
 import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
 import { EmptyChart } from "./emptyStates/emptyChart";
 import { AreaChartDefault } from "@/components/ui/areaChart";
 import { ChartPieDonut } from "@/components/others/donoutChart";
 import ResourceStats from "./ResourceStats";
 import UserStats from "./UserStats";
+import PageHeader from "./ui/PageHeader";
 import { useAnalytics } from "../hooks/companyHooks";
-import { Currency } from "lucide-react";
-import { Role } from "@/types/global";
 import { camelToSentence } from "@/lib/HelperFunctions";
 
 export const handleLogout = async (router: AppRouterInstance) => {
@@ -102,16 +98,15 @@ export const AdminDashboard = () => {
     : [];
   return (
     <>
-      <div className="w-full min-h-screen space-y-6 px-3 pb-8">
-        <div className="flex justify-between">
-          <h1 className="m-2 text-4xl font-bold text-primary">
-            Admin Dashboard
-          </h1>
-          <ThemeToggler />
-        </div>
+      <div className="w-full space-y-6 p-6 pb-8">
+        <PageHeader
+          title="Admin Dashboard"
+          subtitle="Track resources, users and requests at a glance."
+          actions={<ThemeToggler />}
+        />
 
         <section className="space-y-4">
-          <h2 className="border-b pb-2 text-2xl font-semibold text-foreground">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             Resource Overview
           </h2>
 
@@ -150,7 +145,7 @@ export const AdminDashboard = () => {
         </section>
 
         <section className="space-y-4 border-t pt-6">
-          <h2 className="border-b pb-2 text-2xl font-semibold text-foreground">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             Users Overview
           </h2>
           <UserStats

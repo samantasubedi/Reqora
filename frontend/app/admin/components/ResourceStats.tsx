@@ -13,9 +13,9 @@ export interface statCardInterface {
   statusKey?: "all" | "available" | "inUse" | "underMaintenance";
   IconName?: LucideIcon;
   subtext?: string;
-  bgColor: string;
-  textColor: string;
-  borderColor: string;
+  bgColor?: string;
+  textColor?: string;
+  borderColor?: string;
 }
 
 interface ResourceStatsProps {
@@ -35,33 +35,21 @@ const ResourceStats = ({
       title: "Total Resources",
       statusKey: "all",
       IconName: Package,
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-800",
-      borderColor: "border-blue-500",
     },
     {
       title: "Available",
       statusKey: "available",
       IconName: Check,
-      bgColor: "bg-green-100",
-      textColor: "text-green-800",
-      borderColor: "border-green-500",
     },
     {
       title: "In Use",
       statusKey: "inUse",
       IconName: TrendingUp,
-      bgColor: "bg-amber-100",
-      textColor: "text-amber-800",
-      borderColor: "border-amber-500",
     },
     {
       title: "Under Maintenance",
       statusKey: "underMaintenance",
       IconName: CircleAlert,
-      bgColor: "bg-red-100",
-      textColor: "text-red-800",
-      borderColor: "border-red-500",
     },
   ];
 
@@ -86,7 +74,7 @@ const ResourceStats = ({
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="h-[180px] rounded-xl border bg-card animate-pulse"
+            className="h-[118px] rounded-xl border bg-card animate-pulse"
           />
         ))}
       </div>
@@ -106,9 +94,7 @@ const ResourceStats = ({
             number={currentCount}
             IconName={config.IconName}
             subtext={subtext}
-            bgColor={config.bgColor}
-            textColor={config.textColor}
-            borderColor={config.borderColor}
+            highlighted={config.statusKey === "all"}
           />
         );
       })}

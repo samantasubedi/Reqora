@@ -1,38 +1,33 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { statCardInterface } from "./ResourceStats";
-const borderGradientMap: Record<string, string> = {
-  "border-blue-500": "via-blue-500",
-  "border-green-500": "via-green-500",
-  "border-amber-500": "via-amber-500",
-  "border-red-500": "via-red-500",
-  "border-violet-500": "via-violet-500",
-  "border-gray-500": "via-gray-500",
-  "blue-500": "via-blue-500",
-  "green-500": "via-green-500",
-  "amber-500": "via-amber-500",
-  "red-500": "via-red-500",
-  "violet-500": "via-violet-500",
-  "gray-500": "via-gray-500",
+import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export type StatCardTone = "default" | "success" | "warning" | "danger" | "info";
+
+type StatCardProps = {
+  title: string;
+  number: number | string;
+  IconName?: LucideIcon;
+  subtext?: string;
+  tone?: StatCardTone;
+  highlighted?: boolean;
+  // Deprecated rainbow props — ignored, kept for incremental migration
+  bgColor?: string;
+  textColor?: string;
+  borderColor?: string;
 };
-const bgRadialMap: Record<string, string> = {
-  "bg-blue-100": "from-blue-200/40 dark:from-blue-500/15",
-  "bg-green-100": "from-green-200/40 dark:from-green-500/15",
-  "bg-amber-100": "from-amber-200/40 dark:from-amber-500/15",
-  "bg-red-100": "from-red-200/40 dark:from-red-500/15",
-  "bg-violet-100": "from-violet-200/40 dark:from-violet-500/15",
-  "bg-gray-100": "from-gray-200/40 dark:from-gray-500/15",
-  "blue-100": "from-blue-200/40 dark:from-blue-500/15",
-  "green-100": "from-green-200/40 dark:from-green-500/15",
-  "amber-100": "from-amber-200/40 dark:from-amber-500/15",
-  "red-100": "from-red-200/40 dark:from-red-500/15",
-  "violet-100": "from-violet-200/40 dark:from-violet-500/15",
-  "gray-100": "from-gray-200/40 dark:from-gray-500/15",
+
+const toneBar: Record<StatCardTone, string> = {
+  default: "bg-primary",
+  success: "bg-[var(--status-success-text)]",
+  warning: "bg-[var(--status-pending-text)]",
+  danger: "bg-[var(--status-danger-text)]",
+  info: "bg-[var(--status-info-text)]",
 };
 
 const StatCard = ({
@@ -40,44 +35,42 @@ const StatCard = ({
   number,
   IconName,
   subtext,
-  bgColor,
-  textColor,
-  borderColor,
-}: statCardInterface) => {
-  const viaColor = borderGradientMap[borderColor] || "via-blue-500";
-  const centerGlow =
-    bgRadialMap[bgColor] || "from-blue-200/40 dark:from-blue-500/15";
-
+  tone = "default",
+  highlighted = false,
+}: StatCardProps) => {
   return (
-    <Card className="relative h-[180px] w-full overflow-hidden border-none transition-all duration-300 ease-in-out">
+    <Card
+      className={cn(
+        "relative overflow-hidden",
+        highlighted && "border-primary/40"
+      )}
+    >
       <div
-        className={`absolute inset-0 bg-radial ${centerGlow} via-transparent to-transparent pointer-events-none`}
+        aria-hidden
+        className={cn("absolute inset-y-0 left-0 w-1", toneBar[tone])}
       />
-      <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pl-5">
         <div className="space-y-1">
-          <CardTitle className={`text-xl leading-none font-bold ${textColor}`}>
+          <CardTitle className="text-sm font-medium text-muted-foreground">
             {title}
           </CardTitle>
-          {subtext && (
-            <CardDescription className="text-sm text-muted-foreground">
-              {subtext}
-            </CardDescription>
-          )}
         </div>
         {IconName && (
-          <div className="flex items-center justify-center rounded-lg p-3">
-            <IconName className="h-10 w-10 text-black dark:text-white" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
+            <IconName className="h-4 w-4 text-muted-foreground" />
           </div>
         )}
       </CardHeader>
-      <CardContent className="relative z-10">
-        <div className={`text-4xl font-bold ${textColor}`}>{number}</div>
+      <CardContent className="pl-5">
+        <div className="text-3xl font-bold tracking-tight text-foreground">
+          {number}
+        </div>
+        {subtext && (
+          <p className="mt-1 text-xs text-muted-foreground">{subtext}</p>
+        )}
       </CardContent>
-
-      <div
-        className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent ${viaColor} to-transparent z-10`}
-      />
     </Card>
   );
 };
+
 export default StatCard;

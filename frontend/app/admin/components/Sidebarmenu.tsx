@@ -55,8 +55,8 @@ const Sidebarmenu = () => {
     }
   };
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="bg-sidebar">
+    <Sidebar collapsible="icon" className="border-r">
+      <SidebarHeader className="border-b bg-card">
         <button
           onClick={() => {
             router.push("/");
@@ -69,23 +69,23 @@ const Sidebarmenu = () => {
               width={500}
               height={500}
               alt="logo"
-              className="w-50 h-25"
+              className="h-9 w-auto"
             ></Image>
           ) : (
             ""
           )}
         </button>
       </SidebarHeader>
-      <SidebarContent className="bg-sidebar text-text-primary">
+      <SidebarContent className="bg-card text-foreground">
         <SidebarGroup>
-          <SidebarGroupLabel className=" font-bold">Main</SidebarGroupLabel>
+          <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Dashboard"
                 isActive={isActive("/admin/dashboard")}
                 suppressHydrationWarning
-                className="flex justify-start font-bold"
+                className="flex justify-start"
                 onClick={() => handleSidebarNavigation("/admin/dashboard")}
               >
                 <Icon
@@ -99,9 +99,7 @@ const Sidebarmenu = () => {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="  font-bold">
-            Management
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Management</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <Collapsible open={openResources} onOpenChange={setOpenResources}>
@@ -110,7 +108,7 @@ const Sidebarmenu = () => {
                     tooltip="Resources"
                     suppressHydrationWarning
                     isActive={!openResources && isResourcesSection}
-                    className="flex justify-between font-bold w-full"
+                    className="flex w-full justify-between"
                     onClick={() => handleSidebarNavigation("none")}
                   >
                     <div className="flex justify-start gap-2 ">
@@ -161,7 +159,7 @@ const Sidebarmenu = () => {
                     tooltip="Users"
                     suppressHydrationWarning
                     isActive={!openUsers && isUsersSection}
-                    className="flex justify-between font-bold w-full"
+                    className="flex w-full justify-between"
                     onClick={() => handleSidebarNavigation("none")}
                   >
                     <div className="flex justify-start gap-2 ">
@@ -207,7 +205,7 @@ const Sidebarmenu = () => {
                 tooltip="Requests"
                 isActive={isActive("/admin/requests")}
                 suppressHydrationWarning
-                className="flex justify-start font-bold"
+                className="flex justify-start"
                 onClick={() => handleSidebarNavigation("/admin/requests")}
               >
                 <Icon icon="fluent:clipboard-task-list-ltr-24-filled" className="size-5!" />
@@ -217,13 +215,13 @@ const Sidebarmenu = () => {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel className="  font-bold">System</SidebarGroupLabel>
+          <SidebarGroupLabel>System</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Settings"
                 suppressHydrationWarning
-                className="cursor-pointer font-bold"
+                className="cursor-pointer"
               >
                 <Icon icon="material-symbols:settings" className="size-5!" />
                 Settings
@@ -234,7 +232,7 @@ const Sidebarmenu = () => {
                 tooltip="Logs"
                 isActive={isActive("/admin/logs")}
                 suppressHydrationWarning
-                className="cursor-pointer font-bold"
+                className="cursor-pointer"
                 onClick={() => handleSidebarNavigation("/admin/logs")}
               >
                 <Icon icon="tabler:logs" className="size-5!" />
@@ -244,7 +242,7 @@ const Sidebarmenu = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className=" bg-sidebar-border">
+      <SidebarFooter className="border-t bg-card">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

@@ -18,33 +18,21 @@ const UserStats = ({ countsByRole = [], isLoading }: UserStatsProps) => {
       title: "Total Users",
       role: "all",
       IconName: Users,
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-800",
-      borderColor: "border-blue-500",
     },
     {
       title: "Employees",
       role: "employee",
       IconName: Briefcase,
-      bgColor: "bg-green-100",
-      textColor: "text-green-800",
-      borderColor: "border-green-500",
     },
     {
       title: "Managers",
       role: "manager",
       IconName: UserCog,
-      bgColor: "bg-amber-100",
-      textColor: "text-amber-800",
-      borderColor: "border-amber-500",
     },
     {
       title: "Admins",
       role: "admin",
       IconName: ShieldCheck,
-      bgColor: "bg-red-100",
-      textColor: "text-red-800",
-      borderColor: "border-red-500",
     },
   ];
 
@@ -59,7 +47,7 @@ const UserStats = ({ countsByRole = [], isLoading }: UserStatsProps) => {
         {[...Array(4)].map((_, index) => (
           <div
             key={index}
-            className="h-[180px] animate-pulse rounded-xl border bg-card"
+            className="h-[118px] animate-pulse rounded-xl border bg-card"
           />
         ))}
       </div>
@@ -75,9 +63,7 @@ const UserStats = ({ countsByRole = [], isLoading }: UserStatsProps) => {
           number={getCountByRole(config.role)}
           IconName={config.IconName}
           subtext={config.subtext}
-          bgColor={config.bgColor}
-          textColor={config.textColor}
-          borderColor={config.borderColor}
+          highlighted={config.role === "all"}
         />
       ))}
     </div>

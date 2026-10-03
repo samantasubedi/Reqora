@@ -95,7 +95,7 @@ const RequestStats = ({ requests = [], isLoading }: RequestStatsProps) => {
         {[...Array(6)].map((_, index) => (
           <div
             key={index}
-            className="h-[180px] animate-pulse rounded-xl border bg-card"
+            className="h-[118px] animate-pulse rounded-xl border bg-card"
           />
         ))}
       </div>

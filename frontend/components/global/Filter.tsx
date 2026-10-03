@@ -92,7 +92,7 @@ const Filter = ({ filters, setFilters }: FilterProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="gap-2 bg-secondary!">
+        <Button variant="outline" className="gap-2">
           Filters
           <ListFilterPlus className="h-4 w-4" />
           {appliedCount > 0 && (

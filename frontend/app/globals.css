@@ -157,6 +157,14 @@
     --status-danger-text: oklch(0.55 0.22 27);
     --status-danger-border: oklch(0.86 0.14 25);
 
+    --status-info-bg: oklch(0.95 0.04 290);
+    --status-info-text: oklch(0.5 0.2 290);
+    --status-info-border: oklch(0.86 0.1 290);
+
+    --status-neutral-bg: oklch(0.95 0.01 260);
+    --status-neutral-text: oklch(0.45 0.03 260);
+    --status-neutral-border: oklch(0.88 0.02 260);
+
     /* Ledger / ink direction — paper background, ink text, stamp emerald */
     --paper: oklch(0.977 0.012 95);
     --paper-card: oklch(0.995 0.004 95);
@@ -237,12 +245,12 @@
     /* Table Theme (Teal/Green) */
     --table-bg: oklch(21.185% 0.04513 164.054);
     --table-foreground: oklch(0.92 0.02 165);
-    --table-header-bg: oklch(55.641% 0.13741 155.073);
-    --table-header-foreground: oklch(0.85 0.05 165);
-    --table-row-hover: oklch(38.099% 0.08603 158.707);
-    --table-row-alternate: oklch(21.185% 0.04513 164.054);
-    --table-border: oklch(0.22 0.02 165);
-    --table-selected: oklch(0.24 0.04 165);
+    --table-header-bg: oklch(0.23 0.035 165);
+    --table-header-foreground: oklch(0.75 0.04 165);
+    --table-row-hover: oklch(0.26 0.05 165);
+    --table-row-alternate: oklch(0.2 0.035 165);
+    --table-border: oklch(1 0 0 / 10%);
+    --table-selected: oklch(0.27 0.06 165);
 
     /* Auth page solid background - dark charcoal-green (dark mode) */
     --auth-bg: oklch(0.23 0.02 168);
@@ -270,6 +278,14 @@
     --status-danger-bg: oklch(0.28 0.07 27);
     --status-danger-text: oklch(0.82 0.17 27);
     --status-danger-border: oklch(0.42 0.13 27);
+
+    --status-info-bg: oklch(0.28 0.07 290);
+    --status-info-text: oklch(0.8 0.16 290);
+    --status-info-border: oklch(0.42 0.12 290);
+
+    --status-neutral-bg: oklch(0.26 0.02 260);
+    --status-neutral-text: oklch(0.75 0.03 260);
+    --status-neutral-border: oklch(0.38 0.03 260);
 
     /* Ledger / ink direction — dark: ink paper */
     --paper: oklch(0.16 0.025 165);
@@ -378,6 +394,12 @@
     --color-status-danger-bg: var(--status-danger-bg);
     --color-status-danger-text: var(--status-danger-text);
     --color-status-danger-border: var(--status-danger-border);
+    --color-status-info-bg: var(--status-info-bg);
+    --color-status-info-text: var(--status-info-text);
+    --color-status-info-border: var(--status-info-border);
+    --color-status-neutral-bg: var(--status-neutral-bg);
+    --color-status-neutral-text: var(--status-neutral-text);
+    --color-status-neutral-border: var(--status-neutral-border);
 
     /* NOTE: --font-display is intentionally NOT re-declared here. It comes
        from next/font on <body>, and the .font-display utility below is the
