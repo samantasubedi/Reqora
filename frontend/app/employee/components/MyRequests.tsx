@@ -84,9 +84,9 @@ const STATUS_BADGE_STYLES: Record<RequestStatus, string> = {
   rejected:
     "bg-status-danger-bg text-status-danger-text border-status-danger-border",
   cancelled:
-    "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
+    "bg-status-neutral-bg text-status-neutral-text border-status-neutral-border",
   forwarded:
-    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800",
+    "bg-status-info-bg text-status-info-text border-status-info-border",
 };
 
 const PRIORITY_BADGE_STYLES: Record<Priority, string> = {
@@ -358,54 +358,42 @@ const MyRequests = () => {
       number: counts.total,
       subtext: `${counts.pending} awaiting review`,
       IconName: Package,
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-800 dark:text-blue-200",
-      borderColor: "border-blue-500",
+      tone: "default",
     },
     {
       title: "Pending",
       number: counts.pending,
       subtext: `${pct(counts.pending)}% of your requests`,
       IconName: Clock,
-      bgColor: "bg-amber-100",
-      textColor: "text-amber-800 dark:text-amber-200",
-      borderColor: "border-amber-500",
+      tone: "warning",
     },
     {
       title: "Approved",
       number: counts.approved,
       subtext: `${pct(counts.approved)}% of your requests`,
       IconName: CheckCircle2,
-      bgColor: "bg-green-100",
-      textColor: "text-green-800 dark:text-green-200",
-      borderColor: "border-green-500",
+      tone: "success",
     },
     {
       title: "Rejected",
       number: counts.rejected,
       subtext: `${pct(counts.rejected)}% of your requests`,
       IconName: XCircle,
-      bgColor: "bg-red-100",
-      textColor: "text-red-800 dark:text-red-200",
-      borderColor: "border-red-500",
+      tone: "danger",
     },
     {
       title: "Cancelled",
       number: counts.cancelled,
       subtext: `${pct(counts.cancelled)}% of your requests`,
       IconName: Ban,
-      bgColor: "bg-gray-100",
-      textColor: "text-gray-800 dark:text-gray-200",
-      borderColor: "border-gray-500",
+      tone: "neutral",
     },
     {
       title: "Forwarded",
       number: counts.forwarded,
       subtext: `${pct(counts.forwarded)}% of your requests`,
       IconName: Forward,
-      bgColor: "bg-violet-100",
-      textColor: "text-violet-800 dark:text-violet-200",
-      borderColor: "border-violet-500",
+      tone: "info",
     },
   ];
 
@@ -515,24 +503,25 @@ const MyRequests = () => {
 
   const emptyState = (
     <div className="flex min-h-[280px] w-full flex-col items-center justify-center px-6 py-12 text-center">
-      <div className="mb-6 p-4 bg-background rounded-full shadow-sm">
+      <div className="mb-6 rounded-full bg-muted p-4">
         <Inbox className="size-12 text-muted-foreground" />
       </div>
-      <h2 className="text-2xl font-semibold text-primary mb-3">
+      <h2 className="mb-3 text-xl font-semibold tracking-tight text-foreground">
         No requests found
       </h2>
-      <p className="m-4 font-semibold text-muted-foreground">
+      <p className="max-w-sm text-sm text-muted-foreground">
         {activeTab === "all"
           ? "You haven't submitted any requests yet. Request a new resource to get started."
           : `You have no ${activeTab} requests.`}
       </p>
-      <button
+      <Button
+        variant="secondary"
+        className="mt-4 cursor-pointer gap-2 shadow-sm"
         onClick={() => router.push("/employee/resources")}
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors duration-200 shadow-sm bg-secondary cursor-pointer"
       >
-        <Plus className="size-5" />
+        <Plus className="size-4" />
         Request New Resource
-      </button>
+      </Button>
     </div>
   );
 
@@ -600,7 +589,7 @@ const MyRequests = () => {
             {req.resourceType && (
               <Badge
                 variant="outline"
-                className="font-medium bg-card capitalize shadow-none"
+                className="bg-background font-medium capitalize shadow-none"
               >
                 {req.resourceType}
               </Badge>
@@ -697,7 +686,7 @@ const MyRequests = () => {
                   {req.resourceType && (
                     <Badge
                       variant="outline"
-                      className="font-medium bg-card capitalize shadow-none"
+                      className="bg-background font-medium capitalize shadow-none"
                     >
                       {req.resourceType}
                     </Badge>
@@ -730,11 +719,11 @@ const MyRequests = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Requests</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">My Requests</h1>
+          <p className="text-sm text-muted-foreground">
             Monitor and manage your resource acquisition history.
           </p>
         </div>
@@ -752,19 +741,17 @@ const MyRequests = () => {
           ? Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[180px] min-w-[240px] flex-1 animate-pulse rounded-xl bg-muted"
+                className="h-[118px] min-w-[240px] flex-1 animate-pulse rounded-xl border bg-card"
               />
             ))
           : statCards.map((card) => (
-              <div key={card.title} className="min-w-[240px] flex-1">
+              <div key={card.title} className="min-w-[240px] flex-1 snap-start">
                 <StatCard
                   title={card.title!}
                   number={card.number!}
                   IconName={card.IconName}
                   subtext={card.subtext}
-                  bgColor={card.bgColor!}
-                  textColor={card.textColor!}
-                  borderColor={card.borderColor!}
+                  tone={card.tone}
                 />
               </div>
             ))}
@@ -808,7 +795,7 @@ const MyRequests = () => {
           </div>
         )}
         <div className="flex w-full justify-end">
-          <TabsList className="w-fit max-w-full overflow-x-auto">
+          <TabsList className="max-w-full flex-wrap">
             {TAB_FILTERS.map((tab) => (
               <TabsTrigger
                 key={tab}
@@ -820,7 +807,7 @@ const MyRequests = () => {
               >
                 {tab}
                 {tab !== "all" && (
-                  <span className="rounded-full bg-foreground/10 px-1.5 text-xs font-semibold text-muted-foreground data-[state=active]:bg-foreground/20 data-[state=active]:text-primary-foreground">
+                  <span className="rounded-full bg-muted px-1.5 text-xs font-semibold text-muted-foreground data-[state=active]:bg-primary-foreground/20 data-[state=active]:text-primary-foreground">
                     {countByStatus(tab as RequestStatus)}
                   </span>
                 )}
@@ -834,7 +821,7 @@ const MyRequests = () => {
             <div className="flex flex-wrap items-center justify-end gap-3 border-b border-border p-3">
               <Input
                 placeholder="Search requests..."
-                className="w-[50%] bg-secondary!"
+                className="w-full bg-background sm:max-w-xs"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
@@ -842,13 +829,13 @@ const MyRequests = () => {
                 filters={requestFilterConfig}
                 setFilters={handleFilters}
               />
-              <div className="flex items-center rounded-lg border border-border bg-muted p-0.5">
+              <div className="flex items-center rounded-lg border border-border bg-muted/50 p-1">
                 <Button
                   size="icon"
                   variant="ghost"
                   className={cn(
-                    "h-8 w-8 cursor-pointer",
-                    view === "table" && "bg-background shadow-sm",
+                    "h-8 w-8 cursor-pointer text-muted-foreground",
+                    view === "table" && "bg-background text-foreground shadow-sm",
                   )}
                   onClick={() => setView("table")}
                   aria-label="Table view"
@@ -859,8 +846,8 @@ const MyRequests = () => {
                   size="icon"
                   variant="ghost"
                   className={cn(
-                    "h-8 w-8 cursor-pointer",
-                    view === "grid" && "bg-background shadow-sm",
+                    "h-8 w-8 cursor-pointer text-muted-foreground",
+                    view === "grid" && "bg-background text-foreground shadow-sm",
                   )}
                   onClick={() => setView("grid")}
                   aria-label="Card view"

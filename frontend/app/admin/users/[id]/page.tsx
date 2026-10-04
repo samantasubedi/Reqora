@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, Package, Send, X } from "lucide-react";
 import UserDetailsCard from "../../components/UserDetailsCard";
 import UserDetailsTabs from "../../components/UserDetailsTabs";
-import StatCard from "../../components/StatCard";
+import StatCard, { StatCardTone } from "../../components/StatCard";
 
 const Page = () => {
   const params = useParams();
@@ -52,19 +52,27 @@ const Page = () => {
   const user = data.data ?? data;
   const isManager = user.role === "manager";
   const isAdmin = user.role === "admin";
-  const statConfig = isAdmin
+  const statConfig: {
+    title: string;
+    subtext: string;
+    number: number;
+    Icon: typeof Package;
+    tone: StatCardTone;
+  }[] = isAdmin
     ? [
         {
           title: "Added",
           subtext: "Resources added",
           number: user.addedResources?.length ?? 0,
           Icon: Package,
+          tone: "info",
         },
         {
           title: "Reviewed",
           subtext: "Requests reviewed",
           number: user.reviewedRequests?.length ?? 0,
           Icon: Check,
+          tone: "success",
         },
       ]
     : isManager
@@ -76,6 +84,7 @@ const Page = () => {
               (r: { status: string }) => r.status === "approved",
             ).length,
             Icon: Check,
+            tone: "success",
           },
           {
             title: "Rejected",
@@ -84,6 +93,7 @@ const Page = () => {
               (r: { status: string }) => r.status === "rejected",
             ).length,
             Icon: X,
+            tone: "danger",
           },
         ]
       : [
@@ -92,12 +102,14 @@ const Page = () => {
             subtext: "Assigned resources",
             number: user.resourceItems?.length ?? 0,
             Icon: Package,
+            tone: "info",
           },
           {
             title: "Requests",
             subtext: "Requests created",
             number: user.createdRequests?.length ?? 0,
             Icon: Send,
+            tone: "warning",
           },
         ];
 
@@ -124,6 +136,7 @@ const Page = () => {
               subtext={stat.subtext}
               number={stat.number}
               IconName={stat.Icon}
+              tone={stat.tone}
             />
           ))}
         </div>

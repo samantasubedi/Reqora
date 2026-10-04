@@ -7,7 +7,13 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type StatCardTone = "default" | "success" | "warning" | "danger" | "info";
+export type StatCardTone =
+  | "default"
+  | "success"
+  | "warning"
+  | "danger"
+  | "info"
+  | "neutral";
 
 type StatCardProps = {
   title: string;
@@ -28,6 +34,19 @@ const toneBar: Record<StatCardTone, string> = {
   warning: "bg-[var(--status-pending-text)]",
   danger: "bg-[var(--status-danger-text)]",
   info: "bg-[var(--status-info-text)]",
+  neutral: "bg-[var(--status-neutral-text)]",
+};
+
+const toneChip: Record<StatCardTone, string> = {
+  default: "bg-muted text-muted-foreground",
+  success:
+    "bg-[var(--status-success-bg)] text-[var(--status-success-text)]",
+  warning:
+    "bg-[var(--status-pending-bg)] text-[var(--status-pending-text)]",
+  danger: "bg-[var(--status-danger-bg)] text-[var(--status-danger-text)]",
+  info: "bg-[var(--status-info-bg)] text-[var(--status-info-text)]",
+  neutral:
+    "bg-[var(--status-neutral-bg)] text-[var(--status-neutral-text)]",
 };
 
 const StatCard = ({
@@ -56,8 +75,13 @@ const StatCard = ({
           </CardTitle>
         </div>
         {IconName && (
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
-            <IconName className="h-4 w-4 text-muted-foreground" />
+          <div
+            className={cn(
+              "flex h-9 w-9 items-center justify-center rounded-lg",
+              toneChip[tone]
+            )}
+          >
+            <IconName className="h-4 w-4" />
           </div>
         )}
       </CardHeader>

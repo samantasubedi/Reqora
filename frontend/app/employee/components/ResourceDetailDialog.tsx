@@ -36,19 +36,19 @@ const itemGroups: {
     key: "available",
     label: "Available",
     Icon: CheckCircle2,
-    iconClass: "text-green-600",
+    iconClass: "text-status-success-text",
   },
   {
     key: "inUse",
     label: "In Use",
     Icon: Loader,
-    iconClass: "text-sky-600",
+    iconClass: "text-status-info-text",
   },
   {
     key: "underMaintenance",
     label: "Under Maintenance",
     Icon: Wrench,
-    iconClass: "text-amber-600",
+    iconClass: "text-status-pending-text",
   },
 ];
 
@@ -128,14 +128,14 @@ const ResourceDetailBody = ({
               </p>
               <p className="text-xs text-muted-foreground">Total</p>
             </div>
-            <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-3 text-center">
-              <p className="text-2xl font-bold text-green-700 dark:text-green-400">
+            <div className="rounded-xl border border-status-success-border bg-status-success-bg p-3 text-center">
+              <p className="text-2xl font-bold text-status-success-text">
                 {availableQuantity}
               </p>
               <p className="text-xs text-muted-foreground">Available</p>
             </div>
-            <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-3 text-center">
-              <p className="text-2xl font-bold text-sky-700 dark:text-sky-400">
+            <div className="rounded-xl border border-status-info-border bg-status-info-bg p-3 text-center">
+              <p className="text-2xl font-bold text-status-info-text">
                 {resourceDetail.inUseQuantity}
               </p>
               <p className="text-xs text-muted-foreground">In use</p>
@@ -186,7 +186,8 @@ const ResourceDetailBody = ({
                           </p>
                         </div>
                         <Badge
-                          className={`capitalize ${
+                          variant="outline"
+                          className={`capitalize shadow-none ${
                             itemStatusBadgeClass[item.status] ?? ""
                           }`}
                         >
@@ -202,7 +203,7 @@ const ResourceDetailBody = ({
             })}
 
           {resourceDetail.underMaintenanceQuantity > 0 && (
-            <p className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2.5 text-sm text-amber-700 dark:text-amber-400">
+            <p className="flex items-center gap-2 rounded-lg border border-status-pending-border bg-status-pending-bg px-3 py-2.5 text-sm text-status-pending-text">
               <CircleAlert className="size-4 shrink-0" />
               {resourceDetail.underMaintenanceQuantity} item
               {resourceDetail.underMaintenanceQuantity === 1 ? "" : "s"} under
@@ -212,7 +213,7 @@ const ResourceDetailBody = ({
         </section>
       </div>
 
-      <div className="shrink-0 border-t bg-background px-6 py-4">
+      <div className="shrink-0 border-t border-border bg-background px-6 py-4">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Request this resource
         </h3>

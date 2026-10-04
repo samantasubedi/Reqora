@@ -33,7 +33,7 @@ const MyResourcesTable = ({
   return (
     <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow className="bg-muted/50 hover:bg-muted/50">
           <TableHead>Resource</TableHead>
           <TableHead>Department</TableHead>
           <TableHead>Location</TableHead>
@@ -46,14 +46,14 @@ const MyResourcesTable = ({
         {resources.map((resource) => (
           <TableRow
             key={resource.id}
-            className="cursor-pointer"
+            className="cursor-pointer transition-colors hover:bg-muted/50"
             onClick={() => onSelect(resource)}
           >
             <TableCell>
               <p className="font-medium text-foreground">{resource.name}</p>
               <p className="text-xs text-muted-foreground">{resource.type}</p>
               {resource.description && (
-                <p className="max-w-64 truncate text-xs text-muted-foreground/70">
+                <p className="max-w-64 truncate text-xs text-muted-foreground">
                   {resource.description}
                 </p>
               )}

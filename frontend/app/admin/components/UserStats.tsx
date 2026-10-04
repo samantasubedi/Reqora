@@ -18,21 +18,25 @@ const UserStats = ({ countsByRole = [], isLoading }: UserStatsProps) => {
       title: "Total Users",
       role: "all",
       IconName: Users,
+      tone: "info",
     },
     {
       title: "Employees",
       role: "employee",
       IconName: Briefcase,
+      tone: "success",
     },
     {
       title: "Managers",
       role: "manager",
       IconName: UserCog,
+      tone: "warning",
     },
     {
       title: "Admins",
       role: "admin",
       IconName: ShieldCheck,
+      tone: "info",
     },
   ];
 
@@ -63,7 +67,7 @@ const UserStats = ({ countsByRole = [], isLoading }: UserStatsProps) => {
           number={getCountByRole(config.role)}
           IconName={config.IconName}
           subtext={config.subtext}
-          highlighted={config.role === "all"}
+          tone={config.tone}
         />
       ))}
     </div>

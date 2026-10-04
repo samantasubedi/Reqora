@@ -85,10 +85,10 @@ const Page = () => {
   const safePage = Math.min(data?.currentPage ?? 1, totalPages);
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Resources</h1>
+        <p className="text-sm text-muted-foreground">
           Browse your department&apos;s resources and request what you need.
         </p>
       </div>
@@ -102,18 +102,18 @@ const Page = () => {
         <div className="flex flex-wrap items-center justify-end gap-3 border-b border-border p-3">
           <Input
             placeholder="Search resources..."
-            className="w-[50%] bg-secondary!"
+            className="w-full bg-background sm:max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
           <Filter filters={tableFilter} setFilters={handleSetFilters} />
-          <div className="flex items-center rounded-lg border border-border bg-muted p-0.5">
+          <div className="flex items-center rounded-lg border border-border bg-muted/50 p-1">
             <Button
               size="icon"
               variant="ghost"
               className={cn(
-                "h-8 w-8 cursor-pointer",
-                view === "table" && "bg-background shadow-sm",
+                "h-8 w-8 cursor-pointer text-muted-foreground",
+                view === "table" && "bg-background text-foreground shadow-sm",
               )}
               onClick={() => setView("table")}
               aria-label="Table view"
@@ -124,8 +124,8 @@ const Page = () => {
               size="icon"
               variant="ghost"
               className={cn(
-                "h-8 w-8 cursor-pointer",
-                view === "grid" && "bg-background shadow-sm",
+                "h-8 w-8 cursor-pointer text-muted-foreground",
+                view === "grid" && "bg-background text-foreground shadow-sm",
               )}
               onClick={() => setView("grid")}
               aria-label="Card view"
@@ -139,11 +139,11 @@ const Page = () => {
           view === "grid" ? (
             <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-56 rounded-2xl border bg-card animate-pulse" />
+                <div key={i} className="h-56 animate-pulse rounded-xl border bg-card" />
               ))}
             </div>
           ) : (
-            <div className="h-72 animate-pulse bg-muted/40" />
+            <div className="h-72 animate-pulse rounded-xl border bg-card" />
           )
         ) : isError ? (
           <div className="flex min-h-64 flex-col items-center justify-center gap-3 p-10 text-center">

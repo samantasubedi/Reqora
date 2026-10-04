@@ -161,7 +161,7 @@ const Page = () => {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="h-12 w-full animate-pulse rounded bg-muted"
+              className="h-12 w-full animate-pulse rounded-xl border bg-card"
             />
           ))}
         </div>
@@ -171,7 +171,7 @@ const Page = () => {
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-56 animate-pulse rounded-2xl bg-muted"
+                className="h-56 animate-pulse rounded-xl border bg-card"
               />
             ))}
           </div>
@@ -226,11 +226,11 @@ const Page = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Resources</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">My Resources</h1>
+          <p className="text-sm text-muted-foreground">
             Resources currently assigned to you.
           </p>
         </div>
@@ -247,18 +247,18 @@ const Page = () => {
         <div className="flex flex-wrap items-center justify-end gap-3 border-b border-border p-3">
           <Input
             placeholder="Search my resources..."
-            className="w-[50%] bg-secondary!"
+            className="w-full bg-background sm:max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
           <Filter filters={tableFilter} setFilters={handleSetFilters} />
-          <div className="flex items-center rounded-lg border border-border bg-muted p-0.5">
+          <div className="flex items-center rounded-lg border border-border bg-muted/50 p-1">
             <Button
               size="icon"
               variant="ghost"
               className={cn(
-                "h-8 w-8 cursor-pointer",
-                view === "table" && "bg-background shadow-sm",
+                "h-8 w-8 cursor-pointer text-muted-foreground",
+                view === "table" && "bg-background text-foreground shadow-sm",
               )}
               onClick={() => setView("table")}
               aria-label="Table view"
@@ -269,8 +269,8 @@ const Page = () => {
               size="icon"
               variant="ghost"
               className={cn(
-                "h-8 w-8 cursor-pointer",
-                view === "grid" && "bg-background shadow-sm",
+                "h-8 w-8 cursor-pointer text-muted-foreground",
+                view === "grid" && "bg-background text-foreground shadow-sm",
               )}
               onClick={() => setView("grid")}
               aria-label="Card view"
@@ -321,6 +321,7 @@ const Page = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Keep Resource</AlertDialogCancel>
             <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/80 cursor-pointer"
               disabled={releaseMutation.isPending}
               onClick={handleRelease}
             >

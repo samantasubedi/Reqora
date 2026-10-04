@@ -23,7 +23,7 @@ const MyResourcesGrid = ({
         <Card
           key={resource.id}
           onClick={() => onSelect(resource)}
-          className="flex cursor-pointer flex-col gap-4 rounded-2xl border-border/60 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+          className="flex cursor-pointer flex-col gap-4 rounded-xl border bg-card p-5 shadow-sm transition-colors hover:border-primary/40"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -47,7 +47,7 @@ const MyResourcesGrid = ({
               {resource.location}
             </p>
             {resource.description && (
-              <p className="line-clamp-2 pt-1 text-xs text-muted-foreground">
+              <p className="line-clamp-2 pt-1 text-sm text-muted-foreground">
                 {resource.description}
               </p>
             )}

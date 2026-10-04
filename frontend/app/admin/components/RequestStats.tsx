@@ -1,5 +1,5 @@
 import React from "react";
-import StatCard from "./StatCard";
+import StatCard, { StatCardTone } from "./StatCard";
 import {
   CircleCheck,
   Clock,
@@ -22,42 +22,49 @@ const RequestStats = ({ requests = [], isLoading }: RequestStatsProps) => {
     statusKey: "all" | "pending" | "approved" | "rejected" | "cancelled" | "forwarded";
     IconName: LucideIcon;
     subtext: string;
+    tone: StatCardTone;
   }[] = [
     {
       title: "Total Requests",
       statusKey: "all",
       IconName: FileQuestion,
       subtext: "all requests",
+      tone: "info",
     },
     {
       title: "Pending",
       statusKey: "pending",
       IconName: Clock,
       subtext: "awaiting review",
+      tone: "warning",
     },
     {
       title: "Approved",
       statusKey: "approved",
       IconName: CircleCheck,
       subtext: "fulfilled requests",
+      tone: "success",
     },
     {
       title: "Rejected",
       statusKey: "rejected",
       IconName: XCircle,
       subtext: "declined requests",
+      tone: "danger",
     },
     {
       title: "Forwarded",
       statusKey: "forwarded",
       IconName: Send,
       subtext: "needs admin action",
+      tone: "info",
     },
     {
       title: "Cancelled",
       statusKey: "cancelled",
       IconName: ListChecks,
       subtext: "withdrawn requests",
+      tone: "neutral",
     },
   ];
 
@@ -90,7 +97,7 @@ const RequestStats = ({ requests = [], isLoading }: RequestStatsProps) => {
           number={getCountByStatus(config.statusKey)}
           subtext={config.subtext}
           IconName={config.IconName}
-          highlighted={config.statusKey === "all"}
+          tone={config.tone}
         />
       ))}
     </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import StatCard from "./StatCard";
+import StatCard, { StatCardTone } from "./StatCard";
 import {
   Package,
   Check,
@@ -13,6 +13,7 @@ export interface statCardInterface {
   statusKey?: "all" | "available" | "inUse" | "underMaintenance";
   IconName?: LucideIcon;
   subtext?: string;
+  tone?: StatCardTone;
   bgColor?: string;
   textColor?: string;
   borderColor?: string;
@@ -35,21 +36,25 @@ const ResourceStats = ({
       title: "Total Resources",
       statusKey: "all",
       IconName: Package,
+      tone: "info",
     },
     {
       title: "Available",
       statusKey: "available",
       IconName: Check,
+      tone: "success",
     },
     {
       title: "In Use",
       statusKey: "inUse",
       IconName: TrendingUp,
+      tone: "warning",
     },
     {
       title: "Under Maintenance",
       statusKey: "underMaintenance",
       IconName: CircleAlert,
+      tone: "danger",
     },
   ];
 
@@ -94,7 +99,7 @@ const ResourceStats = ({
             number={currentCount}
             IconName={config.IconName}
             subtext={subtext}
-            highlighted={config.statusKey === "all"}
+            tone={config.tone}
           />
         );
       })}

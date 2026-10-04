@@ -29,7 +29,7 @@ const EmployeeResourceTable = ({
   return (
     <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow className="bg-muted/50 hover:bg-muted/50">
           <TableHead>Resource</TableHead>
           <TableHead>Type</TableHead>
           <TableHead>Location</TableHead>
@@ -61,7 +61,7 @@ const EmployeeResourceTable = ({
           resources.map((resource) => (
             <TableRow
               key={resource.id}
-              className="cursor-pointer"
+              className="cursor-pointer transition-colors hover:bg-muted/50"
               onClick={() => onSelect(resource)}
             >
               <TableCell>
@@ -71,7 +71,7 @@ const EmployeeResourceTable = ({
                   {resource.department}
                 </p>
                 {resource.description && (
-                  <p className="max-w-64 truncate text-xs text-muted-foreground/70">
+                  <p className="max-w-64 truncate text-xs text-muted-foreground">
                     {resource.description}
                   </p>
                 )}

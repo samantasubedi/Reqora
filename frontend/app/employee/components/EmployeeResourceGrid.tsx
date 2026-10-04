@@ -21,7 +21,7 @@ const EmployeeResourceGrid = ({
 }: EmployeeResourceGridProps) => {
   if (resources.length === 0) {
     return (
-      <div className="flex min-h-64 w-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed p-10 text-center">
+      <div className="flex min-h-64 w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-10 text-center">
         <div className="rounded-full bg-muted p-4">
           <PackageX className="size-10 text-muted-foreground" />
         </div>
@@ -41,7 +41,7 @@ const EmployeeResourceGrid = ({
         <Card
           key={resource.id}
           onClick={() => onSelect(resource)}
-          className="flex cursor-pointer flex-col gap-4 rounded-2xl border-border/60 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+          className="flex cursor-pointer flex-col gap-4 rounded-xl border bg-card p-5 shadow-sm transition-colors hover:border-primary/40"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -84,7 +84,7 @@ const EmployeeResourceGrid = ({
           <div className="flex items-center justify-between gap-3 border-t pt-3">
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-sky-500" />
+                <span className="size-1.5 rounded-full bg-status-info-text" />
                 {resource.inUseQuantity} in use
               </span>
               <span className="flex items-center gap-1.5">

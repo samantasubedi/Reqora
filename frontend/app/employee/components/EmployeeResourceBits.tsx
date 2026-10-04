@@ -16,19 +16,19 @@ const levelStyles: Record<
   { dot: string; bar: string; pill: string }
 > = {
   available: {
-    dot: "bg-green-500",
-    bar: "bg-green-500",
-    pill: "bg-green-500/10 text-green-700 dark:text-green-400",
+    dot: "bg-status-success-text",
+    bar: "bg-status-success-text",
+    pill: "bg-status-success-bg text-status-success-text border-status-success-border border",
   },
   low: {
-    dot: "bg-amber-500",
-    bar: "bg-amber-500",
-    pill: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    dot: "bg-status-pending-text",
+    bar: "bg-status-pending-text",
+    pill: "bg-status-pending-bg text-status-pending-text border-status-pending-border border",
   },
   out: {
-    dot: "bg-red-500",
-    bar: "bg-red-500",
-    pill: "bg-red-500/10 text-red-700 dark:text-red-400",
+    dot: "bg-status-danger-text",
+    bar: "bg-status-danger-text",
+    pill: "bg-status-danger-bg text-status-danger-text border-status-danger-border border",
   },
 };
 
@@ -98,9 +98,11 @@ export const AvailabilityBar = ({
 };
 
 export const itemStatusBadgeClass: Record<string, string> = {
-  available: "bg-green-500/10 text-green-700 dark:text-green-400",
-  inUse: "bg-sky-500/10 text-sky-700 dark:text-sky-400",
-  underMaintenance: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  available:
+    "bg-status-success-bg text-status-success-text border-status-success-border border",
+  inUse: "bg-status-info-bg text-status-info-text border-status-info-border border",
+  underMaintenance:
+    "bg-status-pending-bg text-status-pending-text border-status-pending-border border",
 };
 
 export const ItemStatusPill = ({

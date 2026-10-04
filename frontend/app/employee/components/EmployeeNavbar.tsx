@@ -144,7 +144,7 @@ const EmployeeNavbar = () => {
               <DropdownMenuSeparator />
               <Button
                 variant={"secondary"}
-                className="min-w-full flex gap-2 justify-start cursor-pointer"
+                className="flex w-full cursor-pointer justify-start gap-2"
                 onClick={() => router.push("/profile")}
               >
                 <UserRound className="size-4" />
@@ -152,7 +152,7 @@ const EmployeeNavbar = () => {
               </Button>
               <Button
                 variant={"secondary"}
-                className="min-w-full flex gap-2 justify-start cursor-pointer hover:bg-muted"
+                className="flex w-full cursor-pointer justify-start gap-2"
                 onClick={handleLeave}
               >
                 <Building2 className="size-4" />
@@ -165,7 +165,7 @@ const EmployeeNavbar = () => {
           </div>
       </div>
 
-      <nav className="flex items-center gap-1 overflow-x-auto px-4 pb-2 lg:hidden">
+      <nav className="flex items-center gap-1 overflow-x-auto border-t border-border px-4 py-2 lg:hidden">
         {renderNavLinks()}
       </nav>
     </header>

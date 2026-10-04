@@ -55,7 +55,7 @@ const MyResourceDetailModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {resource && (
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <div className="flex items-start justify-between gap-3 pr-6">
               <div className="min-w-0">
@@ -96,7 +96,7 @@ const MyResourceDetailModal = ({
             </div>
           )}
 
-          <div className="flex justify-end border-t pt-4">
+          <div className="flex justify-end border-t border-border pt-4">
             <Button
               type="button"
               variant="secondary"

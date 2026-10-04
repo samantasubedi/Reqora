@@ -37,21 +37,21 @@ import { useMyItems, useMyRequests } from "@/app/employee/hooks/requestHooks";
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
   pending:
-    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
+    "bg-status-pending-bg text-status-pending-text border-status-pending-border",
   approved:
-    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+    "bg-status-success-bg text-status-success-text border-status-success-border",
   rejected:
-    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
+    "bg-status-danger-bg text-status-danger-text border-status-danger-border",
   cancelled:
-    "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
+    "bg-status-neutral-bg text-status-neutral-text border-status-neutral-border",
   forwarded:
-    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800",
+    "bg-status-info-bg text-status-info-text border-status-info-border",
   inUse:
-    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+    "bg-status-info-bg text-status-info-text border-status-info-border",
   underMaintenance:
-    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
+    "bg-status-pending-bg text-status-pending-text border-status-pending-border",
   available:
-    "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800",
+    "bg-status-success-bg text-status-success-text border-status-success-border",
 };
 
 const RequestStatusBadge = ({ status }: { status: string }) => (
@@ -124,54 +124,42 @@ const EmployeeDashboard = () => {
       number: counts.total,
       subtext: "All time",
       IconName: Package,
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-800 dark:text-blue-200",
-      borderColor: "border-blue-500",
+      tone: "default",
     },
     {
       title: "Pending",
       number: counts.pending,
       subtext: "Awaiting review",
       IconName: Clock,
-      bgColor: "bg-amber-100",
-      textColor: "text-amber-800 dark:text-amber-200",
-      borderColor: "border-amber-500",
+      tone: "warning",
     },
     {
       title: "Approved",
       number: counts.approved,
       subtext: "Approved requests",
       IconName: CheckCircle2,
-      bgColor: "bg-green-100",
-      textColor: "text-green-800 dark:text-green-200",
-      borderColor: "border-green-500",
+      tone: "success",
     },
     {
       title: "Rejected",
       number: counts.rejected,
       subtext: "Rejected requests",
       IconName: XCircle,
-      bgColor: "bg-red-100",
-      textColor: "text-red-800 dark:text-red-200",
-      borderColor: "border-red-500",
+      tone: "danger",
     },
     {
       title: "Cancelled",
       number: counts.cancelled,
       subtext: "Cancelled by you",
       IconName: Ban,
-      bgColor: "bg-gray-100",
-      textColor: "text-gray-800 dark:text-gray-200",
-      borderColor: "border-gray-500",
+      tone: "neutral",
     },
     {
       title: "Forwarded",
       number: counts.forwarded,
       subtext: "Escalated to admin",
       IconName: Forward,
-      bgColor: "bg-violet-100",
-      textColor: "text-violet-800 dark:text-violet-200",
-      borderColor: "border-violet-500",
+      tone: "info",
     },
   ];
 
@@ -186,20 +174,20 @@ const EmployeeDashboard = () => {
   const showRequestsSkeleton = requestsLoading || recentLoading;
 
   return (
-    <div className="flex-1 space-y-8 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
+    <div className="w-full space-y-6 p-6 pb-8">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
             Manage your assigned resources and track request progress.
           </p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button
-            className=" text-bold!  duration-300 bg-primary transition-all cursor-pointer"
+            className="cursor-pointer gap-2 shadow-sm"
             onClick={() => router.push("/employee/resources")}
           >
-            <Plus className="mr-2 h-4 w-4" /> New Request
+            <Plus className="h-4 w-4" /> New Request
           </Button>
         </div>
       </div>
@@ -209,19 +197,17 @@ const EmployeeDashboard = () => {
           ? Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[180px] min-w-[240px] flex-1 animate-pulse rounded-xl bg-muted"
+                className="h-[118px] min-w-[240px] flex-1 animate-pulse rounded-xl border bg-card"
               />
             ))
           : statCards.map((card) => (
-              <div key={card.title} className="min-w-[240px] flex-1">
+              <div key={card.title} className="min-w-[240px] flex-1 snap-start">
                 <StatCard
                   title={card.title!}
                   number={card.number!}
                   IconName={card.IconName}
                   subtext={card.subtext}
-                  bgColor={card.bgColor!}
-                  textColor={card.textColor!}
-                  borderColor={card.borderColor!}
+                  tone={card.tone}
                 />
               </div>
             ))}

@@ -89,35 +89,35 @@ type ActivityEvent = {
 
 const STATUS_BADGE_STYLES: Record<RequestStatus, string> = {
   pending:
-    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
+    "bg-status-pending-bg text-status-pending-text border-status-pending-border",
   approved:
-    "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+    "bg-status-success-bg text-status-success-text border-status-success-border",
   rejected:
-    "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
+    "bg-status-danger-bg text-status-danger-text border-status-danger-border",
   cancelled:
-    "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
+    "bg-status-neutral-bg text-status-neutral-text border-status-neutral-border",
   forwarded:
-    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800",
+    "bg-status-info-bg text-status-info-text border-status-info-border",
 };
 
 const PRIORITY_BADGE_STYLES: Record<Priority, string> = {
-  low: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
+  low: "bg-status-success-bg text-status-success-text border-status-success-border",
   medium:
-    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
-  high: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-800",
+    "bg-status-pending-bg text-status-pending-text border-status-pending-border",
+  high: "bg-status-danger-bg text-status-danger-text border-status-danger-border",
 };
 
 const STATUS_BANNER_STYLES: Record<RequestStatus, string> = {
   pending:
-    "from-amber-500/15 via-transparent to-transparent text-amber-700 dark:text-amber-300",
+    "from-amber-500/15 via-transparent to-transparent text-status-pending-text",
   approved:
-    "from-emerald-500/15 via-transparent to-transparent text-emerald-700 dark:text-emerald-300",
+    "from-emerald-500/15 via-transparent to-transparent text-status-success-text",
   rejected:
-    "from-rose-500/15 via-transparent to-transparent text-rose-700 dark:text-rose-300",
+    "from-rose-500/15 via-transparent to-transparent text-status-danger-text",
   cancelled:
-    "from-gray-500/15 via-transparent to-transparent text-gray-700 dark:text-gray-300",
+    "from-gray-500/15 via-transparent to-transparent text-status-neutral-text",
   forwarded:
-    "from-violet-500/15 via-transparent to-transparent text-violet-700 dark:text-violet-300",
+    "from-violet-500/15 via-transparent to-transparent text-status-info-text",
 };
 
 const STATUS_BANNER_ICON: Record<RequestStatus, typeof Hourglass> = {
@@ -323,7 +323,7 @@ const RequestDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="p-8 space-y-6">
+      <div className="space-y-6 p-6">
         <Skeleton className="h-10 w-64" />
         <Skeleton className="h-32 w-full" />
         <div className="grid gap-6 lg:grid-cols-2">
@@ -337,7 +337,7 @@ const RequestDetails = () => {
 
   if (isError || !detail) {
     return (
-      <div className="p-8">
+      <div className="p-6">
         <Card className="mx-auto max-w-lg">
           <CardContent className="flex flex-col items-center gap-3 px-6 py-12 text-center">
             <FileX className="size-12 text-muted-foreground" />
@@ -438,8 +438,8 @@ const RequestDetails = () => {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -450,11 +450,11 @@ const RequestDetails = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               Request Details
             </h1>
-            <p className="text-muted-foreground font-mono text-sm">
+            <p className="font-mono text-xs text-muted-foreground">
               {id.slice(0, 8)}
             </p>
           </div>
@@ -498,7 +498,7 @@ const RequestDetails = () => {
         </div>
       </div>
 
-      <Card className="relative overflow-hidden border-none">
+      <Card className="relative overflow-hidden">
         <div
           className={cn(
             "absolute inset-0 bg-radial via-transparent to-transparent pointer-events-none",
@@ -508,16 +508,16 @@ const RequestDetails = () => {
         <CardContent className="relative z-10 flex items-center gap-4 py-6">
           <div
             className={cn(
-              "flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-muted",
+              "flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-muted",
               status === "pending"
-                ? "text-amber-600 dark:text-amber-400"
+                ? "text-status-pending-text"
                 : status === "approved"
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-status-success-text"
                   : status === "rejected"
-                    ? "text-rose-600 dark:text-rose-400"
+                    ? "text-status-danger-text"
                     : status === "forwarded"
-                      ? "text-violet-600 dark:text-violet-400"
-                      : "text-gray-600 dark:text-gray-400",
+                      ? "text-status-info-text"
+                      : "text-status-neutral-text",
             )}
           >
             <StatusIcon className="size-8" />
@@ -538,7 +538,7 @@ const RequestDetails = () => {
             </div>
             <h2 className="text-2xl font-bold">{resourceName}</h2>
             {note && (
-              <p className="mt-1 text-sm text-rose-600 dark:text-rose-400 font-medium">
+              <p className="mt-1 text-sm font-medium text-status-danger-text">
                 Review note: {note}
               </p>
             )}
@@ -605,7 +605,7 @@ const RequestDetails = () => {
               <div className="sm:col-span-2">
                 <div className="flex items-start gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
-                    <PackageCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+                    <PackageCheck className="size-4 text-status-success-text" />
                   </div>
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -642,7 +642,7 @@ const RequestDetails = () => {
                       </span>
                       <Badge
                         variant="outline"
-                        className="font-medium bg-card capitalize shadow-none"
+                        className="bg-background font-medium capitalize shadow-none"
                       >
                         {resourceType}
                       </Badge>
@@ -685,7 +685,7 @@ const RequestDetails = () => {
                         state === "done"
                           ? "border-primary bg-primary text-primary-foreground"
                           : state === "current"
-                            ? "border-amber-400 bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400"
+                            ? "border-status-pending-border bg-status-pending-bg text-status-pending-text"
                             : "border-border bg-muted text-muted-foreground",
                       )}
                     >

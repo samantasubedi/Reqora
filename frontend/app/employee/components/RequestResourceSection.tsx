@@ -55,7 +55,7 @@ const RequestResourceSection = ({
 
   if (availableQuantity <= 0) {
     return (
-      <p className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2.5 text-sm text-red-700 dark:text-red-400">
+      <p className="flex items-center gap-2 rounded-lg border border-status-danger-border bg-status-danger-bg px-3 py-2.5 text-sm text-status-danger-text">
         <PackageX className="size-4 shrink-0" />
         No items of this resource are currently available to request.
       </p>
