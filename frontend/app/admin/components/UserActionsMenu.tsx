@@ -181,14 +181,14 @@ const UserActionsMenu = ({ user }: { user: userType }) => {
             className="cursor-pointer"
             onClick={openRoleDialog}
           >
-            <Shield className="text-amber-500" />
+            <Shield className="text-muted-foreground" />
             Change Role
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer"
             onClick={openDepartmentDialog}
           >
-            <Users className="text-blue-500" />
+            <Users className="text-muted-foreground" />
             Change Department
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-1" />
@@ -197,7 +197,7 @@ const UserActionsMenu = ({ user }: { user: userType }) => {
             className="cursor-pointer"
             onClick={requestDelete}
           >
-            <Trash2 className="text-red-500" />
+            <Trash2 />
             Remove User
           </DropdownMenuItem>
         </DropdownMenuContent>

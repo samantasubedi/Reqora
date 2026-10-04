@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -8,13 +7,7 @@ import {
 import { Building2, Mail, User as UserIcon } from "lucide-react";
 import { userType } from "./UserTable";
 import UserActionsMenu from "./UserActionsMenu";
-
-
-const roleBadgeStyle: Record<string, string> = {
-  admin: "bg-red-100 text-red-700 border-red-200",
-  manager: "bg-amber-100 text-amber-700 border-amber-200",
-  employee: "bg-green-100 text-green-700 border-green-200",
-};
+import StatusBadge from "./ui/StatusBadge";
 
 export default function UserDetailsCard({ user }: { user: userType }) {
   const initials = user.username
@@ -47,12 +40,7 @@ export default function UserDetailsCard({ user }: { user: userType }) {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">Role</p>
-            <Badge
-              variant="outline"
-              className={`font-semibold capitalize ${roleBadgeStyle[user.role ?? ""] ?? ""}`}
-            >
-              {user.role ?? "N/A"}
-            </Badge>
+            <StatusBadge status={user.role} />
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">

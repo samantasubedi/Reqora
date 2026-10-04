@@ -24,7 +24,7 @@ const LogoutDialog = () => {
         <AlertDialogTrigger asChild className="flex gap-2 w-full">
           <Button
             variant={"secondary"}
-            className="min-w-full  hover:text-red-500 flex gap-2 justify-start"
+            className="min-w-full flex gap-2 justify-start"
           >
             <Icon icon="line-md:logout" className="size-5" />{" "}
             <span className="font-semibold">Logout</span>
@@ -40,7 +40,7 @@ const LogoutDialog = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="text-white bg-red-600 hover:bg-red-500 cursor-pointer"
+              variant="destructive"
               onClick={() => handleLogout(router)}
             >
               Logout

@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import StatusBadge from "../../components/ui/StatusBadge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,13 +31,11 @@ import {
 import { Progress } from "@/components/ui/progress";
 import {
   ResourceTabs,
-  ResourceItemDetail,
 } from "@/components/others/ResourceTabs";
 import { useRouter } from "next/navigation";
 
 import { useResource, useDeleteResource } from "../../hooks/resourceHooks";
 import ResourceDetailsSkeleton from "../../components/skeletonLoaders/resourceDetailsSkeleton";
-import { ResourceStatus } from "../(with-sidebar)/page";
 import { resourceDetailType } from "../../apis/resourceApi";
 
 const ResourceDetails = () => {
@@ -86,7 +84,7 @@ const ResourceDetails = () => {
       value: resourceDetail?.inUseQuantity,
     },
     {
-      label: "Under Maintainence",
+      label: "Under Maintenance",
       value: resourceDetail?.underMaintenanceQuantity,
     },
   ];
@@ -167,35 +165,34 @@ const ResourceDetails = () => {
               </div>
 
               <div>
-                <h1 className="text-3xl font-bold">{resourceDetail.name}</h1>
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  {resourceDetail.name}
+                </h1>
 
-                <p className="text-muted-foreground">{resourceDetail.type}</p>
+                <p className="text-sm text-muted-foreground">
+                  {resourceDetail.type}
+                </p>
               </div>
             </div>
 
-            <Badge
-              className={
-                resourceDetail.availability
-                  ? "border-green-500 text-green-700 bg-green-100"
-                  : "border-red-500 text-red-700 bg-red-100"
-              }
+            <StatusBadge
+              status={resourceDetail.availability ? "available" : "rejected"}
             >
               {resourceDetail.availability ? "Available" : "Not Available"}
-            </Badge>
+            </StatusBadge>
           </div>
 
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {cardData.map((curr: { label: string; value: number }) => {
               return (
-                <Card key={curr.label}>
-                  <CardContent className="p-4 text-center">
-                    <p className="text-muted-foreground text-sm">
-                      {curr.label}
-                    </p>
+                <div
+                  key={curr.label}
+                  className="rounded-lg border bg-muted/40 p-4 text-center"
+                >
+                  <p className="text-sm text-muted-foreground">{curr.label}</p>
 
-                    <h3 className="text-2xl font-bold">{curr.value}</h3>
-                  </CardContent>
-                </Card>
+                  <p className="text-2xl font-bold">{curr.value}</p>
+                </div>
               );
             })}
           </div>

@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, ClipboardList, Loader2, X } from "lucide-react";
 import { requestType } from "../apis/requestApi";
@@ -15,22 +14,21 @@ import { useReviewRequest } from "../hooks/requestHooks";
 import { useQueryClient } from "@tanstack/react-query";
 import TableEmpty, { tableEmptyType } from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
+import { TableError } from "./TableError";
 import { toast } from "react-toastify";
-
-const statusBadge: Record<string, string> = {
-  pending: "bg-amber-100 text-amber-700 border-amber-200",
-  approved: "bg-green-100 text-green-700 border-green-200",
-  rejected: "bg-red-100 text-red-700 border-red-200",
-  cancelled: "bg-gray-100 text-gray-700 border-gray-200",
-  forwarded: "bg-violet-100 text-violet-700 border-violet-200",
-};
+import { Card, CardContent } from "@/components/ui/card";
+import StatusBadge from "./ui/StatusBadge";
 
 const RequestTable = ({
   requests,
   isLoading,
+  isError = false,
+  onRetry,
 }: {
   requests?: requestType[];
   isLoading: boolean;
+  isError?: boolean;
+  onRetry?: () => void;
 }) => {
   const queryClient = useQueryClient();
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -58,8 +56,12 @@ const RequestTable = ({
   };
 
   return (
-    <div className="mt-5 mb-5 px-3">
-      <Table>
+    <Card>
+      <CardContent className="pt-6">
+        {isError ? (
+          <TableError onRetry={onRetry ?? (() => {})} />
+        ) : (
+          <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Requester</TableHead>
@@ -91,12 +93,7 @@ const RequestTable = ({
                   </TableCell>
                   <TableCell>{request.requestedQuantity}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={`font-semibold capitalize ${statusBadge[request.status] ?? ""}`}
-                    >
-                      {request.status}
-                    </Badge>
+                    <StatusBadge status={request.status} />
                   </TableCell>
                   <TableCell>
                     {new Date(request.createdAt).toLocaleDateString()}
@@ -106,7 +103,6 @@ const RequestTable = ({
                       <div className="flex gap-2">
                         <Button
                           size="sm"
-                          className="cursor-pointer bg-green-600 text-white hover:bg-green-700"
                           disabled={actionLoading !== null}
                           onClick={() =>
                             handleReview(request.requestId, "approved")
@@ -122,7 +118,7 @@ const RequestTable = ({
                         </Button>
                         <Button
                           size="sm"
-                          className="cursor-pointer bg-red-600 text-white hover:bg-red-700"
+                          variant="destructive"
                           disabled={actionLoading !== null}
                           onClick={() =>
                             handleReview(request.requestId, "rejected")
@@ -149,8 +145,10 @@ const RequestTable = ({
             )}
           </TableBody>
         )}
-      </Table>
-    </div>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

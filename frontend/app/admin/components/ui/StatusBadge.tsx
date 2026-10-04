@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 type StatusTone = "pending" | "success" | "danger" | "info" | "neutral";
 
@@ -47,9 +48,11 @@ const toneClass: Record<StatusTone, string> = {
 export default function StatusBadge({
   status,
   className,
+  children,
 }: {
   status: string | null | undefined;
   className?: string;
+  children?: ReactNode;
 }) {
   const key = (status ?? "N/A").toLowerCase().replace(/[\s_-]/g, "");
   const tone = statusToTone[key] ?? "neutral";
@@ -58,7 +61,7 @@ export default function StatusBadge({
       variant="outline"
       className={cn("font-medium capitalize", toneClass[tone], className)}
     >
-      {status ?? "N/A"}
+      {children ?? status ?? "N/A"}
     </Badge>
   );
 }

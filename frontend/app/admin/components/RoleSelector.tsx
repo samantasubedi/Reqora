@@ -37,7 +37,7 @@ const RoleSelector: FC<{
           >
             <div>
               <div
-                className={`font-semibold text-lg font-sans ${value === curr.role.toLowerCase() ? "text-primary-foreground" : "text-primary"}`}
+                className={`text-lg font-semibold ${value === curr.role.toLowerCase() ? "text-primary-foreground" : "text-foreground"}`}
               >
                 {curr.role}
               </div>

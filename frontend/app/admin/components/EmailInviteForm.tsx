@@ -13,18 +13,14 @@ import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutationError } from "@/types/global";
 import RoleAndExpiryTime from "./RoleAndExpiryTime";
 import { useEmailInvite } from "../hooks/userHooks";
 
-const fieldLabel =
-  "text-sm font-semibold uppercase tracking-wide text-card-foreground";
-const inputClass =
-  "h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition";
-const textareaClass =
-  "rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition";
+const fieldLabel = "text-sm font-medium";
+const inputClass = "h-10";
+const textareaClass = "";
 
 const schema = z.object({
   email: z.email("Please enter an email").min(1, "Please enter an email"),
@@ -74,12 +70,12 @@ const EmailInviteForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto mt-6 shadow-sm border border-border bg-card rounded-2xl">
+    <Card className="mx-auto mt-6 w-full max-w-2xl shadow-sm">
       <CardHeader>
-        <CardTitle className="text-center text-2xl text-primary font-bold">
+        <CardTitle className="text-xl font-semibold tracking-tight">
           Send an Invitation Email
         </CardTitle>
-        <CardDescription className="text-center">
+        <CardDescription>
           Invite a teammate by email and assign their role and access.
         </CardDescription>
       </CardHeader>
@@ -133,8 +129,9 @@ const EmailInviteForm = () => {
         <CardFooter>
           <Button
             type="submit"
+            size="lg"
             disabled={inviteMutation.isPending}
-            className="w-full h-11 cursor-pointer mt-6 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-6 w-full"
           >
             {inviteMutation.isPending ? "Sending..." : "Send Invitation"}
           </Button>

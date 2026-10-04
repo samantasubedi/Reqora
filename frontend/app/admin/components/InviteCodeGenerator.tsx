@@ -13,14 +13,12 @@ import RoleAndExpiryTime from "./RoleAndExpiryTime";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { T_MutationError } from "@/types/global";
 import { CopyButton } from "@/components/animate-ui/components/buttons/copy";
 import { useCodeInvite } from "../hooks/userHooks";
 
-const fieldLabel =
-  "text-sm font-semibold uppercase tracking-wide text-card-foreground";
+const fieldLabel = "text-sm font-medium";
 
 const schema = z.object({
   role: z.string().min(1, "please select a role"),
@@ -63,12 +61,12 @@ const InviteCodeGenerator = () => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto mt-6 shadow-sm border border-border bg-card rounded-2xl">
+    <Card className="mx-auto mt-6 w-full max-w-2xl shadow-sm">
       <CardHeader>
-        <CardTitle className="text-center text-2xl text-primary font-bold">
+        <CardTitle className="text-xl font-semibold tracking-tight">
           Generate Invite Code
         </CardTitle>
-        <CardDescription className="text-center">
+        <CardDescription>
           Create a one-time code a teammate can use to join your workspace.
         </CardDescription>
       </CardHeader>
@@ -126,14 +124,15 @@ const InviteCodeGenerator = () => {
         <CardFooter className="flex flex-col gap-5">
           <Button
             type="submit"
+            size="lg"
             disabled={inviteMutation.isPending}
-            className="w-full h-11 mt-6 cursor-pointer rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-6 w-full"
           >
             {inviteMutation.isPending ? "Generating..." : "Generate Code"}
           </Button>
 
-          <div className="w-full bg-accent p-3 rounded-lg">
-            <span className="font-bold text-foreground">Note :</span>
+          <div className="w-full rounded-lg bg-accent p-3">
+            <span className="font-semibold text-foreground">Note:</span>
             <ol className="list-disc pl-5 mt-1 space-y-1">
               <li className="text-muted-foreground">
                 This code can be used only <strong>once</strong> and will{" "}

@@ -39,8 +39,8 @@ const Page = () => {
             </CardContent>
           </Card>
           <div className="flex flex-col gap-4">
-            <Skeleton className="h-[180px] w-full rounded-xl" />
-            <Skeleton className="h-[180px] w-full rounded-xl" />
+            <Skeleton className="h-[118px] w-full rounded-xl" />
+            <Skeleton className="h-[118px] w-full rounded-xl" />
           </div>
         </div>
       </div>
@@ -59,22 +59,12 @@ const Page = () => {
           subtext: "Resources added",
           number: user.addedResources?.length ?? 0,
           Icon: Package,
-          colors: {
-            bg: "bg-blue-100",
-            text: "text-blue-800",
-            border: "border-blue-500",
-          },
         },
         {
           title: "Reviewed",
           subtext: "Requests reviewed",
           number: user.reviewedRequests?.length ?? 0,
           Icon: Check,
-          colors: {
-            bg: "bg-green-100",
-            text: "text-green-800",
-            border: "border-green-500",
-          },
         },
       ]
     : isManager
@@ -86,11 +76,6 @@ const Page = () => {
               (r: { status: string }) => r.status === "approved",
             ).length,
             Icon: Check,
-            colors: {
-              bg: "bg-green-100",
-              text: "text-green-800",
-              border: "border-green-500",
-            },
           },
           {
             title: "Rejected",
@@ -99,11 +84,6 @@ const Page = () => {
               (r: { status: string }) => r.status === "rejected",
             ).length,
             Icon: X,
-            colors: {
-              bg: "bg-red-100",
-              text: "text-red-800",
-              border: "border-red-500",
-            },
           },
         ]
       : [
@@ -112,22 +92,12 @@ const Page = () => {
             subtext: "Assigned resources",
             number: user.resourceItems?.length ?? 0,
             Icon: Package,
-            colors: {
-              bg: "bg-blue-100",
-              text: "text-blue-800",
-              border: "border-blue-500",
-            },
           },
           {
             title: "Requests",
             subtext: "Requests created",
             number: user.createdRequests?.length ?? 0,
             Icon: Send,
-            colors: {
-              bg: "bg-amber-100",
-              text: "text-amber-800",
-              border: "border-amber-500",
-            },
           },
         ];
 
@@ -154,9 +124,6 @@ const Page = () => {
               subtext={stat.subtext}
               number={stat.number}
               IconName={stat.Icon}
-              bgColor={stat.colors.bg}
-              textColor={stat.colors.text}
-              borderColor={stat.colors.border}
             />
           ))}
         </div>

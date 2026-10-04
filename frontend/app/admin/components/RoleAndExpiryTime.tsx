@@ -17,10 +17,8 @@ type propType = {
   };
 };
 
-const fieldLabel =
-  "text-sm font-semibold uppercase tracking-wide text-card-foreground";
-const selectClass =
-  "h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition";
+const fieldLabel = "text-sm font-medium";
+const selectClass = "h-10";
 
 const roleArray = [
   {
@@ -77,7 +75,7 @@ const RoleAndExpiryTime = ({ onChange, values, errors }: propType) => {
               >
                 <div>
                   <div
-                    className={`font-semibold text-lg font-sans ${selected ? "text-primary-foreground" : "text-primary"}`}
+                    className={`text-lg font-semibold ${selected ? "text-primary-foreground" : "text-foreground"}`}
                   >
                     {curr.role}
                   </div>

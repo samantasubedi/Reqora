@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -10,15 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardCheck, Package, PlusCircle, Send } from "lucide-react";
-
-const statusBadge: Record<string, string> = {
-  available: "bg-green-100 text-green-700 border-green-200",
-  inUse: "bg-blue-100 text-blue-700 border-blue-200",
-  underMaintenance: "bg-amber-100 text-amber-700 border-amber-200",
-  pending: "bg-amber-100 text-amber-700 border-amber-200",
-  approved: "bg-green-100 text-green-700 border-green-200",
-  rejected: "bg-red-100 text-red-700 border-red-200",
-};
+import StatusBadge from "./ui/StatusBadge";
 
 type ResourceItem = {
   id: string;
@@ -97,12 +88,7 @@ const AcquiredTable = ({ items }: { items: ResourceItem[] }) => (
           <TableCell className="capitalize">{item.resource.type}</TableCell>
           <TableCell>{item.location}</TableCell>
           <TableCell>
-            <Badge
-              variant="outline"
-              className={`font-semibold capitalize ${statusBadge[item.status] ?? ""}`}
-            >
-              {item.status}
-            </Badge>
+            <StatusBadge status={item.status} />
           </TableCell>
           <TableCell>{formatDate(item.createdAt)}</TableCell>
         </TableRow>
@@ -130,12 +116,7 @@ const RequestedTable = ({ requests }: { requests: UserRequest[] }) => (
           <TableCell className="capitalize">{req.resource?.type}</TableCell>
           <TableCell>{req.requestedQuantity}</TableCell>
           <TableCell>
-            <Badge
-              variant="outline"
-              className={`font-semibold capitalize ${statusBadge[req.status] ?? ""}`}
-            >
-              {req.status}
-            </Badge>
+            <StatusBadge status={req.status} />
           </TableCell>
           <TableCell>{req.reviewedBy?.username ?? "—"}</TableCell>
           <TableCell>{formatDate(req.createdAt)}</TableCell>
@@ -167,12 +148,7 @@ const ReviewedTable = ({ requests }: { requests: ReviewedRequest[] }) => (
           <TableCell className="capitalize">{req.resource.type}</TableCell>
           <TableCell>{req.requestedQuantity}</TableCell>
           <TableCell>
-            <Badge
-              variant="outline"
-              className={`font-semibold capitalize ${statusBadge[req.status] ?? ""}`}
-            >
-              {req.status}
-            </Badge>
+            <StatusBadge status={req.status} />
           </TableCell>
           <TableCell>{formatDate(req.createdAt)}</TableCell>
         </TableRow>

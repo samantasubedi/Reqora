@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const DashboardSkeleton = () => {
   return (
-    <div className="min-h-screen w-full space-y-6 p-3">
+    <div className="min-h-screen w-full space-y-6 p-6">
       <StatCardsSkeleton />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -13,7 +13,7 @@ export const DashboardSkeleton = () => {
         <ChartSkeleton />
       </div>
 
-      <TableSkeleton />
+      <TableSkeleton columnCount={6} />
     </div>
   );
 };

@@ -1,33 +1,32 @@
 import { AlertCircle, RotateCcw } from "lucide-react";
-import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 
 interface TableErrorProps {
   onRetry: () => void;
+  title?: string;
+  message?: string;
 }
 
-export function TableError({ onRetry }: TableErrorProps) {
+export function TableError({
+  onRetry,
+  title = "Unable to load data",
+  message = "Check your connection and try again.",
+}: TableErrorProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-6 rounded-lg bg-red-50 px-8 py-12 text-center">
-      <Icon icon="cuida:alert-outline" className="text-7xl text-red-500" />
-
-      <div>
-        <h2 className="mb-2 text-lg font-medium text-slate-900">
-          Unable to load table
-        </h2>
-        <p className="text-sm text-slate-600">
-          Check your connection and try again
-        </p>
+    <div className="flex flex-col items-center justify-center gap-4 rounded-lg border bg-card px-8 py-12 text-center">
+      <div className="rounded-full bg-destructive/10 p-4">
+        <AlertCircle className="size-8 text-destructive" />
       </div>
 
-      <Button
-        onClick={onRetry}
-        className="bg-white text-blue-500 hover:bg-blue-100 cursor-pointer font-bold text-md"
-      >
-        <Icon
-          icon="stash:arrow-retry"
-          className="text-blue size-6!  font-extrabold!"
-        />
+      <div>
+        <h2 className="mb-1 text-base font-semibold text-foreground">
+          {title}
+        </h2>
+        <p className="text-sm text-muted-foreground">{message}</p>
+      </div>
+
+      <Button variant="outline" onClick={onRetry} className="gap-2">
+        <RotateCcw className="size-4" />
         Retry
       </Button>
     </div>

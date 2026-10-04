@@ -100,10 +100,10 @@ const Section = ({
   title: string;
   children: ReactNode;
 }) => (
-  <section className="space-y-4 rounded-xl border border-border bg-muted/30 p-4 sm:p-5">
+  <section className="space-y-4 rounded-xl border bg-background p-4 sm:p-5">
     <div className="flex items-center gap-2">
       <span className="h-5 w-1.5 rounded-full bg-primary" />
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-card-foreground">
+      <h3 className="text-sm font-medium text-foreground">
         {title}
       </h3>
     </div>
@@ -129,7 +129,7 @@ const SegmentedControl = ({
         className={`flex-1 cursor-pointer rounded-md px-3 py-2 text-sm font-medium transition ${
           value === opt.value
             ? "bg-primary text-primary-foreground shadow-sm"
-            : "text-muted-foreground hover:text-card-foreground"
+            : "text-muted-foreground hover:text-foreground"
         }`}
       >
         {opt.label}
@@ -158,10 +158,10 @@ const AssignmentProgress = ({
         <span
           className={
             remaining === 0
-              ? "text-green-600 font-medium"
+              ? "font-medium text-[var(--status-success-text)]"
               : remaining > 0
-                ? "text-yellow-600 font-medium"
-                : "text-destructive font-medium"
+                ? "font-medium text-[var(--status-pending-text)]"
+                : "font-medium text-destructive"
           }
         >
           {remaining === 0 ? "All items assigned" : `Remaining: ${remaining}`}
@@ -478,36 +478,35 @@ export const ResourceForm = ({
   ];
 
   return (
-    <div className="flex justify-center items-start min-h-screen bg-background py-12 px-4">
-      <Card className="w-full max-w-3xl! shadow-xl border-border rounded-2xl overflow-hidden bg-card">
-        <div className="h-1.5 bg-linear-to-r from-primary to-secondary-foreground" />
-        <CardHeader className="text-center px-10 pt-10 pb-6 border-b border-border">
-          <CardTitle className="text-4xl font-bold tracking-tight text-card-foreground">
+    <div className="mx-auto w-full max-w-3xl p-6">
+      <Card className="shadow-sm">
+        <CardHeader className="border-b">
+          <CardTitle className="text-2xl font-semibold tracking-tight">
             {formType == "add"
               ? "Add Resource"
               : formType == "edit"
                 ? "Edit Resource"
                 : ""}
           </CardTitle>
-          <CardDescription className="text-base text-muted-foreground mt-1">
+          <CardDescription>
             {formType == "add" ? "Fill" : formType == "edit" ? "Edit " : ""}
             the resource details below
           </CardDescription>
         </CardHeader>
-        <CardContent className="px-10 pb-10 pt-8">
+        <CardContent className="pt-6">
           <form
             onSubmit={handleSubmit(formSubmitHandler)}
             className="space-y-6"
           >
             <Section title="Basic Details">
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
+                <label className="text-sm font-medium">
                   Resource Name
                 </label>
                 <Input
                   {...register("resourceName")}
                   placeholder="Enter the resource name"
-                  className="h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                  className="h-10"
                 />
                 <p className="text-xs text-destructive font-medium">
                   {errors.resourceName?.message}
@@ -516,7 +515,7 @@ export const ResourceForm = ({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
+                  <label className="text-sm font-medium">
                     Quantity
                   </label>
                   <Input
@@ -524,7 +523,7 @@ export const ResourceForm = ({
                     placeholder="e.g. 10"
                     type="number"
                     min={1}
-                    className="h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    className="h-10"
                   />
                   <p className="text-xs text-destructive font-medium">
                     {errors.quantity?.message}
@@ -532,7 +531,7 @@ export const ResourceForm = ({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
+                  <label className="text-sm font-medium">
                     Type
                   </label>
                   <SelectBox
@@ -542,7 +541,7 @@ export const ResourceForm = ({
                     onChange={(v) => {
                       setValue("type", v);
                     }}
-                    className="h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    className="h-10"
                   />
                   <p className="text-xs text-destructive font-medium">
                     {errors.type?.message}
@@ -551,7 +550,7 @@ export const ResourceForm = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
+                <label className="text-sm font-medium">
                   Department
                 </label>
                 <SelectBox
@@ -561,7 +560,7 @@ export const ResourceForm = ({
                     setValue("departmentId", v);
                   }}
                   value={getValues("departmentId")}
-                  className="h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                  className="h-10"
                 />
                 <p className="text-xs text-destructive font-medium">
                   {errors.departmentId?.message}
@@ -576,7 +575,7 @@ export const ResourceForm = ({
                     placeholder="Add a new department"
                     value={newDepartmentName}
                     onChange={(e) => setNewDepartmentName(e.target.value)}
-                    className="flex-1 h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    className="h-10 flex-1"
                   />
                   <Button
                     type="button"
@@ -587,7 +586,7 @@ export const ResourceForm = ({
                       !newDepartmentName.trim() ||
                       addDepartmentMutation.isPending
                     }
-                    className="h-10 shrink-0 cursor-pointer rounded-lg border-border disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-10 shrink-0"
                   >
                     <Plus />
                     {addDepartmentMutation.isPending ? "Adding..." : "Add"}
@@ -605,14 +604,14 @@ export const ResourceForm = ({
 
               {locationMode === "single" && (
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
+                  <label className="text-sm font-medium">
                     Location
                   </label>
                   <Input
                     placeholder="Enter the resource location"
                     value={singleLocation}
                     onChange={(e) => setSingleLocation(e.target.value)}
-                    className="h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    className="h-10"
                   />
                   {totalQuantity > 0 && (
                     <p className="text-xs text-muted-foreground">
@@ -640,7 +639,7 @@ export const ResourceForm = ({
                           onChange={(e) =>
                             updateGroup(index, "location", e.target.value)
                           }
-                          className="flex-1 h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                          className="flex-1 h-10"
                         />
                         <Input
                           placeholder="Qty"
@@ -650,7 +649,7 @@ export const ResourceForm = ({
                           onChange={(e) =>
                             updateGroup(index, "quantity", e.target.value)
                           }
-                          className="w-24 h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                          className="w-24 h-10"
                         />
                         {locationGroups.length > 1 && (
                           <Button
@@ -672,7 +671,7 @@ export const ResourceForm = ({
                     variant="outline"
                     size="sm"
                     onClick={addGroup}
-                    className="h-10 w-full cursor-pointer rounded-lg border-dashed border-border"
+                    className="h-10 w-full border-dashed"
                   >
                     <Plus />
                     Add location
@@ -696,7 +695,7 @@ export const ResourceForm = ({
 
               {statusMode === "same" && (
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-card-foreground tracking-wide uppercase">
+                  <label className="text-sm font-medium">
                     Status
                   </label>
                   <SelectBox
@@ -704,7 +703,7 @@ export const ResourceForm = ({
                     options={statusOptions}
                     onChange={(v) => setSingleStatus(v)}
                     value={singleStatus}
-                    className="h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    className="h-10"
                   />
                   {totalQuantity > 0 && (
                     <p className="text-xs text-muted-foreground">
@@ -733,7 +732,7 @@ export const ResourceForm = ({
                           onChange={(v) =>
                             updateStatusGroup(index, "status", v)
                           }
-                          className="flex-1 h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                          className="flex-1 h-10"
                         />
                         <Input
                           placeholder="Qty"
@@ -743,7 +742,7 @@ export const ResourceForm = ({
                           onChange={(e) =>
                             updateStatusGroup(index, "quantity", e.target.value)
                           }
-                          className="w-24 h-10 rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                          className="w-24 h-10"
                         />
                         {statusGroups.length > 1 && (
                           <Button
@@ -765,7 +764,7 @@ export const ResourceForm = ({
                     variant="outline"
                     size="sm"
                     onClick={addStatusGroup}
-                    className="h-10 w-full cursor-pointer rounded-lg border-dashed border-border"
+                    className="h-10 w-full border-dashed"
                   >
                     <Plus />
                     Add status
@@ -786,7 +785,6 @@ export const ResourceForm = ({
                   {...register("description")}
                   placeholder="Write a description about the resource (optional)"
                   rows={4}
-                  className="rounded-lg border-border bg-background focus:ring-2 focus:ring-primary focus:border-transparent transition"
                 />
                 <p className="text-xs text-destructive font-medium">
                   {errors.description?.message}
@@ -803,8 +801,9 @@ export const ResourceForm = ({
             <div className="pt-2">
               <Button
                 type="submit"
+                size="lg"
                 disabled={addMutation.isPending}
-                className="w-full h-11 cursor-pointer rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold tracking-wide shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full"
               >
                 {addMutation.isPending ? "Submitting..." : "Submit Resource"}
               </Button>

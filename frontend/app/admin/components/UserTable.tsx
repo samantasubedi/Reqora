@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import TableEmpty, { tableEmptyType } from "./emptyStates/TableEmpty";
 import { TableSkeleton } from "./skeletonLoaders/TableSkeleton";
+import { TableError } from "./TableError";
 import { FilterConfig, FilterValues } from "@/components/global/Filter";
 import { useUserTable } from "../hooks/userHooks";
 import { useRouter } from "next/navigation";
@@ -177,7 +178,7 @@ export const UserTable = () => {
   ];
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const { isLoading, data, isSuccess } = useUserTable({
+  const { isLoading, data, isSuccess, isError, refetch } = useUserTable({
     searchText: debouncedSearchText,
     filters,
     page: currentPage,
@@ -260,7 +261,10 @@ export const UserTable = () => {
           setFilters={setFilters}
           actions={columnToggle}
         />
-        <Table>
+        {isError ? (
+          <TableError onRetry={() => refetch()} />
+        ) : (
+          <Table>
           <TableHeader>
             <TableRow>
               {tableFields.map((cur) => (
@@ -337,7 +341,8 @@ export const UserTable = () => {
               onPageChange={setCurrentPage}
             />
           )}
-        </Table>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );

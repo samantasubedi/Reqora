@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function StatCardSkeleton() {
   return (
-    <Card className="relative h-[180px] w-full overflow-hidden border-none">
+    <Card className="relative h-[118px] w-full overflow-hidden">
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div className="space-y-2">
           <Skeleton className="h-5 w-32" />

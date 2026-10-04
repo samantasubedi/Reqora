@@ -2,7 +2,7 @@
 import React from "react";
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "../ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
+import StatusBadge from "@/app/admin/components/ui/StatusBadge";
 import { MapPin, User } from "lucide-react";
 import { ResourceStatus } from "@/app/admin/resources/(with-sidebar)/page";
 import { requestType } from "@/app/admin/apis/resourceApi";
@@ -23,22 +23,18 @@ export const getItemStatusDisplay = (status: ResourceStatus) => {
     case ResourceStatus.available:
       return {
         display: "Available",
-        badgeClass: "border-green-500 text-green-700 bg-green-100",
       };
     case ResourceStatus.inUse:
       return {
         display: "In Use",
-        badgeClass: "border-amber-500 text-amber-700 bg-amber-100",
       };
     case ResourceStatus.underMaintenance:
       return {
         display: "Under Maintenance",
-        badgeClass: "border-red-500 text-red-700 bg-red-100",
       };
     default:
       return {
         display: status,
-        badgeClass: "",
       };
   }
 };
@@ -87,7 +83,7 @@ export const ResourceTabs = ({
                         </p>
                       </div>
 
-                      <Badge>{item.status}</Badge>
+                      <StatusBadge status={item.status} />
                     </div>
                   ))
                 ) : (
@@ -133,11 +129,9 @@ export const ResourceTabs = ({
                         </div>
                       </div>
 
-                      <Badge
-                        className={getItemStatusDisplay(item.status).badgeClass}
-                      >
+                      <StatusBadge status={item.status}>
                         {getItemStatusDisplay(item.status).display}
-                      </Badge>
+                      </StatusBadge>
                     </div>
                   ))}
                 </div>
@@ -179,9 +173,9 @@ export const ResourceTabs = ({
                           </div>
                         </div>
 
-                        <Badge className={status.badgeClass}>
+                        <StatusBadge status={item.status}>
                           {status.display}
-                        </Badge>
+                        </StatusBadge>
                       </div>
                     );
                   })}

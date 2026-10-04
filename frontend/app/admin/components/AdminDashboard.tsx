@@ -15,6 +15,7 @@ import { ChartPieDonut } from "@/components/others/donoutChart";
 import ResourceStats from "./ResourceStats";
 import UserStats from "./UserStats";
 import PageHeader from "./ui/PageHeader";
+import { TableError } from "./TableError";
 import { useAnalytics } from "../hooks/companyHooks";
 import { camelToSentence } from "@/lib/HelperFunctions";
 
@@ -133,6 +134,8 @@ export const AdminDashboard = () => {
               </div>
               <AreaChartDefault />
             </div>
+          ) : isError ? (
+            <TableError onRetry={() => refetch()} />
           ) : (
             <div className="grid gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
@@ -173,9 +176,9 @@ export const AdminDashboard = () => {
               </div>
               <AreaChartDefault />
             </div>
-          ) : (
-            ""
-          )}
+          ) : isError ? (
+            <TableError onRetry={() => refetch()} />
+          ) : null}
         </section>
       </div>
     </>

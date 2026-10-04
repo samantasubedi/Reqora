@@ -1,6 +1,7 @@
 "use client";
 import { ResourceTable } from "@/app/admin/components/ResourceTable";
 import ResourceStats from "@/app/admin/components/ResourceStats";
+import PageHeader from "@/app/admin/components/ui/PageHeader";
 import { useResources } from "@/app/admin/hooks/resourceHooks";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -43,22 +44,16 @@ const Page = () => {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
-          <p className="text-muted-foreground">
-            Manage company resources and track availability.
-          </p>
-        </div>
-
-        <Button
-          onClick={() => router.push("/admin/resources/add")}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-        >
-          <Plus className="h-5 w-5" />
-          Add Resource
-        </Button>
-      </div>
+      <PageHeader
+        title="Resources"
+        subtitle="Manage company resources and track availability."
+        actions={
+          <Button onClick={() => router.push("/admin/resources/add")}>
+            <Plus className="h-4 w-4" />
+            Add Resource
+          </Button>
+        }
+      />
 
       <ResourceStats
         countsByStatus={data?.countsByStatus}
