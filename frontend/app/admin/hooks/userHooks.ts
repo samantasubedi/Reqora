@@ -19,7 +19,7 @@ import { codeInviteFormType } from "../components/InviteCodeGenerator";
 
 export const useUsers = () => {
   return useQuery({
-    queryFn: () => getAllUsersApi,
+    queryFn: () => getAllUsersApi({}),
     queryKey: ["allUsers"],
   });
 };

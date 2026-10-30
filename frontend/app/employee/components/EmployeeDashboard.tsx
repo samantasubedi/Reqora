@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React from "react";
 import {
   Package,
   Clock,
@@ -33,7 +33,7 @@ import {
 import StatCard from "@/app/admin/components/StatCard";
 import type { statCardInterface } from "@/app/admin/components/ResourceStats";
 import { ChartPieDonut } from "@/components/others/donoutChart";
-import { useMyItems, useMyRequests } from "@/app/employee/hooks/requestHooks";
+import { useEmployeeDashboard } from "@/app/employee/hooks/dashboardHooks";
 
 const STATUS_BADGE_STYLES: Record<string, string> = {
   pending:
@@ -75,48 +75,25 @@ const formatDate = (iso: string) => {
   });
 };
 
+const EMPTY_COUNTS = {
+  total: 0,
+  pending: 0,
+  approved: 0,
+  rejected: 0,
+  cancelled: 0,
+  forwarded: 0,
+};
+
 const EmployeeDashboard = () => {
   const router = useRouter();
-  const {
-    data: allRequestsRes,
-    isLoading: requestsLoading,
-    isError: requestsError,
-    refetch: refetchRequests,
-  } = useMyRequests();
-  const {
-    data: recentRes,
-    isLoading: recentLoading,
-    isError: recentError,
-    refetch: refetchRecent,
-  } = useMyRequests({ limit: 5 });
-  const {
-    data: itemsRes,
-    isLoading: itemsLoading,
-    isError: itemsError,
-    refetch: refetchItems,
-  } = useMyItems();
+  const { data: dashboardRes, isLoading, isError, refetch } =
+    useEmployeeDashboard();
 
-  const allRequests = useMemo(
-    () => allRequestsRes?.data ?? [],
-    [allRequestsRes],
-  );
-  const recentRequests = useMemo(() => recentRes?.data ?? [], [recentRes]);
-  const assignedItems = useMemo(() => itemsRes?.data ?? [], [itemsRes]);
-
-  const counts = useMemo(() => {
-    const c = {
-      total: allRequests.length,
-      pending: 0,
-      approved: 0,
-      rejected: 0,
-      cancelled: 0,
-      forwarded: 0,
-    };
-    for (const r of allRequests) {
-      if (r.status in c) c[r.status as keyof typeof c] += 1;
-    }
-    return c;
-  }, [allRequests]);
+  const dashboard = dashboardRes?.data;
+  const counts = dashboard?.countsByStatus ?? EMPTY_COUNTS;
+  const recentRequests = dashboard?.recentRequests ?? [];
+  const assignedItems = dashboard?.assignedItems ?? [];
+  const assignedItemsCount = dashboard?.assignedItemsCount ?? 0;
 
   const statCards: Partial<statCardInterface>[] = [
     {
@@ -171,8 +148,6 @@ const EmployeeDashboard = () => {
     { label: "Forwarded", value: counts.forwarded, fill: "var(--chart-5)" },
   ];
 
-  const showRequestsSkeleton = requestsLoading || recentLoading;
-
   return (
     <div className="w-full space-y-6 p-6 pb-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -193,7 +168,7 @@ const EmployeeDashboard = () => {
       </div>
 
       <section className="flex gap-4 overflow-x-auto pb-2">
-        {showRequestsSkeleton
+        {isLoading
           ? Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
@@ -230,7 +205,7 @@ const EmployeeDashboard = () => {
             </Button>
           </CardHeader>
           <CardContent className="flex-1 p-0">
-            {showRequestsSkeleton ? (
+            {isLoading ? (
               <ul className="divide-y divide-border">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <li
@@ -244,19 +219,12 @@ const EmployeeDashboard = () => {
                   </li>
                 ))}
               </ul>
-            ) : requestsError || recentError ? (
+            ) : isError ? (
               <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
                 <p className="text-sm text-muted-foreground">
                   Failed to load your requests.
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    refetchRequests();
-                    refetchRecent();
-                  }}
-                >
+                <Button variant="outline" size="sm" onClick={() => refetch()}>
                   Retry
                 </Button>
               </div>
@@ -321,11 +289,11 @@ const EmployeeDashboard = () => {
               </CardDescription>
             </div>
             <Badge variant="secondary" className="px-3 py-1 font-semibold">
-              {itemsLoading ? "…" : `${assignedItems.length} assigned`}
+              {isLoading ? "…" : `${assignedItemsCount} assigned`}
             </Badge>
           </CardHeader>
           <CardContent className="p-0">
-            {itemsLoading ? (
+            {isLoading ? (
               <div className="space-y-2 p-6">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div
@@ -334,16 +302,12 @@ const EmployeeDashboard = () => {
                   />
                 ))}
               </div>
-            ) : itemsError ? (
+            ) : isError ? (
               <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
                 <p className="text-sm text-muted-foreground">
                   Failed to load assigned items.
                 </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => refetchItems()}
-                >
+                <Button variant="outline" size="sm" onClick={() => refetch()}>
                   Retry
                 </Button>
               </div>

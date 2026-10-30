@@ -25,13 +25,16 @@ export const getAllRequestsApi = async () => {
 export const reviewRequestApi = async ({
   requestId,
   status,
+  note,
 }: {
   requestId: string;
   status: "approved" | "rejected";
+  note?: string;
 }) => {
   const response = await api.post(`/requests/${requestId}/review`, {
     requestId,
     status,
+    note,
   });
   return response.data;
 };

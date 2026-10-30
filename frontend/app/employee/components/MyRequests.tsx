@@ -336,8 +336,10 @@ const MyRequests = () => {
   const cancelMutation = useCancelRequest();
   const createMutation = useCreateRequest();
 
-  const invalidate = () =>
+  const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["myRequests"] });
+    queryClient.invalidateQueries({ queryKey: ["employeeDashboard"] });
+  };
 
   const changeTab = (value: string) => {
     setActiveTab(value as TabFilter);

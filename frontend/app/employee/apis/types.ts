@@ -111,10 +111,33 @@ export type EditRequestInput = {
   reason?: string | null;
 };
 
+export type EmployeeDashboardCounts = {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  cancelled: number;
+  forwarded: number;
+};
+
+export type EmployeeDashboardData = {
+  countsByStatus: EmployeeDashboardCounts;
+  assignedItemsCount: number;
+  recentRequests: MyRequestItem[];
+  assignedItems: MyResourceItem[];
+};
+
+export type EmployeeDashboardResponse = {
+  success: boolean;
+  message: string;
+  code: string;
+  data: EmployeeDashboardData;
+};
+
 export const employeeQueryKeys = {
   myRequests: (filters?: Record<string, unknown>) =>
     filters ? (["myRequests", filters] as const) : (["myRequests"] as const),
   myRequest: (id: string) => ["myRequest", id] as const,
   myItems: () => ["myItems"] as const,
-  employeeStats: () => ["employeeStats"] as const,
+  dashboard: () => ["employeeDashboard"] as const,
 };

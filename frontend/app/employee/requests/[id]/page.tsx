@@ -319,6 +319,7 @@ const RequestDetails = () => {
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["myRequest", id] });
     queryClient.invalidateQueries({ queryKey: ["myRequests"] });
+    queryClient.invalidateQueries({ queryKey: ["employeeDashboard"] });
   };
 
   if (isLoading) {

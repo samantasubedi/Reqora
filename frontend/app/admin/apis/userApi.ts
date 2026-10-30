@@ -12,9 +12,11 @@ export const getAllUsersApi = async ({
   page?: string;
   filters?: FilterValues;
 }) => {
-  const paramsObj = searchText
-    ? { search: searchText, ...filters }
-    : { page: page, ...filters };
+  const paramsObj = {
+    page,
+    search: searchText || undefined,
+    ...filters,
+  };
   const response = await api.get(`/users`, {
     params: paramsObj,
   });

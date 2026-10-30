@@ -20,7 +20,7 @@ export const useReviewRequest = (
   options: UseMutationOptions<
     any,
     T_MutationError,
-    { requestId: string; status: "approved" | "rejected" }
+    { requestId: string; status: "approved" | "rejected"; note?: string }
   >,
 ) => {
   return useMutation({

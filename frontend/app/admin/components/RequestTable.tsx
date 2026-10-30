@@ -18,6 +18,7 @@ import { TableError } from "./TableError";
 import { toast } from "react-toastify";
 import { Card, CardContent } from "@/components/ui/card";
 import StatusBadge from "./ui/StatusBadge";
+import RejectDialog from "@/components/global/RejectDialog";
 
 const RequestTable = ({
   requests,
@@ -32,6 +33,7 @@ const RequestTable = ({
 }) => {
   const queryClient = useQueryClient();
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<requestType | null>(null);
   const reviewRequest = useReviewRequest({
     onSuccess: () => {
       setActionLoading(null);
@@ -44,9 +46,13 @@ const RequestTable = ({
     },
   });
 
-  const handleReview = (requestId: string, status: "approved" | "rejected") => {
+  const handleReview = (
+    requestId: string,
+    status: "approved" | "rejected",
+    note?: string,
+  ) => {
     setActionLoading(`${requestId}-${status}`);
-    reviewRequest.mutate({ requestId, status });
+    reviewRequest.mutate({ requestId, status, note });
   };
 
   const tableEmptyProps: tableEmptyType = {
@@ -56,6 +62,7 @@ const RequestTable = ({
   };
 
   return (
+    <>
     <Card>
       <CardContent className="pt-6">
         {isError ? (
@@ -99,7 +106,8 @@ const RequestTable = ({
                     {new Date(request.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    {request.status === "pending" ? (
+                    {request.status === "pending" ||
+                    request.status === "forwarded" ? (
                       <div className="flex gap-2">
                         <Button
                           size="sm"
@@ -120,15 +128,9 @@ const RequestTable = ({
                           size="sm"
                           variant="destructive"
                           disabled={actionLoading !== null}
-                          onClick={() =>
-                            handleReview(request.requestId, "rejected")
-                          }
+                          onClick={() => setRejecting(request)}
                         >
-                          {actionLoading === `${request.requestId}-rejected` ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <X className="h-4 w-4" />
-                          )}
+                          <X className="h-4 w-4" />
                           Reject
                         </Button>
                       </div>
@@ -149,6 +151,26 @@ const RequestTable = ({
         )}
       </CardContent>
     </Card>
+
+    {rejecting && (
+      <RejectDialog
+        open={!!rejecting}
+        onOpenChange={(open) => {
+          if (!open) setRejecting(null);
+        }}
+        employeeName={rejecting.requestedBy}
+        resourceName={rejecting.resourceName}
+        onConfirm={(reason) => {
+          handleReview(
+            rejecting.requestId,
+            "rejected",
+            reason || undefined,
+          );
+          setRejecting(null);
+        }}
+      />
+    )}
+    </>
   );
 };
 

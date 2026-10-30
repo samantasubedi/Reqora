@@ -126,6 +126,7 @@ const Page = () => {
     queryClient.invalidateQueries({ queryKey: ["myItems"] });
     queryClient.invalidateQueries({ queryKey: ["tableResourceData"] });
     queryClient.invalidateQueries({ queryKey: ["resourceDetails"] });
+    queryClient.invalidateQueries({ queryKey: ["employeeDashboard"] });
   };
 
   const handleOpenDetail = (resource: MyResourceItem) => {

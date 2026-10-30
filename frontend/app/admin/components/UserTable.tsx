@@ -178,6 +178,17 @@ export const UserTable = () => {
   ];
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const handleSearchChange = (value: string) => {
+    setSearchText(value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (values: FilterValues) => {
+    setFilters(values);
+    setCurrentPage(1);
+  };
+
   const { isLoading, data, isSuccess, isError, refetch } = useUserTable({
     searchText: debouncedSearchText,
     filters,
@@ -255,10 +266,10 @@ export const UserTable = () => {
       <CardContent className="space-y-4 pt-6">
         <TableToolbar
           searchValue={searchText}
-          onSearchChange={setSearchText}
+          onSearchChange={handleSearchChange}
           searchPlaceholder="Search by user name"
           filters={tableFilter}
-          setFilters={setFilters}
+          setFilters={handleFilterChange}
           actions={columnToggle}
         />
         {isError ? (

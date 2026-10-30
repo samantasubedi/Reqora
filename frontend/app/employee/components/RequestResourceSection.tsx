@@ -42,7 +42,7 @@ const RequestResourceSection = ({
       queryClient.invalidateQueries({ queryKey: ["resourceDetails"] });
       queryClient.invalidateQueries({ queryKey: ["myRequests"] });
       queryClient.invalidateQueries({ queryKey: ["myItems"] });
-      queryClient.invalidateQueries({ queryKey: ["employeeStats"] });
+      queryClient.invalidateQueries({ queryKey: ["employeeDashboard"] });
       setQuantity(1);
       setPriority("medium");
       setReason("");

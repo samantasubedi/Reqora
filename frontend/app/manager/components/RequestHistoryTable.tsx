@@ -21,30 +21,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Filter, { FilterConfig, FilterValues } from "@/components/global/Filter";
 import InitialsAvatar from "./InitialsAvatar";
-import { formatDate, ResourceRequest } from "./requestsDummyData";
+import { formatDate } from "./requestUtils";
 import TablePaginationFooter from "@/app/admin/components/TablePaginationFooter";
+import type { ManagerRequest } from "../apis/types";
 
 type RequestHistoryTableProps = {
-  requests: ResourceRequest[];
+  requests: ManagerRequest[];
+  isLoading?: boolean;
 };
 
 const PAGE_SIZE = 6;
 
-const resourceTypeOptions = [
-  "Laptop",
-  "Projector",
-  "Vehicle",
-  "Printer",
-  "Server",
-  "Furniture",
-].map((type) => ({ label: type, value: type.toLowerCase() }));
-
 const statusBadgeClass: Record<string, string> = {
+  pending: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
   approved: "bg-green-500/10 text-green-700 dark:text-green-400",
   rejected: "bg-red-500/10 text-red-700 dark:text-red-400",
+  cancelled: "bg-muted text-muted-foreground",
+  forwarded: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
 };
 
-const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
+const RequestHistoryTable = ({
+  requests,
+  isLoading = false,
+}: RequestHistoryTableProps) => {
   const router = useRouter();
   const [searchText, setSearchText] = useState("");
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
@@ -58,6 +57,12 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
     return () => clearTimeout(timer);
   }, [searchText]);
 
+  const resourceTypeOptions = [
+    ...new Set(requests.map((request) => request.resourceType)),
+  ]
+    .filter(Boolean)
+    .map((type) => ({ label: type, value: type.toLowerCase() }));
+
   const tableFilter: FilterConfig[] = [
     {
       key: "requestStatus",
@@ -66,14 +71,20 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
       options: [
         { label: "Approved", value: "approved" },
         { label: "Rejected", value: "rejected" },
+        { label: "Forwarded", value: "forwarded" },
+        { label: "Cancelled", value: "cancelled" },
       ],
     },
-    {
-      key: "resourceType",
-      title: "Resource Type",
-      type: "dropdown",
-      options: resourceTypeOptions,
-    },
+    ...(resourceTypeOptions.length > 0
+      ? [
+          {
+            key: "resourceType",
+            title: "Resource Type",
+            type: "dropdown" as const,
+            options: resourceTypeOptions,
+          },
+        ]
+      : []),
   ];
 
   const query = debouncedSearchText.toLowerCase();
@@ -82,13 +93,13 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
 
   const filtered = requests.filter((request) => {
     const matchesSearch =
-      request.employee.name.toLowerCase().includes(query) ||
-      request.resource.name.toLowerCase().includes(query) ||
-      request.resource.type.toLowerCase().includes(query);
-    const matchesStatus =
-      !statusFilter || request.status === statusFilter;
+      request.requestedBy.toLowerCase().includes(query) ||
+      request.requestedByEmail.toLowerCase().includes(query) ||
+      request.resourceName.toLowerCase().includes(query) ||
+      request.resourceType.toLowerCase().includes(query);
+    const matchesStatus = !statusFilter || request.status === statusFilter;
     const matchesType =
-      !typeFilter || request.resource.type.toLowerCase() === typeFilter;
+      !typeFilter || request.resourceType.toLowerCase() === typeFilter;
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -111,7 +122,7 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
           Review History
         </h2>
         <span className="text-sm text-muted-foreground">
-          {filtered.length} reviewed
+          {filtered.length} past requests
         </span>
       </div>
 
@@ -141,32 +152,42 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
             <TableHead>Resource</TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead>Requested</TableHead>
-            <TableHead>Reviewed</TableHead>
+            <TableHead>Updated</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="w-12" />
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {paged.length > 0 ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={7}>
+                <div className="flex min-h-40 items-center justify-center text-sm text-muted-foreground">
+                  Loading request history…
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : paged.length > 0 ? (
             paged.map((request) => (
               <TableRow
-                key={request.id}
+                key={request.requestId}
                 className="cursor-pointer"
-                onClick={() => router.push(`/manager/requests/${request.id}`)}
+                onClick={() =>
+                  router.push(`/manager/requests/${request.requestId}`)
+                }
               >
                 <TableCell>
                   <div className="flex min-w-0 items-center gap-3">
                     <InitialsAvatar
-                      name={request.employee.name}
+                      name={request.requestedBy}
                       className="size-9"
                     />
                     <div className="min-w-0">
                       <p className="truncate font-medium text-foreground">
-                        {request.employee.name}
+                        {request.requestedBy}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
-                        {request.employee.email}
+                        {request.requestedByEmail}
                       </p>
                     </div>
                   </div>
@@ -174,10 +195,10 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
                 <TableCell>
                   <div className="min-w-0">
                     <p className="truncate font-medium text-foreground">
-                      {request.resource.name}
+                      {request.resourceName}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {request.resource.type}
+                      {request.resourceType}
                     </p>
                   </div>
                 </TableCell>
@@ -186,7 +207,7 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
                   {formatDate(request.createdAt)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatDate(request.reviewedAt)}
+                  {formatDate(request.updatedAt)}
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -206,7 +227,7 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={() =>
-                          router.push(`/manager/requests/${request.id}`)
+                          router.push(`/manager/requests/${request.requestId}`)
                         }
                       >
                         <PackageSearch className="size-4" />
@@ -225,7 +246,7 @@ const RequestHistoryTable = ({ requests }: RequestHistoryTableProps) => {
                     <Inbox className="size-10 text-muted-foreground" />
                   </div>
                   <h3 className="text-xl font-semibold text-foreground">
-                    No reviewed requests found
+                    No past requests found
                   </h3>
                   <p className="max-w-sm text-sm text-muted-foreground">
                     Try adjusting your search or filters.
