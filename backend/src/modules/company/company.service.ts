@@ -26,7 +26,6 @@ import {
 } from "./company.schema";
 import { sendMail } from "../../utils/sendMail";
 import cryptoRandomString from "crypto-random-string";
-import { prisma } from "../../lib/prisma";
 export const createCompanyService = async ({
   companyName,
   email,
@@ -314,54 +313,4 @@ export const leaveCompanyService = async ({
   }
   const result = await leaveCompanyRepo({ email });
   return result;
-};
-export const dashabordAnalyticsService = async ({
-  companyId,
-}: {
-  companyId: string;
-}) => {
-  const resourceCountsByStatus = await prisma.resourceItem.groupBy({
-    by: ["status"],
-    _count: true,
-    where: { resource: { companyId } },
-  });
-  const resourceCountsByType = await prisma.resource.groupBy({
-    by: ["type"],
-    _count: true,
-    where: { companyId },
-  });
-  const totalResourceCount = await prisma.resourceItem.count({
-    where: { resource: { companyId } },
-  });
-  const userCountsByRole = await prisma.user.groupBy({
-    by: ["role"],
-    _count: true,
-    where: { companyId },
-  });
-  const userCountsByDepartments = await prisma.department.findMany({
-    where: {
-      companyId,
-    },
-    select: {
-      name: true,
-      _count: {
-        select: {
-          users: true,
-        },
-      },
-    },
-  });
-  return {
-    resourceStats: {
-      countsByStatus: [
-        ...resourceCountsByStatus,
-        { status: "all", _count: totalResourceCount },
-      ],
-      countsByType: resourceCountsByType,
-    },
-    userStats: {
-      countsByRole: userCountsByRole,
-      countsByDepartment: userCountsByDepartments,
-    },
-  };
 };

@@ -20,10 +20,18 @@ import {
 
 export const getAllRequestService = async ({
   companyId,
+  departmentId,
+  excludeRequestedById,
 }: {
   companyId: string;
+  departmentId?: string;
+  excludeRequestedById?: string;
 }) => {
-  const result = await findRequestsByCompanyId({ companyId });
+  const result = await findRequestsByCompanyId({
+    companyId,
+    departmentId,
+    excludeRequestedById,
+  });
 
   const allRequests = result.map((curr) => {
     //we are doing this because we get an array not an object
@@ -41,7 +49,9 @@ export const getAllRequestService = async ({
       reviewedById: curr.reviewedBy?.id,
       requestedBy: curr.requestedBy.username,
       requestedById: curr.requestedBy.id,
+      requestedByEmail: curr.requestedBy.email,
       requestedByDepartment: curr.requestedBy.department?.name ?? null,
+      requestedByDepartmentId: curr.requestedBy.departmentId,
       companyName: curr.company.companyName,
       createdAt: curr.createdAt,
       updatedAt: curr.updatedAt,
@@ -248,7 +258,9 @@ export const getRequestDetailsService = async ({ id }: { id: string }) => {
     resourceType: details.resource.type,
     requestedBy: details.requestedBy.username,
     requestedById: details.requestedBy.id,
+    requestedByEmail: details.requestedBy.email,
     requestedByDepartment: details.requestedBy.department?.name ?? null,
+    requestedByDepartmentId: details.requestedBy.departmentId,
     reviewedBy: details.reviewedBy?.username ?? null,
     reviewedById: details.reviewedBy?.id ?? null,
     companyId: details.companyId,

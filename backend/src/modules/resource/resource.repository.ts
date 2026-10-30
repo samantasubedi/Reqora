@@ -362,6 +362,21 @@ export const findItemsByUserId = async ({
   });
 };
 
+export const countItemsByUserId = async ({
+  userId,
+  companyId,
+}: {
+  userId: string;
+  companyId: string;
+}) => {
+  return prisma.resourceItem.count({
+    where: {
+      acquiredById: userId,
+      resource: { companyId },
+    },
+  });
+};
+
 export const releaseResourceItem = async ({ id }: { id: string }) => {
   return prisma.resourceItem.update({
     where: { id },

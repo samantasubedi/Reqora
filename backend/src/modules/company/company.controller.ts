@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import { refresh } from "../auth/auth.service";
 import {
   createCompanyService,
-  dashabordAnalyticsService,
   emailInviteService,
   generateCodeService,
   joinByCodeService,
@@ -226,28 +225,6 @@ export const addDepartment = async (
       code: "DEPARTMENT_ADDED",
       message: "department added successfully",
       data: department,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const getAnalytics = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { companyId } = res.locals.user;
-    const { resourceStats, userStats } = await dashabordAnalyticsService({
-      companyId,
-    });
-    return res.status(200).json({
-      success: true,
-      code: "ANALYTICS_FETCHED",
-      message: "dashabord anaytics fetched successfully",
-      resourceStats,
-      userStats,
     });
   } catch (err) {
     next(err);

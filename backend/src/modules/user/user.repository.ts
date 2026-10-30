@@ -59,6 +59,30 @@ export const findUsersByCompanyId = async ({
     take,
   });
 };
+export const countUsersByCompanyId = async ({
+  companyId,
+  search,
+  userRole,
+  userDepartmentSearch,
+}: {
+  companyId: string;
+  search?: string;
+  userRole?: Role;
+  userDepartmentSearch?: string;
+}) => {
+  return prisma.user.count({
+    where: {
+      companyId,
+      role: userRole ?? undefined,
+      username: search ? { contains: search } : undefined,
+      department: userDepartmentSearch
+        ? {
+            is: { name: { contains: userDepartmentSearch } },
+          }
+        : undefined,
+    },
+  });
+};
 export const findUserById = async ({ id }: { id: string }) => {
   return prisma.user.findUnique({
     where: { id },

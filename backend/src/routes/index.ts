@@ -5,6 +5,7 @@ import resourceRoutes from "../modules/resource/resource.route";
 import requestRoutes from "../modules/request/request.route";
 import companyRoutes from "../modules/company/company.route";
 import logRoutes from "../modules/log/log.route";
+import dashboardRoutes from "../modules/dashboard/dashboard.route";
 import { authMiddlware } from "../middleware/authMiddleware";
 
 const router = Router();
@@ -14,4 +15,5 @@ router.use(authMiddlware, companyRoutes);
 router.use(authMiddlware, requestRoutes);
 router.use(authMiddlware, resourceRoutes);
 router.use(authMiddlware, logRoutes);
+router.use(authMiddlware, dashboardRoutes);
 export default router;

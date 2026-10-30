@@ -21,8 +21,19 @@ export const getAllRequest = async (
   next: NextFunction,
 ) => {
   try {
-    const companyId = res.locals.user.companyId;
-    const allRequests = await getAllRequestService({ companyId });
+    const { companyId, role, departmentId, id } = res.locals.user;
+    if (role === Role.manager && !departmentId) {
+      throw new appError(
+        403,
+        "NO_DEPARTMENT",
+        "a manager must belong to a department to view requests",
+      );
+    }
+    const allRequests = await getAllRequestService({
+      companyId,
+      departmentId: role === Role.manager ? departmentId : undefined,
+      excludeRequestedById: role === Role.manager ? id : undefined,
+    });
     return res.status(200).json({
       success: true,
       code: "REQUESTS_RETRIVED",
@@ -129,6 +140,19 @@ export const getSpecificRequest = async (
           403,
           "NOT_REQUESTER",
           "you can only view your own requests",
+        );
+      }
+    }
+    if (role === Role.manager) {
+      if (
+        !res.locals.user.departmentId ||
+        requestDetails.requestedByDepartmentId !==
+          res.locals.user.departmentId
+      ) {
+        throw new appError(
+          403,
+          "NOT_SAME_DEPARTMENT",
+          "you can only view requests from your department",
         );
       }
     }
@@ -267,7 +291,13 @@ export const handleReview = async (
       );
     }
 
-    if (requestDetails.status !== RequestStatus.pending) {
+    // Managers can only resolve their department's pending requests. Admins
+    // make the final decision on both pending and forwarded requests.
+    const reviewableStatuses: RequestStatus[] =
+      reviewer.role === Role.admin
+        ? [RequestStatus.pending, RequestStatus.forwarded]
+        : [RequestStatus.pending];
+    if (!reviewableStatuses.includes(requestDetails.status)) {
       throw new appError(
         400,
         "REQUEST_ALREADY_PROCESSED",
@@ -287,6 +317,7 @@ export const handleReview = async (
       );
     }
 
+    let availableItemIds: string[] = [];
     if (status === RequestStatus.approved) {
       const availableItems = await prisma.resourceItem.findMany({
         where: {
@@ -305,27 +336,34 @@ export const handleReview = async (
           "not enough available resource items to fulfill this request",
         );
       }
+      availableItemIds = availableItems.map((item) => item.id);
+    }
 
-      await prisma.$transaction([
-        prisma.request.update({
-          where: { id: requestId },
-          data: { reviewedById: reviewer.id, status, note: note ?? undefined },
-        }),
-        prisma.resourceItem.updateMany({
-          where: { id: { in: availableItems.map((item) => item.id) } },
+    // Guard the write against a concurrent review/forward so only one
+    // transition from the current status can succeed.
+    await prisma.$transaction(async (tx) => {
+      const updated = await tx.request.updateMany({
+        where: { id: requestId, status: requestDetails.status },
+        data: { reviewedById: reviewer.id, status, note: note ?? undefined },
+      });
+      if (updated.count === 0) {
+        throw new appError(
+          409,
+          "REQUEST_ALREADY_PROCESSED",
+          "this request has already been processed",
+        );
+      }
+      if (status === RequestStatus.approved) {
+        await tx.resourceItem.updateMany({
+          where: { id: { in: availableItemIds } },
           data: {
             status: ResourceStatus.inUse,
             acquiredById: requestDetails.requestedById,
             allocatedRequestId: requestId,
           },
-        }),
-      ]);
-    } else {
-      await prisma.request.update({
-        where: { id: requestId },
-        data: { reviewedById: reviewer.id, status, note: note ?? undefined },
-      });
-    }
+        });
+      }
+    });
 
     return res.status(200).json({
       message: "Request status updated",
@@ -457,10 +495,17 @@ export const handleForward = async (
         "only pending requests can be forwarded",
       );
     }
-    await prisma.request.update({
-      where: { id },
+    const updated = await prisma.request.updateMany({
+      where: { id, status: RequestStatus.pending },
       data: { status: RequestStatus.forwarded },
     });
+    if (updated.count === 0) {
+      throw new appError(
+        409,
+        "CANNOT_FORWARD",
+        "this request has already been processed",
+      );
+    }
     return res.status(200).json({
       message: "Request forwarded to admin",
       success: true,

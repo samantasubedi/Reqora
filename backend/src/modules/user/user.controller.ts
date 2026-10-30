@@ -3,10 +3,12 @@ import { ResourceStatus, Role } from "../../generated/prisma/enums";
 import { NextFunction, Request, Response } from "express";
 import { appError } from "../../utils/appError";
 import {
+  countUsersByCompanyId,
   findUserById,
   findUserDetailsByEmail,
   findUsersByCompanyId,
 } from "./user.repository";
+import { T_QueryFilters } from "../../middleware/queryMiddleware";
 //Private routes, accessible by that specific user only
 export const getProfileInfo = async (
   req: Request,
@@ -71,15 +73,29 @@ export const getAllUsers = async (
 ) => {
   try {
     const companyId = res.locals.user.companyId;
-    const { skip, take, search, userRole, userDepartmentSearch } =
-      res.locals.query;
-    const users = await findUsersByCompanyId({
-      companyId,
-      skip,
+    const {
       take,
+      pageNumber,
       search,
       userRole,
       userDepartmentSearch,
+    } = res.locals.query as T_QueryFilters;
+    const pageSize = take > 0 ? take : 10;
+    const userFilters = {
+      companyId,
+      search,
+      userRole: userRole as Role | undefined,
+      userDepartmentSearch,
+    };
+
+    const total = await countUsersByCompanyId(userFilters);
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
+
+    const users = await findUsersByCompanyId({
+      ...userFilters,
+      skip: (currentPage - 1) * pageSize,
+      take: pageSize,
     });
     const countsByRole = await prisma.user.groupBy({
       by: ["role"],
@@ -91,6 +107,10 @@ export const getAllUsers = async (
       code: "USERS_RETRIVED",
       data: users,
       countsByRole,
+      total,
+      currentPage,
+      totalPages,
+      pageSize,
       message: "users retrived successfully",
     });
   } catch (err) {

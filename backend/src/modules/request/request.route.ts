@@ -14,7 +14,7 @@ import { validate } from "../../middleware/validationMiddleware";
 import { create } from "node:domain";
 import { createRequestSchema, editRequestSchema } from "./request.schema";
 const router = Router();
-router.get("/requests", roleMiddleware(["admin"]), getAllRequest);
+router.get("/requests", roleMiddleware(["admin", "manager"]), getAllRequest);
 router.get("/myRequests", getMyRequest);
 router.get(
   "/requests/:id",

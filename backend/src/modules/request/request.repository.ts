@@ -2,11 +2,21 @@ import { prisma } from "../../lib/prisma";
 
 export const findRequestsByCompanyId = async ({
   companyId,
+  departmentId,
+  excludeRequestedById,
 }: {
   companyId: string;
+  departmentId?: string;
+  excludeRequestedById?: string;
 }) => {
   return await prisma.request.findMany({
-    where: { companyId },
+    where: {
+      companyId,
+      requestedBy: departmentId ? { departmentId } : undefined,
+      requestedById: excludeRequestedById
+        ? { not: excludeRequestedById }
+        : undefined,
+    },
     include: {
       company: true,
       requestedBy: { include: { department: true } },
@@ -49,6 +59,8 @@ export const findRequestById = async ({ id }: { id: string }) => {
         select: {
           id: true,
           username: true,
+          email: true,
+          departmentId: true,
           department: { select: { name: true } },
         },
       },

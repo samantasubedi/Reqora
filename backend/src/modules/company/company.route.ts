@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
   createCompany,
   generateCode,
-  getAnalytics,
   inviteToCompany,
   joinByCode,
   joinByEmail,
@@ -38,7 +37,6 @@ router.post(
 router.post("/join/byEmail", validate(joinByEmailSchema), joinByEmail);
 router.post("/join/byCode", validate(joinByCodeSchema), joinByCode);
 router.post("/leave", leaveCompany);
-router.get("/analytics", roleMiddleware(["admin"]), getAnalytics);
 router.get("/departments", getDepartments);
 router.post(
   "/departments",

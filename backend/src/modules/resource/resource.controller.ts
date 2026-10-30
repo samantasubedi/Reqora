@@ -30,10 +30,12 @@ export const getAllResources = async (
       availability,
     } = res.locals.query as T_QueryFilters;
 
-    // Employees only see resources of their own department. Users without a
-    // department (or other roles) keep the company-wide view.
+    // Employees and managers only see resources of their own department.
+    // Users without a department (or admins) keep the company-wide view.
     const scopedDepartmentId =
-      role === "employee" && departmentId ? departmentId : undefined;
+      (role === "employee" || role === "manager") && departmentId
+        ? departmentId
+        : undefined;
 
     const {
       resources,
@@ -166,7 +168,9 @@ export const getSpecificResource = async (
       companyId,
       status: resourceStatus,
       departmentId:
-        role === "employee" && departmentId ? departmentId : undefined,
+        (role === "employee" || role === "manager") && departmentId
+          ? departmentId
+          : undefined,
     });
 
     return res.status(200).json({
