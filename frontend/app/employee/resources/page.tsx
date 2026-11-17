@@ -37,12 +37,11 @@ const Page = () => {
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  const { isLoading, data, isSuccess, isError, refetch } =
-    useTableResources({
-      searchText: debouncedSearchText,
-      filters,
-      page: currentPage,
-    });
+  const { isLoading, data, isSuccess, isError, refetch } = useTableResources({
+    searchText: debouncedSearchText,
+    filters,
+    page: currentPage,
+  });
 
   const typeOptions = [
     ...new Set((data?.allResources ?? []).map((r) => r.type)),
@@ -84,10 +83,13 @@ const Page = () => {
   const totalPages = data?.totalPages ?? 1;
   const safePage = Math.min(data?.currentPage ?? 1, totalPages);
 
+
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Resources</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Resources
+        </h1>
         <p className="text-sm text-muted-foreground">
           Browse your department&apos;s resources and request what you need.
         </p>
@@ -139,7 +141,10 @@ const Page = () => {
           view === "grid" ? (
             <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-56 animate-pulse rounded-xl border bg-card" />
+                <div
+                  key={i}
+                  className="h-56 animate-pulse rounded-xl border bg-card"
+                />
               ))}
             </div>
           ) : (

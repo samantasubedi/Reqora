@@ -22,6 +22,7 @@ type RequestResourceSectionProps = {
   resourceName: string;
   availableQuantity: number;
   onSuccess?: () => void;
+  onClose?: () => void;
 };
 
 const RequestResourceSection = ({
@@ -29,6 +30,7 @@ const RequestResourceSection = ({
   resourceName,
   availableQuantity,
   onSuccess,
+  onClose,
 }: RequestResourceSectionProps) => {
   const [quantity, setQuantity] = useState(1);
   const [priority, setPriority] = useState<EmployeePriority>("medium");
@@ -82,8 +84,10 @@ const RequestResourceSection = ({
         of {resourceName} available to request
       </p>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center rounded-lg border bg-card">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="space-y-1.5">
+          <p className="text-xs font-medium text-muted-foreground">Quantity</p>
+          <div className="flex items-center rounded-lg border bg-card">
           <Button
             type="button"
             variant="ghost"
@@ -121,26 +125,15 @@ const RequestResourceSection = ({
             <Plus className="size-4" />
           </Button>
         </div>
+        </div>
 
-        <Button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isPending}
-          className="gap-2"
-        >
-          {isPending && <Loader className="size-4 animate-spin" />}
-          Submit Request
-        </Button>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
           <p className="text-xs font-medium text-muted-foreground">Priority</p>
           <Select
             value={priority}
             onValueChange={(v) => setPriority(v as EmployeePriority)}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full min-w-[120px]">
               <SelectValue placeholder="Select priority" />
             </SelectTrigger>
             <SelectContent>
@@ -150,18 +143,36 @@ const RequestResourceSection = ({
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-1.5 sm:col-span-1">
-          <p className="text-xs font-medium text-muted-foreground">
-            Reason <span className="font-normal">(optional)</span>
-          </p>
-          <Textarea
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Why do you need this?"
-            rows={2}
-            maxLength={2000}
-          />
-        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <p className="text-xs font-medium text-muted-foreground">
+          Reason <span className="font-normal">(optional)</span>
+        </p>
+        <Textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="Why do you need this?"
+          rows={2}
+          maxLength={2000}
+        />
+      </div>
+
+      <div className="flex items-center justify-between gap-2 pt-2">
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose}>
+            Close
+          </Button>
+        )}
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isPending}
+          className="gap-2"
+        >
+          {isPending && <Loader className="size-4 animate-spin" />}
+          Submit Request
+        </Button>
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { resourceType } from "@/app/admin/resources/(with-sidebar)/page";
 import {
   AvailabilityBar,
@@ -64,12 +63,9 @@ const QuickRequestDialog = ({
             resourceName={resource.name}
             availableQuantity={resource.availableQuantity}
             onSuccess={() => onOpenChange(false)}
+            onClose={() => onOpenChange(false)}
           />
         </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
