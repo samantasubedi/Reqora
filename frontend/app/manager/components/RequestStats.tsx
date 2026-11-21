@@ -1,63 +1,57 @@
-import StatCard from "@/app/admin/components/StatCard";
 import { CheckCircle2, CircleX, ClipboardList, Clock } from "lucide-react";
-import { statCardInterface } from "@/app/admin/components/ResourceStats";
+import type { LucideIcon } from "lucide-react";
+import StatCard, { type StatCardTone } from "@/app/admin/components/StatCard";
+import type { RequestCounts } from "./dashboardUtils";
 
-const totalRequests = 128;
-const pendingRequests = 21;
-const approvedRequests = 96;
-const rejectedRequests = 11;
+type StatConfig = {
+  title: string;
+  number: number;
+  subtext: string;
+  IconName: LucideIcon;
+  tone: StatCardTone;
+};
 
-const statConfig: Omit<statCardInterface, "number">[] = [
-  {
-    title: "Total Requests",
-    IconName: ClipboardList,
-    subtext: "Requests in your department",
-    bgColor: "bg-blue-100",
-    textColor: "text-blue-800",
-    borderColor: "border-blue-500",
-  },
-  {
-    title: "Pending",
-    IconName: Clock,
-    subtext: `${((pendingRequests / totalRequests) * 100).toFixed(1)}% of total`,
-    bgColor: "bg-amber-100",
-    textColor: "text-amber-800",
-    borderColor: "border-amber-500",
-  },
-  {
-    title: "Approved",
-    IconName: CheckCircle2,
-    subtext: `${((approvedRequests / totalRequests) * 100).toFixed(1)}% of total`,
-    bgColor: "bg-green-100",
-    textColor: "text-green-800",
-    borderColor: "border-green-500",
-  },
-  {
-    title: "Rejected",
-    IconName: CircleX,
-    subtext: `${((rejectedRequests / totalRequests) * 100).toFixed(1)}% of total`,
-    bgColor: "bg-red-100",
-    textColor: "text-red-800",
-    borderColor: "border-red-500",
-  },
-];
+const percentageOfTotal = (count: number, total: number) =>
+  total > 0
+    ? `${((count / total) * 100).toFixed(1)}% of total`
+    : "0.0% of total";
 
-const statValues = [
-  totalRequests,
-  pendingRequests,
-  approvedRequests,
-  rejectedRequests,
-];
+const RequestStats = ({ counts }: { counts: RequestCounts }) => {
+  const statConfig: StatConfig[] = [
+    {
+      title: "Total Requests",
+      number: counts.total,
+      subtext: "Requests in your department",
+      IconName: ClipboardList,
+      tone: "info",
+    },
+    {
+      title: "Pending",
+      number: counts.pending,
+      subtext: percentageOfTotal(counts.pending, counts.total),
+      IconName: Clock,
+      tone: "warning",
+    },
+    {
+      title: "Approved",
+      number: counts.approved,
+      subtext: percentageOfTotal(counts.approved, counts.total),
+      IconName: CheckCircle2,
+      tone: "success",
+    },
+    {
+      title: "Rejected",
+      number: counts.rejected,
+      subtext: percentageOfTotal(counts.rejected, counts.total),
+      IconName: CircleX,
+      tone: "danger",
+    },
+  ];
 
-const RequestStats = () => {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {statConfig.map((config, index) => (
-        <StatCard
-          key={config.title}
-          {...config}
-          number={statValues[index]}
-        />
+      {statConfig.map((config) => (
+        <StatCard key={config.title} {...config} />
       ))}
     </div>
   );
