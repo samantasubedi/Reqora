@@ -11,11 +11,12 @@ import {
   AvailabilityBar,
   ResourceStatusPill,
 } from "./ResourceBits";
-import { getResourceCounts, Resource } from "./resourcesDummyData";
+import type { ManagerResource } from "../apis/types";
+import { getResourceCounts } from "./resourceUtils";
 
 type ResourceTableViewProps = {
-  resources: Resource[];
-  onSelect: (resource: Resource) => void;
+  resources: ManagerResource[];
+  onSelect: (resource: ManagerResource) => void;
 };
 
 const ResourceTableView = ({
@@ -54,7 +55,7 @@ const ResourceTableView = ({
           </TableRow>
         ) : (
           resources.map((resource) => {
-            const counts = getResourceCounts(resource.items);
+            const counts = getResourceCounts(resource);
             return (
               <TableRow
                 key={resource.id}
@@ -65,7 +66,7 @@ const ResourceTableView = ({
                   <p className="font-medium text-foreground">{resource.name}</p>
                   <p className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Building2 className="size-3" />
-                    {resource.department}
+                    {resource.department ?? "No department"}
                   </p>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
@@ -74,7 +75,7 @@ const ResourceTableView = ({
                 <TableCell>
                   <p className="flex items-center gap-1.5 text-muted-foreground">
                     <MapPin className="size-4 shrink-0" />
-                    {resource.location}
+                    {resource.location || "No location"}
                   </p>
                 </TableCell>
                 <TableCell>

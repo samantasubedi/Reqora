@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { getAvailabilityLevel, type AvailabilityLevel } from "./resourcesDummyData";
+import { getAvailabilityLevel, type AvailabilityLevel } from "./resourceUtils";
 
 const levelStyles: Record<
   AvailabilityLevel,

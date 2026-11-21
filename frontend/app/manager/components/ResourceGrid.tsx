@@ -4,11 +4,12 @@ import {
   AvailabilityBar,
   ResourceStatusPill,
 } from "./ResourceBits";
-import { getResourceCounts, Resource } from "./resourcesDummyData";
+import type { ManagerResource } from "../apis/types";
+import { getResourceCounts } from "./resourceUtils";
 
 type ResourceGridProps = {
-  resources: Resource[];
-  onSelect: (resource: Resource) => void;
+  resources: ManagerResource[];
+  onSelect: (resource: ManagerResource) => void;
 };
 
 const ResourceGrid = ({ resources, onSelect }: ResourceGridProps) => {
@@ -31,7 +32,7 @@ const ResourceGrid = ({ resources, onSelect }: ResourceGridProps) => {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {resources.map((resource) => {
-        const counts = getResourceCounts(resource.items);
+        const counts = getResourceCounts(resource);
         return (
           <Card
             key={resource.id}
@@ -56,11 +57,11 @@ const ResourceGrid = ({ resources, onSelect }: ResourceGridProps) => {
             <div className="space-y-1.5 text-sm text-muted-foreground">
               <p className="flex items-center gap-2">
                 <Building2 className="size-4 shrink-0 text-muted-foreground" />
-                {resource.department}
+                {resource.department ?? "No department"}
               </p>
               <p className="flex items-center gap-2">
                 <MapPin className="size-4 shrink-0 text-muted-foreground" />
-                {resource.location}
+                {resource.location || "No location"}
               </p>
             </div>
 
