@@ -9,7 +9,6 @@ import {
   findUserByEmail,
 } from "../company/company.repository";
 import {
-  countAllResources,
   countResourceItemsByStatus,
   countResources,
   countResourcesByType,
@@ -69,7 +68,7 @@ export const findAllResourcesService = async ({
     });
   }
 
-  const [resources, countsByStatus, countsByType, totalResources, totalCount] =
+  const [resources, countsByStatus, countsByType, totalCount] =
     await Promise.all([
       findAllResources({
         companyId,
@@ -84,7 +83,6 @@ export const findAllResourcesService = async ({
       }),
       countResourceItemsByStatus({ companyId, departmentId }),
       countResourcesByType({ companyId, departmentId }),
-      countAllResources({ companyId, departmentId }),
       countResources({
         companyId,
         search,
@@ -96,13 +94,20 @@ export const findAllResourcesService = async ({
       }),
     ]);
 
+  // "all" must count every individual resource item, matching the
+  // available/in-use/maintenance item counts returned alongside it.
+  const totalItems = countsByStatus.reduce(
+    (total, statusCount) => total + statusCount._count,
+    0,
+  );
+
   const totalPages = Math.ceil(totalCount / take);
   return {
     resources,
     countsByStatus,
     countsByType,
     totalPages,
-    totalResources,
+    totalItems,
   };
 };
 

@@ -17,12 +17,21 @@ import {
   findDepartmentsByCompanyId,
   createDepartment,
   findDepartmentByName,
+  findCompanyById,
+  updateCompanyById,
+  findDepartmentWithCounts,
+  countDepartmentsByCompanyId,
+  findDepartmentByNameExcludingId,
+  updateDepartmentById,
+  deleteDepartmentById,
 } from "./company.repository";
+import { CompanyIndustry } from "../../generated/prisma/enums";
 import crypto from "crypto";
 import {
   createCompanyType,
   emailInviteType,
   generateCodeType,
+  updateCompanyType,
 } from "./company.schema";
 import { sendMail } from "../../utils/sendMail";
 import cryptoRandomString from "crypto-random-string";
@@ -313,4 +322,152 @@ export const leaveCompanyService = async ({
   }
   const result = await leaveCompanyRepo({ email });
   return result;
+};
+
+export const getCompanyService = async ({
+  companyId,
+}: {
+  companyId?: string;
+}) => {
+  if (!companyId) {
+    throw new appError(
+      400,
+      "USER_NOT_ENROLLED",
+      "User does not belong to a company",
+    );
+  }
+  const company = await findCompanyById({ id: companyId });
+  if (!company) {
+    throw new appError(404, "COMPANY_NOT_FOUND", "company not found");
+  }
+  return company;
+};
+
+export const updateCompanyService = async ({
+  companyId,
+  data,
+}: {
+  companyId?: string;
+  data: updateCompanyType;
+}) => {
+  if (!companyId) {
+    throw new appError(
+      400,
+      "USER_NOT_ENROLLED",
+      "User does not belong to a company",
+    );
+  }
+  if (Object.keys(data).length === 0) {
+    throw new appError(400, "NO_FIELDS", "nothing to update");
+  }
+
+  const company = await findCompanyById({ id: companyId });
+  if (!company) {
+    throw new appError(404, "COMPANY_NOT_FOUND", "company not found");
+  }
+
+  if (data.email && data.email !== company.email) {
+    const duplicate = await findCompanyByEmail({ email: data.email });
+    if (duplicate) {
+      throw new appError(
+        400,
+        "DUPLICATE_EMAIL",
+        "company already registered with this email",
+      );
+    }
+  }
+
+  const { website, phoneNumber, industry, ...rest } = data;
+  return updateCompanyById({
+    id: companyId,
+    data: {
+      ...rest,
+      ...(industry !== undefined
+        ? { industry: industry as CompanyIndustry }
+        : {}),
+      ...(website !== undefined ? { website: website || null } : {}),
+      ...(phoneNumber !== undefined
+        ? { phoneNumber: phoneNumber || null }
+        : {}),
+    },
+  });
+};
+
+export const updateDepartmentService = async ({
+  id,
+  name,
+  companyId,
+}: {
+  id: string;
+  name: string;
+  companyId?: string;
+}) => {
+  if (!companyId) {
+    throw new appError(
+      400,
+      "USER_NOT_ENROLLED",
+      "User does not belong to a company",
+    );
+  }
+
+  const department = await findDepartmentById({ id });
+  if (!department || department.companyId !== companyId) {
+    throw new appError(404, "NOT_FOUND", "department not found");
+  }
+
+  const duplicate = await findDepartmentByNameExcludingId({
+    name,
+    companyId,
+    excludeId: id,
+  });
+  if (duplicate) {
+    throw new appError(
+      400,
+      "DUPLICATE_DEPARTMENT",
+      "department already exists in this company",
+    );
+  }
+
+  return updateDepartmentById({ id, name });
+};
+
+export const deleteDepartmentService = async ({
+  id,
+  companyId,
+}: {
+  id: string;
+  companyId?: string;
+}) => {
+  if (!companyId) {
+    throw new appError(
+      400,
+      "USER_NOT_ENROLLED",
+      "User does not belong to a company",
+    );
+  }
+
+  const department = await findDepartmentWithCounts({ id });
+  if (!department || department.companyId !== companyId) {
+    throw new appError(404, "NOT_FOUND", "department not found");
+  }
+
+  const totalDepartments = await countDepartmentsByCompanyId({ companyId });
+  if (totalDepartments <= 1) {
+    throw new appError(
+      400,
+      "LAST_DEPARTMENT",
+      "you cannot delete the only department in the company",
+    );
+  }
+
+  const { users, resources } = department._count;
+  if (users > 0 || resources > 0) {
+    throw new appError(
+      409,
+      "DEPARTMENT_IN_USE",
+      `department still has ${users} user(s) and ${resources} resource(s). Move them to another department first.`,
+    );
+  }
+
+  return deleteDepartmentById({ id });
 };

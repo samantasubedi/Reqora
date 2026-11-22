@@ -31,6 +31,8 @@ export const createCompanySchema = z.object({
     .optional(),
 });
 export type createCompanyType = z.infer<typeof createCompanySchema>;
+export const updateCompanySchema = createCompanySchema.partial();
+export type updateCompanyType = z.infer<typeof updateCompanySchema>;
 export const emailInviteSchema = z.object({
   email: z.string().email("Invalid email address"),
   role: z.enum(["admin", "manager", "employee"]),

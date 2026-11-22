@@ -8,6 +8,10 @@ import {
   leaveCompany,
   getDepartments,
   addDepartment,
+  getCompany,
+  updateCompany,
+  updateDepartment,
+  deleteDepartment,
 } from "./company.controller";
 import { roleMiddleware } from "../../middleware/roleMIddleware";
 import { validate } from "../../middleware/validationMiddleware";
@@ -18,6 +22,7 @@ import {
   joinByCodeSchema,
   joinByEmailSchema,
   addDepartmentSchema,
+  updateCompanySchema,
 } from "./company.schema";
 
 const router = Router();
@@ -43,6 +48,24 @@ router.post(
   roleMiddleware(["admin"]),
   validate(addDepartmentSchema),
   addDepartment,
+);
+router.patch(
+  "/departments/:id",
+  roleMiddleware(["admin"]),
+  validate(addDepartmentSchema),
+  updateDepartment,
+);
+router.delete(
+  "/departments/:id",
+  roleMiddleware(["admin"]),
+  deleteDepartment,
+);
+router.get("/company", roleMiddleware(["admin"]), getCompany);
+router.patch(
+  "/company",
+  roleMiddleware(["admin"]),
+  validate(updateCompanySchema),
+  updateCompany,
 );
 
 export default router;

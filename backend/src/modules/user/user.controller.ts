@@ -1,12 +1,20 @@
 import { prisma } from "../../lib/prisma";
 import { ResourceStatus, Role } from "../../generated/prisma/enums";
 import { NextFunction, Request, Response } from "express";
+import bcrypt from "bcrypt-ts";
 import { appError } from "../../utils/appError";
+import { clearAuthCookies } from "../../utils/setCookie";
 import {
   countUsersByCompanyId,
   findUserById,
   findUserDetailsByEmail,
   findUsersByCompanyId,
+  findUserByUsernameExcludingId,
+  findUserByEmailExcludingId,
+  updateUserProfile,
+  findUserPasswordById,
+  findUserAccountById,
+  updateUserPassword,
 } from "./user.repository";
 import { T_QueryFilters } from "../../middleware/queryMiddleware";
 //Private routes, accessible by that specific user only
@@ -64,6 +72,137 @@ export const editUser = (req: Request, res: Response) => {
   res.json({
     message: "this edits the existing user info like name,personal details",
   });
+};
+
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = res.locals.user.id as string;
+    const { username, email, description } = req.body as {
+      username?: string;
+      email?: string;
+      description?: string;
+    };
+
+    if (
+      username === undefined &&
+      email === undefined &&
+      description === undefined
+    ) {
+      throw new appError(400, "NO_FIELDS", "nothing to update");
+    }
+
+    const currentUser = await findUserAccountById({ id: userId });
+    if (!currentUser) {
+      throw new appError(404, "USER_NOT_FOUND", "user not found");
+    }
+
+    if (username !== undefined) {
+      const duplicate = await findUserByUsernameExcludingId({
+        username,
+        excludeId: userId,
+      });
+      if (duplicate) {
+        throw new appError(
+          409,
+          "DUPLICATE_USERNAME",
+          "username is already taken",
+        );
+      }
+    }
+
+    if (email !== undefined) {
+      const duplicate = await findUserByEmailExcludingId({
+        email,
+        excludeId: userId,
+      });
+      if (duplicate) {
+        throw new appError(409, "DUPLICATE_EMAIL", "email is already in use");
+      }
+    }
+
+    const data: {
+      username?: string;
+      email?: string;
+      description?: string;
+    } = {};
+    if (username !== undefined) data.username = username;
+    if (email !== undefined) data.email = email;
+    if (description !== undefined) data.description = description;
+
+    const updatedUser = await updateUserProfile({ id: userId, data });
+    const requiresRelogin =
+      (username !== undefined && username !== currentUser.username) ||
+      (email !== undefined && email !== currentUser.email);
+    if (requiresRelogin) {
+      clearAuthCookies(res);
+    }
+
+    return res.status(200).json({
+      success: true,
+      code: "PROFILE_UPDATED",
+      message: requiresRelogin
+        ? "profile updated successfully. Please log in again."
+        : "profile updated successfully",
+      requiresRelogin,
+      data: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = res.locals.user.id as string;
+    const { currentPassword, newPassword } = req.body as {
+      currentPassword: string;
+      newPassword: string;
+    };
+
+    const user = await findUserPasswordById({ id: userId });
+    if (!user) {
+      throw new appError(404, "USER_NOT_FOUND", "user not found");
+    }
+
+    const isCurrentPasswordCorrect = await bcrypt.compare(
+      currentPassword,
+      user.passwordHash,
+    );
+    if (!isCurrentPasswordCorrect) {
+      throw new appError(
+        400,
+        "INVALID_PASSWORD",
+        "current password is incorrect",
+      );
+    }
+
+    if (currentPassword === newPassword) {
+      throw new appError(
+        400,
+        "SAME_PASSWORD",
+        "new password must be different from the current password",
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await updateUserPassword({ id: userId, passwordHash });
+
+    return res.status(200).json({
+      success: true,
+      code: "PASSWORD_CHANGED",
+      message: "password changed successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 //general user routes, accessible by company
 export const getAllUsers = async (

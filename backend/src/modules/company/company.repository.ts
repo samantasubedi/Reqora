@@ -278,3 +278,88 @@ export const leaveCompanyRepo = async ({ email }: { email: string }) => {
     }),
   ]);
 };
+
+export const findCompanyById = async ({ id }: { id: string }) => {
+  return prisma.company.findUnique({ where: { id } });
+};
+
+export const updateCompanyById = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: {
+    companyName?: string;
+    email?: string;
+    address?: string;
+    size?: number;
+    industry?: CompanyIndustry;
+    website?: string | null;
+    phoneNumber?: string | null;
+  };
+}) => {
+  return prisma.company.update({ where: { id }, data });
+};
+
+export const findDepartmentWithCounts = async ({ id }: { id: string }) => {
+  return prisma.department.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      companyId: true,
+      _count: {
+        select: {
+          users: true,
+          resources: true,
+          joinTokens: true,
+          joinCodes: true,
+        },
+      },
+    },
+  });
+};
+
+export const countDepartmentsByCompanyId = async ({
+  companyId,
+}: {
+  companyId: string;
+}) => {
+  return prisma.department.count({ where: { companyId } });
+};
+
+export const findDepartmentByNameExcludingId = async ({
+  name,
+  companyId,
+  excludeId,
+}: {
+  name: string;
+  companyId: string;
+  excludeId: string;
+}) => {
+  return prisma.department.findFirst({
+    where: {
+      companyId,
+      name,
+      id: { not: excludeId },
+    },
+  });
+};
+
+export const updateDepartmentById = async ({
+  id,
+  name,
+}: {
+  id: string;
+  name: string;
+}) => {
+  return prisma.department.update({ where: { id }, data: { name } });
+};
+
+export const deleteDepartmentById = async ({ id }: { id: string }) => {
+  return prisma.$transaction([
+    prisma.joinToken.deleteMany({ where: { departmentId: id } }),
+    prisma.joinCode.deleteMany({ where: { departmentId: id } }),
+    prisma.department.delete({ where: { id } }),
+  ]);
+};

@@ -42,7 +42,7 @@ export const getAllResources = async (
       countsByStatus,
       countsByType,
       totalPages,
-      totalResources,
+      totalItems,
     } = await findAllResourcesService({
       companyId,
       search,
@@ -93,7 +93,7 @@ export const getAllResources = async (
       allResources,
       countsByStatus: [
         ...countsByStatus,
-        { _count: totalResources, status: "all" },
+        { _count: totalItems, status: "all" },
       ],
       countsByType,
       totalPages,

@@ -9,6 +9,10 @@ import {
   leaveCompanyService,
   getDepartmentsService,
   addDepartmentService,
+  getCompanyService,
+  updateCompanyService,
+  updateDepartmentService,
+  deleteDepartmentService,
 } from "./company.service";
 import { clearAuthCookies, cookieOptions, setCookie } from "../../utils/setCookie";
 
@@ -225,6 +229,91 @@ export const addDepartment = async (
       code: "DEPARTMENT_ADDED",
       message: "department added successfully",
       data: department,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getCompany = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const companyId = res.locals.user.companyId;
+    const company = await getCompanyService({ companyId });
+    return res.status(200).json({
+      success: true,
+      code: "COMPANY_FETCHED",
+      message: "company fetched successfully",
+      data: company,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateCompany = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const companyId = res.locals.user.companyId;
+    const company = await updateCompanyService({
+      companyId,
+      data: req.body,
+    });
+    return res.status(200).json({
+      success: true,
+      code: "COMPANY_UPDATED",
+      message: "company updated successfully",
+      data: company,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateDepartment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const companyId = res.locals.user.companyId;
+    const id = String(req.params.id);
+    const { name } = req.body;
+    const department = await updateDepartmentService({
+      id,
+      name,
+      companyId,
+    });
+    return res.status(200).json({
+      success: true,
+      code: "DEPARTMENT_UPDATED",
+      message: "department updated successfully",
+      data: department,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteDepartment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const companyId = res.locals.user.companyId;
+    const id = String(req.params.id);
+    await deleteDepartmentService({ id, companyId });
+    return res.status(200).json({
+      success: true,
+      code: "DEPARTMENT_DELETED",
+      message: "department deleted successfully",
     });
   } catch (err) {
     next(err);

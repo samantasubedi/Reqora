@@ -119,18 +119,6 @@ export const countResources = async ({
   });
 };
 
-export const countAllResources = async ({
-  companyId,
-  departmentId,
-}: {
-  companyId: string;
-  departmentId?: string;
-}) => {
-  return prisma.resource.count({
-    where: { companyId, departmentId: departmentId ?? undefined },
-  });
-};
-
 export const countResourceItemsByStatus = async ({
   companyId,
   departmentId,

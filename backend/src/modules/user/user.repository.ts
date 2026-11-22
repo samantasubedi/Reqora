@@ -112,3 +112,79 @@ export const findUserById = async ({ id }: { id: string }) => {
     },
   });
 };
+
+export const findUserByUsernameExcludingId = async ({
+  username,
+  excludeId,
+}: {
+  username: string;
+  excludeId: string;
+}) => {
+  return prisma.user.findFirst({
+    where: { username, id: { not: excludeId } },
+    select: { id: true },
+  });
+};
+
+export const findUserByEmailExcludingId = async ({
+  email,
+  excludeId,
+}: {
+  email: string;
+  excludeId: string;
+}) => {
+  return prisma.user.findFirst({
+    where: { email, id: { not: excludeId } },
+    select: { id: true },
+  });
+};
+
+export const updateUserProfile = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: { username?: string; email?: string; description?: string };
+}) => {
+  return prisma.user.update({
+    where: { id },
+    data,
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      description: true,
+      role: true,
+      department: { select: { id: true, name: true } },
+      company: { select: { companyName: true } },
+    },
+  });
+};
+
+export const findUserPasswordById = async ({ id }: { id: string }) => {
+  return prisma.user.findUnique({
+    where: { id },
+    select: { id: true, passwordHash: true },
+  });
+};
+
+export const findUserAccountById = async ({ id }: { id: string }) => {
+  return prisma.user.findUnique({
+    where: { id },
+    select: { id: true, username: true, email: true, description: true },
+  });
+};
+
+export const updateUserPassword = async ({
+  id,
+  passwordHash,
+}: {
+  id: string;
+  passwordHash: string;
+}) => {
+  return prisma.user.update({
+    where: { id },
+    data: { passwordHash },
+    select: { id: true },
+  });
+};
