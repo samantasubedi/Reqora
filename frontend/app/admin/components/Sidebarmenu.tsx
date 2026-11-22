@@ -220,8 +220,10 @@ const Sidebarmenu = () => {
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Settings"
+                isActive={isActive("/admin/settings")}
                 suppressHydrationWarning
                 className="cursor-pointer"
+                onClick={() => handleSidebarNavigation("/admin/settings")}
               >
                 <Icon icon="material-symbols:settings" className="size-5!" />
                 Settings
