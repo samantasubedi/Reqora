@@ -48,7 +48,25 @@ export type UpdateCompanyPayload = {
   phoneNumber?: string;
 };
 
-export const getAnalyticsApi = async () => {
+export type MonthlyPoint = { label: string; value: number };
+
+export type AdminAnalytics = {
+  success: boolean;
+  code: string;
+  message: string;
+  resourceStats: {
+    countsByStatus: Array<{ status: string; _count: number }>;
+    countsByType: Array<{ type: string; _count: number }>;
+    resourcesByMonth: MonthlyPoint[];
+  };
+  userStats: {
+    countsByRole: Array<{ role: string; _count: number }>;
+    countsByDepartment: Array<{ name: string; _count: { users: number } }>;
+    usersByMonth: MonthlyPoint[];
+  };
+};
+
+export const getAnalyticsApi = async (): Promise<AdminAnalytics> => {
   const response = await api.get(`/analytics`);
   return response.data;
 };

@@ -22,6 +22,7 @@ export type areaChartPropsType = {
   chartTitle: string;
   chartDescription?: string;
   chartFooter?: string;
+  valueLabel?: string;
 };
 
 export function AreaChartLabel({
@@ -29,10 +30,11 @@ export function AreaChartLabel({
   chartTitle,
   chartDescription,
   chartFooter,
+  valueLabel = "Requests",
 }: areaChartPropsType) {
   const chartConfig = {
     value: {
-      label: "Requests",
+      label: valueLabel,
       color: "var(--chart-1)",
     },
   } satisfies ChartConfig;

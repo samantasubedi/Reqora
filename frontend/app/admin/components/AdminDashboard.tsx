@@ -10,7 +10,7 @@ import ThemeToggler from "@/components/global/ThemeToggler";
 import { api } from "@/lib/apiClient";
 import ChartSkeleton from "./skeletonLoaders/chartSkeleton";
 import { EmptyChart } from "./emptyStates/emptyChart";
-import { AreaChartDefault } from "@/components/ui/areaChart";
+import { AreaChartLabel } from "@/components/others/AreaChartLabel";
 import { ChartPieDonut } from "@/components/others/donoutChart";
 import ResourceStats from "./ResourceStats";
 import UserStats from "./UserStats";
@@ -39,8 +39,19 @@ export type countsByStatusType={ status: string; _count: number }
 export type countsByTypeType={ type: string; _count: number }
 
 export const AdminDashboard = () => {
-  const { isError, error, data, isSuccess, isLoading, refetch } =
-    useAnalytics();
+  const { isError, data, isSuccess, isLoading, refetch } = useAnalytics();
+
+  const resourcesByMonth = data?.resourceStats.resourcesByMonth ?? [];
+  const usersByMonth = data?.userStats.usersByMonth ?? [];
+  const resourcesAddedTotal = resourcesByMonth.reduce(
+    (total, point) => total + point.value,
+    0,
+  );
+  const usersJoinedTotal = usersByMonth.reduce(
+    (total, point) => total + point.value,
+    0,
+  );
+
   const userBarChartData: chartPropsType = {
     chartTitle: "User Distribution",
     chartData:
@@ -82,20 +93,18 @@ export const AdminDashboard = () => {
         }))
     : [];
   const donoutChartData = isSuccess
-    ? data.userStats.countsByRole.map(
-        (curr: { _count: string; role: string }) => {
-          return {
-            label: camelToSentence(curr.role),
-            value: curr._count,
-            fill:
-              curr.role == "admin"
-                ? "var(--chart-1)"
-                : curr.role == "manager"
-                  ? "var(--chart-2)"
-                  : "var(--chart-3)",
-          };
-        },
-      )
+    ? data.userStats.countsByRole.map((curr) => {
+        return {
+          label: camelToSentence(curr.role),
+          value: curr._count,
+          fill:
+            curr.role == "admin"
+              ? "var(--chart-1)"
+              : curr.role == "manager"
+                ? "var(--chart-2)"
+                : "var(--chart-3)",
+        };
+      })
     : [];
   return (
     <>
@@ -132,7 +141,15 @@ export const AdminDashboard = () => {
                   <ChartBarLabel {...resourceBarChartData} />
                 )}
               </div>
-              <AreaChartDefault />
+              <AreaChartLabel
+                chartTitle="Resources Added Over Time"
+                chartDescription="Resource items added in the last 6 months"
+                chartFooter={`${resourcesAddedTotal} resource item${
+                  resourcesAddedTotal === 1 ? "" : "s"
+                } added in the last 6 months`}
+                chartData={resourcesByMonth}
+                valueLabel="Resources"
+              />
             </div>
           ) : isError ? (
             <TableError onRetry={() => refetch()} />
@@ -174,7 +191,15 @@ export const AdminDashboard = () => {
                 />
                 <ChartBarLabel {...userBarChartData} />
               </div>
-              <AreaChartDefault />
+              <AreaChartLabel
+                chartTitle="Users Joined Over Time"
+                chartDescription="Users who joined the workspace in the last 6 months"
+                chartFooter={`${usersJoinedTotal} user${
+                  usersJoinedTotal === 1 ? "" : "s"
+                } joined in the last 6 months`}
+                chartData={usersByMonth}
+                valueLabel="Users"
+              />
             </div>
           ) : isError ? (
             <TableError onRetry={() => refetch()} />

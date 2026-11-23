@@ -37,40 +37,126 @@ export const getEmployeeDashboardService = async ({
   };
 };
 
+const MONTHS_TO_SHOW = 6;
+
+type MonthlyPoint = { label: string; value: number };
+
+const getStartOfMonthWindow = () => {
+  const now = new Date();
+  return new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth() - (MONTHS_TO_SHOW - 1),
+      1,
+    ),
+  );
+};
+
+const getMonthlyBuckets = () => {
+  const now = new Date();
+  return Array.from({ length: MONTHS_TO_SHOW }, (_, index) => {
+    const date = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth() - (MONTHS_TO_SHOW - 1 - index),
+        1,
+      ),
+    );
+
+    return {
+      key: `${date.getUTCFullYear()}-${date.getUTCMonth()}`,
+      label: date.toLocaleDateString("en-US", {
+        month: "short",
+        timeZone: "UTC",
+      }),
+      value: 0,
+    };
+  });
+};
+
+const bucketDatesByMonth = (dates: Date[]): MonthlyPoint[] => {
+  const buckets = getMonthlyBuckets();
+  const bucketByKey = new Map(buckets.map((bucket) => [bucket.key, bucket]));
+
+  for (const date of dates) {
+    const bucket = bucketByKey.get(
+      `${date.getUTCFullYear()}-${date.getUTCMonth()}`,
+    );
+    if (bucket) bucket.value += 1;
+  }
+
+  return buckets.map(({ label, value }) => ({ label, value }));
+};
+
 export const getAdminDashboardAnalyticsService = async ({
   companyId,
 }: {
   companyId: string;
 }) => {
-  const resourceCountsByStatus = await prisma.resourceItem.groupBy({
-    by: ["status"],
-    _count: true,
-    where: { resource: { companyId } },
-  });
-  const resourceCountsByType = await prisma.resource.groupBy({
-    by: ["type"],
-    _count: true,
-    where: { companyId },
-  });
-  const totalResourceCount = await prisma.resourceItem.count({
-    where: { resource: { companyId } },
-  });
-  const userCountsByRole = await prisma.user.groupBy({
-    by: ["role"],
-    _count: true,
-    where: { companyId },
-  });
-  const userCountsByDepartments = await prisma.department.findMany({
-    where: { companyId },
-    select: {
-      name: true,
-      _count: {
-        select: {
-          users: true,
+  const startOfWindow = getStartOfMonthWindow();
+
+  const [
+    resourceCountsByStatus,
+    resourceCountsByType,
+    totalResourceCount,
+    userCountsByRole,
+    userCountsByDepartments,
+    recentResourceItems,
+    recentUsers,
+  ] = await Promise.all([
+    prisma.resourceItem.groupBy({
+      by: ["status"],
+      _count: true,
+      where: { resource: { companyId } },
+    }),
+    prisma.resource.groupBy({
+      by: ["type"],
+      _count: true,
+      where: { companyId },
+    }),
+    prisma.resourceItem.count({
+      where: { resource: { companyId } },
+    }),
+    prisma.user.groupBy({
+      by: ["role"],
+      _count: true,
+      where: { companyId },
+    }),
+    prisma.department.findMany({
+      where: { companyId },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            users: true,
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.resourceItem.findMany({
+      where: {
+        resource: { companyId },
+        createdAt: { gte: startOfWindow },
+      },
+      select: { createdAt: true },
+    }),
+    prisma.user.findMany({
+      where: {
+        companyId,
+        joinedAt: { gte: startOfWindow },
+      },
+      select: { joinedAt: true },
+    }),
+  ]);
+
+  const resourcesByMonth = bucketDatesByMonth(
+    recentResourceItems.map((item) => item.createdAt),
+  );
+  const usersByMonth = bucketDatesByMonth(
+    recentUsers
+      .map((user) => user.joinedAt)
+      .filter((joinedAt): joinedAt is Date => joinedAt !== null),
+  );
 
   return {
     resourceStats: {
@@ -79,10 +165,12 @@ export const getAdminDashboardAnalyticsService = async ({
         { status: "all", _count: totalResourceCount },
       ],
       countsByType: resourceCountsByType,
+      resourcesByMonth,
     },
     userStats: {
       countsByRole: userCountsByRole,
       countsByDepartment: userCountsByDepartments,
+      usersByMonth,
     },
   };
 };
