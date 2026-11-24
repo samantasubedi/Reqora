@@ -1,9 +1,11 @@
 import { appError } from "../../utils/appError";
 import { prisma } from "../../lib/prisma";
+import { Prisma } from "../../generated/prisma/client";
 import { findUserByEmail } from "../company/company.repository";
 import { getMyRequestService } from "../request/request.service";
 import { countItemsByUserId } from "../resource/resource.repository";
 import { getMyItemsService } from "../resource/resource.service";
+import { buildTrend, type TrendGranularity } from "./dashboard.utils";
 
 export const getEmployeeDashboardService = async ({
   username,
@@ -174,3 +176,170 @@ export const getAdminDashboardAnalyticsService = async ({
     },
   };
 };
+
+type FilteredAnalyticsParams = {
+  companyId: string;
+  from?: Date;
+  to?: Date;
+  tzOffsetMinutes: number;
+  granularity?: TrendGranularity;
+};
+
+export const getAdminResourceAnalyticsService = async ({
+  companyId,
+  from,
+  to,
+  tzOffsetMinutes,
+  granularity,
+}: FilteredAnalyticsParams) => {
+  const rangeTo = to ?? new Date();
+  let rangeFrom = from;
+
+  if (!rangeFrom) {
+    const earliestResourceItem = await prisma.resourceItem.aggregate({
+      where: { resource: { companyId } },
+      _min: { createdAt: true },
+    });
+
+    rangeFrom = earliestResourceItem._min.createdAt ?? rangeTo;
+  }
+
+  const createdAtFilter = { gte: rangeFrom, lte: rangeTo };
+
+  const [countsByStatus, resourceTypeRows, resourceItems] = await Promise.all([
+    prisma.resourceItem.groupBy({
+      by: ["status"],
+      _count: true,
+      where: {
+        resource: { companyId },
+        createdAt: createdAtFilter,
+      },
+    }),
+    prisma.resource.findMany({
+      where: { companyId },
+      select: {
+        type: true,
+        _count: {
+          select: {
+            resourceItems: {
+              where: { createdAt: createdAtFilter },
+            },
+          },
+        },
+      },
+    }),
+    prisma.resourceItem.findMany({
+      where: {
+        resource: { companyId },
+        createdAt: createdAtFilter,
+      },
+      select: { createdAt: true },
+    }),
+  ]);
+
+  const totalResourceCount = countsByStatus.reduce(
+    (total, item) => total + item._count,
+    0,
+  );
+
+  const countsByTypeMap = new Map<string, number>();
+  for (const row of resourceTypeRows) {
+    countsByTypeMap.set(
+      row.type,
+      (countsByTypeMap.get(row.type) ?? 0) + row._count.resourceItems,
+    );
+  }
+
+  const countsByType = [...countsByTypeMap.entries()]
+    .map(([type, count]) => ({ type, _count: count }))
+    .sort((a, b) => a.type.localeCompare(b.type));
+
+  return {
+    countsByStatus: [
+      ...countsByStatus,
+      { status: "all", _count: totalResourceCount },
+    ],
+    countsByType,
+    resourcesTrend: buildTrend(
+      resourceItems.map((item) => item.createdAt),
+      { from: rangeFrom, to: rangeTo, tzOffsetMinutes, granularity },
+    ),
+  };
+};
+
+export const getAdminUserAnalyticsService = async ({
+  companyId,
+  from,
+  to,
+  tzOffsetMinutes,
+  granularity,
+}: FilteredAnalyticsParams) => {
+  const rangeTo = to ?? new Date();
+  let rangeFrom = from;
+
+  if (!rangeFrom) {
+    const earliestUser = await prisma.user.aggregate({
+      where: { companyId },
+      _min: { joinedAt: true, createdAt: true },
+    });
+
+    const earliestDates = [
+      earliestUser._min.joinedAt,
+      earliestUser._min.createdAt,
+    ].filter((date): date is Date => date !== null);
+
+    rangeFrom =
+      earliestDates.length > 0
+        ? new Date(
+            Math.min(...earliestDates.map((date) => date.getTime())),
+          )
+        : rangeTo;
+  }
+
+  const dateFilter = { gte: rangeFrom, lte: rangeTo };
+  const userDateWhere: Prisma.UserWhereInput = {
+    companyId,
+    OR: [
+      { joinedAt: dateFilter },
+      { joinedAt: null, createdAt: dateFilter },
+    ],
+  };
+
+  const [roleCounts, countsByDepartment, users] = await Promise.all([
+    prisma.user.groupBy({
+      by: ["role"],
+      _count: true,
+      where: userDateWhere,
+    }),
+    prisma.department.findMany({
+      where: { companyId },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            users: { where: userDateWhere },
+          },
+        },
+      },
+    }),
+    prisma.user.findMany({
+      where: userDateWhere,
+      select: { joinedAt: true, createdAt: true },
+    }),
+  ]);
+
+  const countsByRole = roleCounts.filter(
+    (item): item is (typeof roleCounts)[number] & { role: string } =>
+      item.role !== null,
+  );
+
+  return {
+    countsByRole,
+    countsByDepartment,
+    usersTrend: buildTrend(
+      users.map((user) => user.joinedAt ?? user.createdAt),
+      { from: rangeFrom, to: rangeTo, tzOffsetMinutes, granularity },
+    ),
+  };
+};
+

@@ -23,6 +23,7 @@ export type areaChartPropsType = {
   chartDescription?: string;
   chartFooter?: string;
   valueLabel?: string;
+  minTickGap?: number;
 };
 
 export function AreaChartLabel({
@@ -31,6 +32,7 @@ export function AreaChartLabel({
   chartDescription,
   chartFooter,
   valueLabel = "Requests",
+  minTickGap = 24,
 }: areaChartPropsType) {
   const chartConfig = {
     value: {
@@ -61,7 +63,8 @@ export function AreaChartLabel({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => String(value).slice(0, 3)}
+              interval="preserveStartEnd"
+              minTickGap={minTickGap}
             />
             <ChartTooltip
               cursor={false}

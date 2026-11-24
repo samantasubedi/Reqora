@@ -16,8 +16,12 @@ import ResourceStats from "./ResourceStats";
 import UserStats from "./UserStats";
 import PageHeader from "./ui/PageHeader";
 import { TableError } from "./TableError";
-import { useAnalytics } from "../hooks/companyHooks";
+import { useResourceAnalytics, useUserAnalytics } from "../hooks/companyHooks";
 import { camelToSentence } from "@/lib/HelperFunctions";
+import { DashboardRangeFilter } from "./dashboard/DashboardRangeFilter";
+import { useDashboardRange } from "./dashboard/useDashboardRange";
+import { formatRangeSummary } from "./dashboard/dateRange";
+import { formatTrendSeries } from "./dashboard/trendLabels";
 
 export const handleLogout = async (router: AppRouterInstance) => {
   try {
@@ -34,54 +38,77 @@ export const handleLogout = async (router: AppRouterInstance) => {
     console.log("request failed", err);
   }
 };
-export type countsByRoleType={ role: string; _count: number }
-export type countsByStatusType={ status: string; _count: number }
-export type countsByTypeType={ type: string; _count: number }
+export type countsByRoleType = { role: string; _count: number };
+export type countsByStatusType = { status: string; _count: number };
+export type countsByTypeType = { type: string; _count: number };
 
 export const AdminDashboard = () => {
-  const { isError, data, isSuccess, isLoading, refetch } = useAnalytics();
+  const resourceRange = useDashboardRange();
+  const userRange = useDashboardRange();
 
-  const resourcesByMonth = data?.resourceStats.resourcesByMonth ?? [];
-  const usersByMonth = data?.userStats.usersByMonth ?? [];
-  const resourcesAddedTotal = resourcesByMonth.reduce(
-    (total, point) => total + point.value,
-    0,
-  );
-  const usersJoinedTotal = usersByMonth.reduce(
-    (total, point) => total + point.value,
-    0,
-  );
+  const {
+    data: resourceData,
+    isError: isResourceError,
+    isLoading: isResourceLoading,
+    isSuccess: isResourceSuccess,
+    refetch: refetchResourceAnalytics,
+  } = useResourceAnalytics(resourceRange.params);
 
-  const userBarChartData: chartPropsType = {
-    chartTitle: "User Distribution",
-    chartData:
-      data?.userStats.countsByRole.map(
-        (item: { role: string; _count: number }) => ({
-          label: item.role,
-          value: item._count,
-        }),
-      ) ?? [],
-    chartFooter: "Showing user distribution by Role ",
-  };
+  const {
+    data: userData,
+    isError: isUserError,
+    isLoading: isUserLoading,
+    isSuccess: isUserSuccess,
+    refetch: refetchUserAnalytics,
+  } = useUserAnalytics(userRange.params);
+
+  const resourceStats = resourceData?.resourceStats;
+  const userStats = userData?.userStats;
+
+  const resourceTrendData = formatTrendSeries(
+    resourceStats?.resourcesTrend,
+    resourceRange.preset,
+  );
+  const userTrendData = formatTrendSeries(
+    userStats?.usersTrend,
+    userRange.preset,
+  );
+  const resourceTickGap = resourceTrendData.length > 12 ? 56 : 20;
+  const userTickGap = userTrendData.length > 12 ? 56 : 20;
+
+  const resourceRangeSummary = formatRangeSummary(
+    resourceRange.preset,
+    resourceRange.customRange,
+  );
+  const userRangeSummary = formatRangeSummary(
+    userRange.preset,
+    userRange.customRange,
+  );
 
   const resourceBarChartData: chartPropsType = {
     chartTitle: "Resource Distribution",
     chartData:
-      data?.resourceStats.countsByType.map(
-        (item: { type: string; _count: number }) => ({
-          label: item.type,
-          value: item._count,
-        }),
-      ) ?? [],
-    chartFooter: "Showing resource distribution by Type ",
+      resourceStats?.countsByType.map((item) => ({
+        label: item.type,
+        value: item._count,
+      })) ?? [],
+    chartFooter: `Resource items by type · ${resourceRangeSummary}`,
   };
 
-  const pieChartData = isSuccess
-    ? (data?.resourceStats.countsByStatus ?? [])
-        .filter(
-          (item: { _count: number; status: string }) => item.status !== "all",
-        )
-        .map((item: { _count: number; status: string }) => ({
+  const userBarChartData: chartPropsType = {
+    chartTitle: "User Distribution",
+    chartData:
+      userStats?.countsByRole.map((item) => ({
+        label: item.role,
+        value: item._count,
+      })) ?? [],
+    chartFooter: `Users by role · ${userRangeSummary}`,
+  };
+
+  const pieChartData = isResourceSuccess
+    ? (resourceStats?.countsByStatus ?? [])
+        .filter((item) => item.status !== "all")
+        .map((item) => ({
           label: camelToSentence(item.status),
           value: item._count,
           fill:
@@ -92,20 +119,32 @@ export const AdminDashboard = () => {
                 : "var(--chart-3)",
         }))
     : [];
-  const donoutChartData = isSuccess
-    ? data.userStats.countsByRole.map((curr) => {
-        return {
-          label: camelToSentence(curr.role),
-          value: curr._count,
-          fill:
-            curr.role == "admin"
-              ? "var(--chart-1)"
-              : curr.role == "manager"
-                ? "var(--chart-2)"
-                : "var(--chart-3)",
-        };
-      })
+
+  const donoutChartData = isUserSuccess
+    ? (userStats?.countsByRole ?? []).map((current) => ({
+        label: camelToSentence(current.role),
+        value: current._count,
+        fill:
+          current.role === "admin"
+            ? "var(--chart-1)"
+            : current.role === "manager"
+              ? "var(--chart-2)"
+              : "var(--chart-3)",
+      }))
     : [];
+
+  const resourcesAddedTotal =
+    resourceStats?.countsByStatus.find((item) => item.status === "all")
+      ?._count ?? 0;
+  const usersJoinedTotal =
+    userStats?.countsByRole.reduce((total, item) => total + item._count, 0) ??
+    0;
+
+  const resourceTotalLabel =
+    resourceRange.preset === "all" ? "Total Resources" : "Resources Added";
+  const userTotalLabel =
+    userRange.preset === "all" ? "Total Users" : "Users Joined";
+
   return (
     <>
       <div className="w-full space-y-6 p-6 pb-8">
@@ -116,16 +155,28 @@ export const AdminDashboard = () => {
         />
 
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Resource Overview
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Resource Overview
+            </h2>
+            <DashboardRangeFilter
+              preset={resourceRange.preset}
+              customRange={resourceRange.customRange}
+              isCustomOpen={resourceRange.isCustomOpen}
+              onCustomOpenChange={resourceRange.setIsCustomOpen}
+              onSelectPreset={resourceRange.selectPreset}
+              onSelectCustomRange={resourceRange.selectCustomRange}
+              onClearCustomRange={resourceRange.clearCustomRange}
+            />
+          </div>
 
           <ResourceStats
-            countsByStatus={data?.resourceStats.countsByStatus}
-            isLoading={isLoading}
+            countsByStatus={resourceStats?.countsByStatus}
+            isLoading={isResourceLoading}
+            totalLabel={resourceTotalLabel}
           />
 
-          {isLoading ? (
+          {isResourceLoading ? (
             <div className="grid gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
                 <ChartSkeleton />
@@ -133,26 +184,30 @@ export const AdminDashboard = () => {
               </div>
               <ChartSkeleton />
             </div>
-          ) : isSuccess ? (
+          ) : isResourceSuccess ? (
             <div className="grid gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
-                <ChartPieLabel data={pieChartData} />
-                {data?.resourceStats.countsByType && (
+                <ChartPieLabel
+                  data={pieChartData}
+                  footer={`Resource items by status · ${resourceRangeSummary}`}
+                />
+                {resourceStats?.countsByType && (
                   <ChartBarLabel {...resourceBarChartData} />
                 )}
               </div>
               <AreaChartLabel
                 chartTitle="Resources Added Over Time"
-                chartDescription="Resource items added in the last 6 months"
+                chartDescription={`Resource items added · ${resourceRangeSummary}`}
                 chartFooter={`${resourcesAddedTotal} resource item${
                   resourcesAddedTotal === 1 ? "" : "s"
-                } added in the last 6 months`}
-                chartData={resourcesByMonth}
+                } added`}
+                chartData={resourceTrendData}
                 valueLabel="Resources"
+                minTickGap={resourceTickGap}
               />
             </div>
-          ) : isError ? (
-            <TableError onRetry={() => refetch()} />
+          ) : isResourceError ? (
+            <TableError onRetry={() => refetchResourceAnalytics()} />
           ) : (
             <div className="grid gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
@@ -165,15 +220,28 @@ export const AdminDashboard = () => {
         </section>
 
         <section className="space-y-4 border-t pt-6">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Users Overview
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Users Overview
+            </h2>
+            <DashboardRangeFilter
+              preset={userRange.preset}
+              customRange={userRange.customRange}
+              isCustomOpen={userRange.isCustomOpen}
+              onCustomOpenChange={userRange.setIsCustomOpen}
+              onSelectPreset={userRange.selectPreset}
+              onSelectCustomRange={userRange.selectCustomRange}
+              onClearCustomRange={userRange.clearCustomRange}
+            />
+          </div>
+
           <UserStats
-            countsByRole={data?.userStats.countsByRole}
-            isLoading={isLoading}
+            countsByRole={userStats?.countsByRole}
+            isLoading={isUserLoading}
+            totalLabel={userTotalLabel}
           />
 
-          {isLoading ? (
+          {isUserLoading ? (
             <div className="grid gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
                 <ChartSkeleton />
@@ -181,28 +249,29 @@ export const AdminDashboard = () => {
               </div>
               <ChartSkeleton />
             </div>
-          ) : isSuccess ? (
+          ) : isUserSuccess ? (
             <div className="grid gap-4">
               <div className="grid gap-4 lg:grid-cols-2">
                 <ChartPieDonut
                   data={donoutChartData}
                   title="User Distribution"
-                  footer="Showing Users distribution by role"
+                  footer={`Users by role · ${userRangeSummary}`}
                 />
                 <ChartBarLabel {...userBarChartData} />
               </div>
               <AreaChartLabel
                 chartTitle="Users Joined Over Time"
-                chartDescription="Users who joined the workspace in the last 6 months"
+                chartDescription={`Users who joined · ${userRangeSummary}`}
                 chartFooter={`${usersJoinedTotal} user${
                   usersJoinedTotal === 1 ? "" : "s"
-                } joined in the last 6 months`}
-                chartData={usersByMonth}
+                } joined`}
+                chartData={userTrendData}
                 valueLabel="Users"
+                minTickGap={userTickGap}
               />
             </div>
-          ) : isError ? (
-            <TableError onRetry={() => refetch()} />
+          ) : isUserError ? (
+            <TableError onRetry={() => refetchUserAnalytics()} />
           ) : null}
         </section>
       </div>

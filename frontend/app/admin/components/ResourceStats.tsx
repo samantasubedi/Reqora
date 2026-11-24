@@ -25,15 +25,17 @@ interface ResourceStatsProps {
     status: string;
   }>;
   isLoading: boolean;
+  totalLabel?: string;
 }
 
 const ResourceStats = ({
   countsByStatus = [],
   isLoading,
+  totalLabel = "Total Resources",
 }: ResourceStatsProps) => {
   const resourceStatConfig: Omit<statCardInterface, "number">[] = [
     {
-      title: "Total Resources",
+      title: totalLabel,
       statusKey: "all",
       IconName: Package,
       tone: "info",

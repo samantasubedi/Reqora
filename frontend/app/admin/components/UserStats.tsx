@@ -8,14 +8,19 @@ interface UserStatsProps {
     role: string;
   }>;
   isLoading: boolean;
+  totalLabel?: string;
 }
 
-const UserStats = ({ countsByRole = [], isLoading }: UserStatsProps) => {
+const UserStats = ({
+  countsByRole = [],
+  isLoading,
+  totalLabel = "Total Users",
+}: UserStatsProps) => {
   const userStatConfig: Array<
     Omit<statCardInterface, "number"> & { role: string }
   > = [
     {
-      title: "Total Users",
+      title: totalLabel,
       role: "all",
       IconName: Users,
       tone: "info",

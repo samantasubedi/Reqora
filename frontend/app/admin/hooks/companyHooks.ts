@@ -1,22 +1,52 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import {
   addDepartmentApi,
   deleteDepartmentApi,
   fetchCompanyApi,
   fetchDepartmentsApi,
+  fetchResourceAnalyticsApi,
+  fetchUserAnalyticsApi,
   getAnalyticsApi,
   leaveCompanyApi,
   updateCompanyApi,
   updateDepartmentApi,
 } from "../apis/companyApi";
-import type { UpdateCompanyPayload } from "../apis/companyApi";
+import type {
+  AnalyticsQueryParams,
+  UpdateCompanyPayload,
+} from "../apis/companyApi";
 import { T_MutationError } from "@/types/global";
 
 export const useAnalytics = () => {
   return useQuery({
     queryFn: getAnalyticsApi,
     queryKey: ["analytics"],
+  });
+};
+
+export const useResourceAnalytics = (
+  params: AnalyticsQueryParams | null,
+) => {
+  return useQuery({
+    queryFn: () => fetchResourceAnalyticsApi(params as AnalyticsQueryParams),
+    queryKey: ["analytics", "resources", params],
+    enabled: params !== null,
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useUserAnalytics = (params: AnalyticsQueryParams | null) => {
+  return useQuery({
+    queryFn: () => fetchUserAnalyticsApi(params as AnalyticsQueryParams),
+    queryKey: ["analytics", "users", params],
+    enabled: params !== null,
+    placeholderData: keepPreviousData,
   });
 };
 

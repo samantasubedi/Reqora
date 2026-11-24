@@ -50,7 +50,24 @@ export type UpdateCompanyPayload = {
 
 export type MonthlyPoint = { label: string; value: number };
 
-export type AdminAnalytics = {
+export type TrendGranularity =
+  | "day"
+  | "week"
+  | "month"
+  | "quarter"
+  | "year";
+
+export type TrendPoint = {
+  bucketStart: string;
+  value: number;
+};
+
+export type TrendSeries = {
+  granularity: TrendGranularity;
+  points: TrendPoint[];
+};
+
+export type AdminAnalyticsResponse = {
   success: boolean;
   code: string;
   message: string;
@@ -66,8 +83,51 @@ export type AdminAnalytics = {
   };
 };
 
-export const getAnalyticsApi = async (): Promise<AdminAnalytics> => {
+export const getAnalyticsApi = async (): Promise<AdminAnalyticsResponse> => {
   const response = await api.get(`/analytics`);
+  return response.data;
+};
+
+export type AnalyticsQueryParams = {
+  from?: string;
+  to: string;
+  tzOffsetMinutes: number;
+  granularity?: TrendGranularity;
+};
+
+export type ResourceAnalyticsResponse = {
+  success: boolean;
+  code: string;
+  message: string;
+  resourceStats: {
+    countsByStatus: Array<{ status: string; _count: number }>;
+    countsByType: Array<{ type: string; _count: number }>;
+    resourcesTrend: TrendSeries;
+  };
+};
+
+export type UserAnalyticsResponse = {
+  success: boolean;
+  code: string;
+  message: string;
+  userStats: {
+    countsByRole: Array<{ role: string; _count: number }>;
+    countsByDepartment: Array<{ name: string; _count: { users: number } }>;
+    usersTrend: TrendSeries;
+  };
+};
+
+export const fetchResourceAnalyticsApi = async (
+  params: AnalyticsQueryParams,
+): Promise<ResourceAnalyticsResponse> => {
+  const response = await api.get(`/analytics/resources`, { params });
+  return response.data;
+};
+
+export const fetchUserAnalyticsApi = async (
+  params: AnalyticsQueryParams,
+): Promise<UserAnalyticsResponse> => {
+  const response = await api.get(`/analytics/users`, { params });
   return response.data;
 };
 
